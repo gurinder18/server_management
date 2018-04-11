@@ -2,14 +2,14 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-users"></i> User Management
+        <i class="fa fa-user"></i> Client Management
       </h1>
     </section>
     <section class="content">
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>addNew"><i class="fa fa-plus"></i> Add New</a>
+                    <a class="btn btn-primary" href="<?php echo base_url(); ?>addNewClient"><i class="fa fa-plus"></i> Add New</a>
                 </div>
             </div>
         </div>
@@ -17,7 +17,7 @@
             <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Users List</h3>
+                    <h3 class="box-title">Clients List</h3>
                     
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
@@ -25,26 +25,34 @@
                     <tr>
                       <th>Id</th>
                       <th>Name</th>
+                      <th>Phone</th>
                       <th>Email</th>
-                      <th>Mobile</th>
-                      <th>Role</th>
+                      <th>Address</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Zip</th>
+                      <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
                     <?php
-                    if(!empty($userRecords))
+                    if(!empty($clientRecords))
                     {
-                        foreach($userRecords as $record)
+                        foreach($clientRecords as $record)
                         { 
                     ?>
                     <tr>
-                      <td><?php echo $record->userId ?></td>
+                      <td><?php echo $record->id ?></td>
                       <td><?php echo $record->name ?></td>
+                      <td><?php echo $record->phone ?></td>
                       <td><?php echo $record->email ?></td>
-                      <td><?php echo $record->mobile ?></td>
-                      <td><?php echo $record->role ?></td>
+                      <td><?php echo $record->address ?></td>
+                      <td><?php echo $record->city ?></td>
+                      <td><?php echo $record->state ?></td>
+                      <td><?php echo $record->zip ?></td>
+                      <td><?php if(($record->status)==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
-                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'editOld/'.$record->userId; ?>"><i class="fa fa-pencil"></i></a>
-                          <a class="btn btn-sm btn-danger deleteUser" href="#" data-userid="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
+                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
+                          <a class="btn btn-sm btn-danger deleteClient" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
                     <?php
@@ -69,7 +77,7 @@
             e.preventDefault();            
             var link = jQuery(this).get(0).href;            
             var value = link.substring(link.lastIndexOf('/') + 1);
-            jQuery("#searchList").attr("action", baseURL + "userListing/" + value);
+            jQuery("#searchList").attr("action", baseURL + "clients/" + value);
             jQuery("#searchList").submit();
         });
     });

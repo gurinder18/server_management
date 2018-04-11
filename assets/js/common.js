@@ -28,7 +28,58 @@ jQuery(document).ready(function(){
 			});
 		}
 	});
+	jQuery(document).ready(function(){
 	
+		jQuery(document).on("click", ".deleteServer", function(){
+			var serverId = $(this).data("serverid"),
+				hitURL = baseURL + "deleteServer",
+				currentRow = $(this);
+			
+			var confirmation = confirm("Are you sure to delete this server ?");
+			
+			if(confirmation)
+			{
+				jQuery.ajax({
+				type : "POST",
+				dataType : "json",
+				url : hitURL,
+				data : { serverId : serverId } 
+				}).done(function(data){
+					console.log(data);
+					currentRow.parents('tr').remove();
+					if(data.status = true) { alert("Server successfully deleted"); }
+					else if(data.status = false) { alert("Server deletion failed"); }
+					else { alert("Access denied..!"); }
+				});
+			}
+		});
+	});
+	jQuery(document).ready(function(){
+	
+		jQuery(document).on("click", ".deleteClient", function(){
+			var id = $(this).data("id"),
+				hitURL = baseURL + "deleteClient",
+				currentRow = $(this);
+			
+			var confirmation = confirm("Are you sure to delete this client ?");
+			
+			if(confirmation)
+			{
+				jQuery.ajax({
+				type : "POST",
+				dataType : "json",
+				url : hitURL,
+				data : { id : id } 
+				}).done(function(data){
+					console.log(data);
+					currentRow.parents('tr').remove();
+					if(data.status = true) { alert("Client successfully deleted"); }
+					else if(data.status = false) { alert("Client deletion failed"); }
+					else { alert("Access denied..!"); }
+				});
+			}
+		});
+	});
 	
 	jQuery(document).on("click", ".searchList", function(){
 		

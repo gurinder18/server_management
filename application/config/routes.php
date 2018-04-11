@@ -68,5 +68,28 @@ $route['resetPasswordConfirmUser/(:any)'] = "login/resetPasswordConfirmUser/$1";
 $route['resetPasswordConfirmUser/(:any)/(:any)'] = "login/resetPasswordConfirmUser/$1/$2";
 $route['createPasswordUser'] = "login/createPasswordUser";
 
+/*********** SERVER DEFINED ROUTES *******************/
+$route['serverListing'] = 'server/serverListing';
+$route['serverListing/(:num)'] = "server/serverListing/$1";
+$route['addNewServer'] = "server/addNewServer";
+$route['addNewServer2'] = "server/addNewServer2";
+
+$route['editOldServer'] = "server/editOldServer";
+$route['editOldServer/(:num)'] = "server/editOldServer/$1";
+$route['editServer'] = "server/editServer";
+$route['deleteServer'] = "server/deleteServer";
+
+/*********** CLIENT DEFINED ROUTES *******************/
+$route['clients'] = 'client/clients';
+$route['clients/(:num)'] = "client/clients/$1";
+$route['addNewClient'] = "client/addClient";
+$route['addNewClient'] = "client/addClient";
+
+$route['edit'] = "client/edit";
+$route['edit/(:num)'] = "client/edit/$1";
+$route['editClient'] = "client/editClient";
+$route['deleteClient'] = "client/deleteClient";
+
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
