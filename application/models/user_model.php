@@ -65,6 +65,8 @@ class User_model extends CI_Model
         
         return $query->result();
     }
+    
+
 
     /**
      * This function is used to check whether email id is already exist or not

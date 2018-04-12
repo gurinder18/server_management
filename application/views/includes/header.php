@@ -109,14 +109,14 @@
             {
             ?>
             <li class="treeview">
-              <a href="<?php echo base_url(); ?>userListing">
+              <a href="<?php echo base_url(); ?>users">
                 <i class="fa fa-users"></i>
                 <span>Users</span>
               </a>
             </li>
             <li class="treeview">
-              <a href="<?php echo base_url(); ?>serverListing">
-                <i class="fa fa-users"></i>
+              <a href="<?php echo base_url(); ?>servers">
+                <i class="fa fa-list-alt"></i>
                 <span>Servers</span>
               </a>
             </li>

@@ -2,14 +2,14 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-users"></i> Server Management
+        <i class="fa fa-list-alt"></i> Server Management
       </h1>
     </section>
     <section class="content">
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>addNewServer"><i class="fa fa-plus"></i> Add New</a>
+                    <a class="btn btn-primary" href="<?php echo base_url(); ?>add-server"><i class="fa fa-plus"></i> Add New</a>
                 </div>
             </div>
         </div>
@@ -25,6 +25,9 @@
                     <tr>
                       <th>Id</th>
                       <th>Name</th>
+                      <th>Client</th>
+                      <th>Server IP</th>
+                      <th>Hostname</th>
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
@@ -35,12 +38,15 @@
                         { 
                     ?>
                     <tr>
-                      <td><?php echo $record->serverId ?></td>
+                      <td><?php echo $record->id ?></td>
                       <td><?php echo $record->name ?></td>
-                      <td><?php echo $record->status ?></td>
+                      <td><?php echo $record->ClientName ?></td>
+                      <td><?php echo $record->server ?></td>
+                      <td><?php echo $record->hostname ?></td>
+                      <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
-                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'editOldServer/'.$record->serverId; ?>"><i class="fa fa-pencil"></i></a>
-                          <a class="btn btn-sm btn-danger deleteServer" href="#" data-serverid="<?php echo $record->serverId; ?>"><i class="fa fa-trash"></i></a>
+                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-server/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
+                          <a class="btn btn-sm btn-danger deleteServer" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
                     <?php

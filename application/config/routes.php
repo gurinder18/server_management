@@ -47,13 +47,13 @@ $route['404_override'] = 'error';
 $route['loginMe'] = 'login/loginMe';
 $route['dashboard'] = 'user';
 $route['logout'] = 'user/logout';
-$route['userListing'] = 'user/userListing';
-$route['userListing/(:num)'] = "user/userListing/$1";
-$route['addNew'] = "user/addNew";
+$route['users'] = 'user/userListing';
+$route['users/(:num)'] = "user/userListing/$1";
+$route['add-user'] = "user/addNew";
 
 $route['addNewUser'] = "user/addNewUser";
-$route['editOld'] = "user/editOld";
-$route['editOld/(:num)'] = "user/editOld/$1";
+$route['edit-user'] = "user/editOld";
+$route['edit-user/(:num)'] = "user/editOld/$1";
 $route['editUser'] = "user/editUser";
 $route['deleteUser'] = "user/deleteUser";
 $route['loadChangePass'] = "user/loadChangePass";
@@ -69,24 +69,24 @@ $route['resetPasswordConfirmUser/(:any)/(:any)'] = "login/resetPasswordConfirmUs
 $route['createPasswordUser'] = "login/createPasswordUser";
 
 /*********** SERVER DEFINED ROUTES *******************/
-$route['serverListing'] = 'server/serverListing';
-$route['serverListing/(:num)'] = "server/serverListing/$1";
-$route['addNewServer'] = "server/addNewServer";
+$route['servers'] = 'server/serverListing';
+$route['servers/(:num)'] = "server/serverListing/$1";
+$route['add-server'] = "server/addNewServer";
 $route['addNewServer2'] = "server/addNewServer2";
 
-$route['editOldServer'] = "server/editOldServer";
-$route['editOldServer/(:num)'] = "server/editOldServer/$1";
+$route['edit-server'] = "server/editOldServer";
+$route['edit-server/(:num)'] = "server/editOldServer/$1";
 $route['editServer'] = "server/editServer";
 $route['deleteServer'] = "server/deleteServer";
 
 /*********** CLIENT DEFINED ROUTES *******************/
 $route['clients'] = 'client/clients';
 $route['clients/(:num)'] = "client/clients/$1";
-$route['addNewClient'] = "client/addClient";
+$route['add-client'] = "client/addClient";
 $route['addNewClient'] = "client/addClient";
 
-$route['edit'] = "client/edit";
-$route['edit/(:num)'] = "client/edit/$1";
+$route['edit-client'] = "client/edit";
+$route['edit-client/(:num)'] = "client/edit/$1";
 $route['editClient'] = "client/editClient";
 $route['deleteClient'] = "client/deleteClient";
 

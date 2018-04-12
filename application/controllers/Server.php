@@ -20,17 +20,18 @@ class Server extends BaseController
         $this->load->model('server_model');
         $this->isLoggedIn();   
     }
-    
+  
     /**
      * This function used to load the first screen of the server
      */
-    /*public function index()
+    public function index()
     {
         $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
         
         $this->loadViews("dashboard", $this->global, NULL , NULL);
+        
     }
-    */
+    
 
     /**
      * This function is used to load the server list
@@ -53,16 +54,29 @@ class Server extends BaseController
             
             $count = $this->server_model->serverListingCount($searchText);
 
-			$returns = $this->paginationCompress ( "serverListing/", $count, 5 );
+			$returns = $this->paginationCompress ( "servers/", $count, 5 );
             
             $data['serverRecords'] = $this->server_model->serverListing($searchText, $returns["page"], $returns["segment"]);
-            
             $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-            
+            //print_r($data);
             $this->loadViews("servers", $this->global, $data, NULL);
         }
     }
+    function checkUserExists()
+    {
+        $id = $this->input->post("id");
+        $username = $this->input->post("username");
 
+        if(empty($id)){
+            $result = $this->server_model->checkUserExists($username);
+        } else {
+            $result = $this->server_model->checkUserExists($username, $id);
+        }
+
+        if(empty($result)){ echo("true"); }
+        else { echo("false"); }
+    }
+    
     /**
      * This function is used to load the add new form
      */
@@ -75,11 +89,11 @@ class Server extends BaseController
         else
         {
             $this->load->model('server_model');
-            //$data['roles'] = $this->user_model->getUserRoles();
-            
+            $data['clients'] = $this->server_model->getClients();
+           
             $this->global['pageTitle'] = 'Orion eSolutions : Add New Server';
-
-            $this->loadViews("addNewServer", $this->global, NULL, NULL);
+           
+            $this->loadViews("addNewServer", $this->global, $data, NULL);
         }
     }
 
@@ -97,8 +111,14 @@ class Server extends BaseController
         {
             $this->load->library('form_validation');
             
-            $this->form_validation->set_rules('name','Name','trim|required|max_length[128]|xss_clean');
-            $this->form_validation->set_rules('status','Status','trim|required|max_length[128]|xss_clean');
+            $this->form_validation->set_rules('name','Name','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('client','Client','trim|required|numeric');
+            $this->form_validation->set_rules('server','Server','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('hostname','Hostname','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('username','Username','max_length[20]');
+            $this->form_validation->set_rules('password','Password','max_length[20]');
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
+            $this->form_validation->set_rules('details','Details','trim|xss_clean');
            
             if($this->form_validation->run() == FALSE)
             {
@@ -107,9 +127,17 @@ class Server extends BaseController
             else
             {
                 $name = ucwords(strtolower($this->input->post('name')));
+                $client = $this->input->post('client');
+                $server = $this->input->post('server');
+                $hostname = $this->input->post('hostname');
+                $username = $this->input->post('username');
+                $password = $this->input->post('password');
                 $status = $this->input->post('status');
+                $details = $this->input->post('details');
                 
-                $serverInfo = array('name'=>ucwords($name),'status'=>$status, 'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
+                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
                 
                 $this->load->model('server_model');
                 $result = $this->server_model->addNewServer2($serverInfo);
@@ -123,7 +151,7 @@ class Server extends BaseController
                     $this->session->set_flashdata('error', 'Server creation failed');
                 }
                 
-                redirect('addNewServer');
+                redirect('servers');
             }
         }
     }
@@ -131,26 +159,26 @@ class Server extends BaseController
     
     /**
      * This function is server load server edit information
-     * @param number $serverId : Optional : This is server id
+     * @param number $id : Optional : This is server id
      */
-    function editOldServer($serverId = NULL)
+    function editOldServer($id = NULL)
     {
-        if($this->isAdmin() == TRUE || $serverId == 0)
+        if($this->isAdmin() == TRUE )
         {
             $this->loadThis();
         }
         else
         {
-            if($serverId == null)
+            if($id == null)
             {
-                redirect('serverListing');
+                redirect('servers');
             }
             
            // $data['roles'] = $this->user_model->getUserRoles();
-            $data['serverInfo'] = $this->server_model->getServerInfo($serverId);
-            
+            $data['serverInfo'] = $this->server_model->getServerInfo($id);
+            $data['clients'] = $this->server_model->getClients();
             $this->global['pageTitle'] = 'Orion eSolutions : Edit Server';
-          
+           //print_r($data);
             $this->loadViews("editOldServer", $this->global, $data, NULL);
         }
     }
@@ -169,27 +197,39 @@ class Server extends BaseController
         {
             $this->load->library('form_validation');
             
-            $serverId = $this->input->post('serverId');
+            $id = $this->input->post('id');
             
-            $this->form_validation->set_rules('name','Name','trim|required|max_length[128]|xss_clean');
-            $this->form_validation->set_rules('status','Status','trim|required|max_length[128]|xss_clean');
-           
+            $this->form_validation->set_rules('name','Name','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('client','Client','trim|required|numeric');
+            $this->form_validation->set_rules('server','Server','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('hostname','Hostname','trim|required|max_length[100]|xss_clean');
+            $this->form_validation->set_rules('username','Username','max_length[20]');
+            $this->form_validation->set_rules('password','Password','max_length[20]');
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
+            $this->form_validation->set_rules('details','Details','trim|xss_clean');
+            
             if($this->form_validation->run() == FALSE)
             {
-                $this->editOldServer($serverId);
+                $this->editOldServer($id);
             }
             else
             {
                 $name = ucwords(strtolower($this->input->post('name')));
+                $client = $this->input->post('client');
+                $server = $this->input->post('server');
+                $hostname = $this->input->post('hostname');
+                $username = $this->input->post('username');
+                $password = $this->input->post('password');
                 $status = $this->input->post('status');
+                $details = $this->input->post('details');
                
                 $serverInfo = array();
                 
-                $serverInfo = array('name'=>ucwords($name), 'status'=>$status, 'updatedBy'=>$this->vendorId, 
+                $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
+                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details, 'updatedBy'=>$this->vendorId, 
                         'updatedDtm'=>date('Y-m-d H:i:s'));
                 
-                
-                $result = $this->server_model->editServer($serverInfo, $serverId);
+                $result = $this->server_model->editServer($serverInfo, $id);
                 
                 if($result == true)
                 {
@@ -200,14 +240,14 @@ class Server extends BaseController
                     $this->session->set_flashdata('error', 'Server updation failed');
                 }
                 
-                redirect('serverListing');
+                redirect('edit-server/'.$id);
             }
         }
     }
 
 
     /**
-     * This function is used to delete the server using serverId
+     * This function is used to delete the server using id
      * @return boolean $result : TRUE / FALSE
      */
     function deleteServer()
@@ -218,10 +258,10 @@ class Server extends BaseController
         }
         else
         {
-            $serverId = $this->input->post('serverId');
+            $id = $this->input->post('id');
             $serverInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
             
-            $result = $this->server_model->deleteServer($serverId, $serverInfo);
+            $result = $this->server_model->deleteServer($id, $serverInfo);
             
             if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
             else { echo(json_encode(array('status'=>FALSE))); }

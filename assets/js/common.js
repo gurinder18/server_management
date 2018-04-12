@@ -31,10 +31,10 @@ jQuery(document).ready(function(){
 	jQuery(document).ready(function(){
 	
 		jQuery(document).on("click", ".deleteServer", function(){
-			var serverId = $(this).data("serverid"),
+			var id = $(this).data("id"),
 				hitURL = baseURL + "deleteServer",
 				currentRow = $(this);
-			
+				
 			var confirmation = confirm("Are you sure to delete this server ?");
 			
 			if(confirmation)
@@ -43,7 +43,7 @@ jQuery(document).ready(function(){
 				type : "POST",
 				dataType : "json",
 				url : hitURL,
-				data : { serverId : serverId } 
+				data : { id : id } 
 				}).done(function(data){
 					console.log(data);
 					currentRow.parents('tr').remove();

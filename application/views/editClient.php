@@ -43,12 +43,9 @@ if(!empty($clientInfo))
             <!-- left column -->
             <div class="col-md-12">
               <!-- general form elements -->
-                
-                
-                
                 <div class="box box-primary">
                     <div class="box-header">
-                        <h3 class="box-title">Enter Client Details</h3>
+                        <h3 class="box-title">Edit Client Details</h3>
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     

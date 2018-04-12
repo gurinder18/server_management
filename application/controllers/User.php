@@ -51,7 +51,7 @@ class User extends BaseController
             
             $count = $this->user_model->userListingCount($searchText);
 
-			$returns = $this->paginationCompress ( "userListing/", $count, 5 );
+			$returns = $this->paginationCompress ( "users/", $count, 5 );
             
             $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
             
@@ -146,7 +146,7 @@ class User extends BaseController
                     $this->session->set_flashdata('error', 'User creation failed');
                 }
                 
-                redirect('addNew');
+                redirect('users');
             }
         }
     }
@@ -158,7 +158,7 @@ class User extends BaseController
      */
     function editOld($userId = NULL)
     {
-        if($this->isAdmin() == TRUE || $userId == 1)
+        if($this->isAdmin() == TRUE )
         {
             $this->loadThis();
         }
@@ -166,7 +166,7 @@ class User extends BaseController
         {
             if($userId == null)
             {
-                redirect('userListing');
+                redirect('users');
             }
             
             $data['roles'] = $this->user_model->getUserRoles();
@@ -194,10 +194,10 @@ class User extends BaseController
             
             $userId = $this->input->post('userId');
             
-            $this->form_validation->set_rules('fname','Full Name','trim|required|max_length[128]|xss_clean');
+            $this->form_validation->set_rules('name','Full Name','trim|required|max_length[128]|xss_clean');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            $this->form_validation->set_rules('password','Password','matches[cpassword]|max_length[20]');
-            $this->form_validation->set_rules('cpassword','Confirm Password','matches[password]|max_length[20]');
+            $this->form_validation->set_rules('password','Password','required|matches[cpassword]|max_length[20]');
+            $this->form_validation->set_rules('cpassword','Confirm Password','required|matches[password]|max_length[20]');
             $this->form_validation->set_rules('role','Role','trim|required|numeric');
             $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
             
@@ -207,7 +207,7 @@ class User extends BaseController
             }
             else
             {
-                $name = ucwords(strtolower($this->input->post('fname')));
+                $name = ucwords(strtolower($this->input->post('name')));
                 $email = $this->input->post('email');
                 $password = $this->input->post('password');
                 $roleId = $this->input->post('role');
@@ -238,7 +238,7 @@ class User extends BaseController
                     $this->session->set_flashdata('error', 'User updation failed');
                 }
                 
-                redirect('userListing');
+                redirect('edit-user/'.$userId);
             }
         }
     }

@@ -150,7 +150,7 @@ class Client extends BaseController
                     $this->session->set_flashdata('error', 'Client creation failed');
                 }
                 
-                redirect('addNewClient');
+                redirect('clients');
             }
         }
     }
@@ -162,7 +162,7 @@ class Client extends BaseController
      */
     function edit($id = NULL)
     {
-        if($this->isAdmin() == TRUE || $id == 0)
+        if($this->isAdmin() == TRUE )
         {   
             $this->loadThis();
         }
@@ -239,7 +239,7 @@ class Client extends BaseController
                     $this->session->set_flashdata('error', 'Client updation failed');
                 }
                 
-                redirect('clients');
+                redirect('edit-client/'.$id);
             }
         }
     }
