@@ -5,7 +5,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-server"></i> Server Management
+        <i class="fa fa-arrow-circle-up"></i> Backups Management
       </h1>
     </section>
     
@@ -18,19 +18,34 @@
             
                 <div class="box box-primary">
                     <div class="box-header">
-                        <h3 class="box-title">Enter Server Details</h3>
+                        <h3 class="box-title">Enter Backups Details</h3>
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" id="addServer" action="<?php echo base_url() ?>addNewServer2" method="post" role="form">
+                    <form role="form" id="addBackup" action="<?php echo base_url() ?>addBackup" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="name">Name *</label>
-                                        <input type="text" class="form-control required" id="name" name="name" maxlength="50" >
+                                        <label for="user">Select User *</label>
+                                        <select class="form-control required" id="user" name="user" > 
+                                            <option value="">Select User</option>
+                                            <?php
+                                            if(!empty($users))
+                                            {
+                                                foreach ($users as $us)
+                                                { 
+                                                    ?>
+                                                    <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="client">Client *</label>
@@ -54,46 +69,53 @@
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="server">Server IP *</label>
-                                        <input type="text" class="form-control required" id="server" name="server" maxlength="128">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">                                
-                                    <div class="form-group">
-                                        <label for="hostname">Hostname *</label>
-                                        <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">                                
-                                    <div class="form-group">
-                                        <label for="username">Username</label>
-                                        <input type="text" class="form-control " id="username" name="username" maxlength="50">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">                                
-                                    <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control " id="password" name="password" maxlength="50" minlength="4">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="status">Status *</label>
-                                        <select class="form-control required" id="status" name="status" > 
-                                            <option value="">Select Status</option>
-                                            <option value="1">Active</option>
-                                            <option value="0">Deactive</option>
+                                        <label for="server">Server *</label>
+                                        <select class="form-control required" id="server" name="server" > 
+                                            <option value="">Select server</option>
+                                            <option value="7">Linux </option>
+                                            <?php /*
+                                            if(!empty($servers))
+                                            {
+                                                foreach ($servers as $sv)
+                                                { 
+                                                    ?>
+                                                    <option value="<?php echo $sv->id ?>"><?php echo $sv->name ?></option>
+                                                    <?php
+                                                }
+                                            }*/
+                                            ?>
                                         </select>
                                     </div>
-                                </div> 
-                                <div class="col-md-6">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="details">Other Details</label>
-                                       <textarea class="form-control" id="details" name="details"></textarea>
+                                        <label for="scheduleType">Schedule type *</label>
+                                        <select class="form-control required" id="scheduleType" name="scheduleType" > 
+                                            <option value="">Select schedule type</option>
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">                                
+                                    <div class="form-group">
+                                        <label for="scheduleTimings">Schedule timings *</label>
+                                        <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
+                                            <option value="">Select schedule timings</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="information">Additional Information</label>
+                                       <textarea class="form-control" id="information" name="information"></textarea>
                                     </div>
                                 </div>    
                             </div>
@@ -146,4 +168,54 @@
   $(function() {
     $('textarea').froalaEditor()
   });
+</script>
+<script>
+    $(document).ready(function () {
+    $("#scheduleType").change(function () {
+        var val = $(this).val();
+        if (val == "Daily") {
+            $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
+        } else if (val == "Weekly") {
+            $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+        } else if (val == "Monthly") {
+           var date =  ''; 
+            for (var i = 1; i <= 31; i++){
+                date += "<option value='"+i+"'>"+i+"</option>";
+            }
+            $("#scheduleTimings").html(date);
+        } else if (val == "") {
+            $("#scheduleTimings").html("<option value=''>select schedule timings</option>");
+        }
+    });
+});
+$(document).on("change","#client",function(){
+    var val = $(this).val();
+    $.ajax({
+	type: "POST",
+	url: baseURL + "getServers/"+val,
+	data:'clientId='+val,
+	success: function(data){
+        var obj = JSON.parse(data);
+        var servers = obj.servers;
+        var server_text = '';
+        $.each(servers, function(i, item) {
+            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
+})
+$("#server").html(server_text);
+     
+    }
+    
+	});
+});
+
+
+
+
+
+
+
+    function getServer(val) {
+	
+}
+   
 </script>

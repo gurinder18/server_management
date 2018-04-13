@@ -126,6 +126,12 @@
                 <span>Clients</span>
               </a>
             </li>
+            <li class="treeview">
+              <a href="<?php echo base_url(); ?>backups">
+                <i class="fa fa-arrow-circle-up"></i>
+                <span>Backups</span>
+              </a>
+            </li>
             <?php
             }
             ?>

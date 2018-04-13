@@ -28,6 +28,7 @@ jQuery(document).ready(function(){
 			});
 		}
 	});
+});
 	jQuery(document).ready(function(){
 	
 		jQuery(document).on("click", ".deleteServer", function(){
@@ -56,6 +57,33 @@ jQuery(document).ready(function(){
 	});
 	jQuery(document).ready(function(){
 	
+		jQuery(document).on("click", ".deleteBackup", function(){
+			var id = $(this).data("id"),
+				hitURL = baseURL + "deleteBackup",
+				currentRow = $(this);
+			
+			var confirmation = confirm("Are you sure to delete this backup ?");
+			
+			if(confirmation)
+			{
+				jQuery.ajax({
+				type : "POST",
+				dataType : "json",
+				url : hitURL,
+				data : { id : id } 
+				}).done(function(data){
+					console.log(data);
+					currentRow.parents('tr').remove();
+					if(data.status = true) { alert("Backup successfully deleted"); }
+					else if(data.status = false) { alert("Backup deletion failed"); }
+					else { alert("Access denied..!"); }
+				});
+			}  
+		});
+	});
+
+	jQuery(document).ready(function(){
+	
 		jQuery(document).on("click", ".deleteClient", function(){
 			var id = $(this).data("id"),
 				hitURL = baseURL + "deleteClient",
@@ -81,8 +109,7 @@ jQuery(document).ready(function(){
 		});
 	});
 	
-	jQuery(document).on("click", ".searchList", function(){
-		
-	});
+
+jQuery(document).on("click", ".searchList", function(){
 	
 });
