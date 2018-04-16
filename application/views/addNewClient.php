@@ -19,7 +19,7 @@
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" id="addClient" action="<?php echo base_url() ?>addNewClient" method="post" role="form">
+                    <form role="form" id="addClient" action="<?php echo base_url() ?>add-client" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -85,7 +85,7 @@
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name="add_client" value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>

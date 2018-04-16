@@ -68,6 +68,16 @@ class BaseController extends CI_Controller {
 			return false;
 		}
 	}
+	/**
+	 * This function is used to check the access
+	 */
+	function isMember() {
+		if ($this->role == ROLE_MANAGER) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
 	 * This function is used to load the set of views

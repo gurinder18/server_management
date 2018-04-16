@@ -49,7 +49,7 @@ if(!empty($clientInfo))
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" action="<?php echo base_url() ?>editClient" method="post" id="editClient" role="form">
+                    <form role="form" action="<?php echo base_url() ?>edit-client/<?php echo $id; ?>" method="post" id="editClient" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -113,9 +113,9 @@ if(!empty($clientInfo))
                                 </div>    
                             </div>
                         </div><!-- /.box-body -->
-    
+     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name="edit_client" value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>

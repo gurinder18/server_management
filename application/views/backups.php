@@ -31,14 +31,74 @@
                       <th>Schedule Timings</th>
                       <th class="text-center">Actions</th>
                     </tr>
+                    <tr>
+                    <td>#</td>
+                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
+                    
+                        <td>
+                            <select class="form-control required" id="user" name="user" > 
+                                <option value="">Select User</option>
+                                <?php
+                                    if(!empty($users))
+                                    {
+                                        foreach ($users as $us)
+                                        { 
+                                ?>
+                                <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                <?php
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control required" id="client" name="client" > 
+                                <option value="">Select Client</option>
+                                <?php
+                                    if(!empty($clients))
+                                    {
+                                        foreach ($clients as $cl)
+                                        { 
+                                ?>
+                                <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
+                                <?php
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control required" id="server" name="server" > 
+                                <option value="">Select server</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control required" id="scheduleType" name="scheduleType" > 
+                                <option value="">Select schedule type</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
+                                <option value="">Select schedule timings</option>
+                            </select>
+                        </td>
+                        <td> 
+                            <input type="submit" class="btn btn-primary" name='search_backup' value="Submit" />
+                        </td>
+                        </form>
+                    </tr>
                     <?php
                     if(!empty($backupRecords))
                     {
+						$i = 1;
                         foreach($backupRecords as $record)
                         { 
                     ?>
                     <tr>
-                      <td><?php echo $record->id ?></td>
+                      <td><?php echo $i ?></td>
                       <td><?php echo $record->UserName ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->ServerName ?></td>
@@ -51,11 +111,15 @@
                       </td>
                     </tr>
                     <?php
+						$i++;
                         }
                     }
+                    else{
+                        echo "<tr><td style='color:red'>No Record Found</td></tr>";
+                    }
+                    
                     ?>
                   </table>
-                  
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php echo $this->pagination->create_links(); ?>
@@ -76,4 +140,42 @@
             jQuery("#searchList").submit();
         });
     });
+
+    $(document).on("change","#scheduleType",function() {
+        var val = $(this).val();
+        if (val == "Daily") {
+            $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
+        } else if (val == "Weekly") {
+            $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+        } else if (val == "Monthly") {
+           var date =  ''; 
+            for (var i = 1; i <= 31; i++){
+                date += "<option value='"+i+"'>"+i+"</option>";
+            }
+            $("#scheduleTimings").html(date);
+        } else if (val == "") {
+            $("#scheduleTimings").html("<option value=''>select schedule timings</option>");
+        }
+    });
+
+$(document).on("change","#client",function(){
+    var val = $(this).val();
+    $.ajax({
+	type: "POST",
+	url: baseURL + "getServers/"+val,
+	data:'clientId='+val,
+	success: function(data){
+        var obj = JSON.parse(data);
+        var servers = obj.servers;
+        var server_text = '';
+        $.each(servers, function(i, item) {
+            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
+})
+$("#server").html(server_text);
+     
+    }
+    
+	});
+});
+
 </script>

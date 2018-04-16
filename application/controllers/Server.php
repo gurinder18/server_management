@@ -61,7 +61,7 @@ class Server extends BaseController
             //print_r($data);
             $this->loadViews("servers", $this->global, $data, NULL);
         }
-    }
+    } 
     function checkUserExists()
     {
         $id = $this->input->post("id");
@@ -80,13 +80,13 @@ class Server extends BaseController
     /**
      * This function is used to load the add new form
      */
-    function addNewServer()
+    function addServer()
     {
         if($this->isAdmin() == TRUE)
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['add_server'])!='Submit')
         {
             $this->load->model('server_model');
             $data['clients'] = $this->server_model->getClients();
@@ -95,20 +95,7 @@ class Server extends BaseController
            
             $this->loadViews("addNewServer", $this->global, $data, NULL);
         }
-    }
-
-    
-    /**
-     * This function is used to add new server to the system
-     */
-    function addNewServer2()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
+        elseif(isset($_POST['add_server'])=='Submit'){
             $this->load->library('form_validation');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[100]|xss_clean');
@@ -122,7 +109,8 @@ class Server extends BaseController
            
             if($this->form_validation->run() == FALSE)
             {
-                $this->addNewServer();
+                unset($_POST['add_server']);
+                $this->addServer();
             }
             else
             {
@@ -153,21 +141,20 @@ class Server extends BaseController
                 
                 redirect('servers');
             }
-        }
+        }else{}
     }
 
-    
     /**
      * This function is server load server edit information
      * @param number $id : Optional : This is server id
      */
-    function editOldServer($id = NULL)
+    function editServer($id = NULL)
     {
         if($this->isAdmin() == TRUE )
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['edit_server'])!='Submit')
         {
             if($id == null)
             {
@@ -181,20 +168,7 @@ class Server extends BaseController
            //print_r($data);
             $this->loadViews("editOldServer", $this->global, $data, NULL);
         }
-    }
-    
-    
-    /**
-     * This function is used to edit the server information
-     */
-    function editServer()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
+        elseif(isset($_POST['edit_server'])=='Submit'){
             $this->load->library('form_validation');
             
             $id = $this->input->post('id');
@@ -210,7 +184,8 @@ class Server extends BaseController
             
             if($this->form_validation->run() == FALSE)
             {
-                $this->editOldServer($id);
+                unset($_POST['edit_server']);
+                $this->editServer($id);
             }
             else
             {
@@ -242,10 +217,9 @@ class Server extends BaseController
                 
                 redirect('edit-server/'.$id);
             }
-        }
+        }else{}
     }
-
-
+    
     /**
      * This function is used to delete the server using id
      * @return boolean $result : TRUE / FALSE

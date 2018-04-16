@@ -22,7 +22,7 @@
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" id="addBackup" action="<?php echo base_url() ?>addBackup" method="post" role="form">
+                    <form role="form" id="addBackup" action="<?php echo base_url() ?>add-backup" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -44,8 +44,6 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="client">Client *</label>
@@ -72,23 +70,9 @@
                                         <label for="server">Server *</label>
                                         <select class="form-control required" id="server" name="server" > 
                                             <option value="">Select server</option>
-                                            <option value="7">Linux </option>
-                                            <?php /*
-                                            if(!empty($servers))
-                                            {
-                                                foreach ($servers as $sv)
-                                                { 
-                                                    ?>
-                                                    <option value="<?php echo $sv->id ?>"><?php echo $sv->name ?></option>
-                                                    <?php
-                                                }
-                                            }*/
-                                            ?>
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="scheduleType">Schedule type *</label>
@@ -122,12 +106,12 @@
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name='add_backup' value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>
                 </div>
-            </div>
+            </div> 
             <div class="col-md-4">
                 <?php
                     $this->load->helper('form');
@@ -162,16 +146,15 @@
     
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
+<script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1//js/froala_editor.pkgd.min.js"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()
   });
 </script>
 <script>
-    $(document).ready(function () {
-    $("#scheduleType").change(function () {
+    $(document).on("change","#scheduleType",function() {
         var val = $(this).val();
         if (val == "Daily") {
             $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
@@ -187,7 +170,7 @@
             $("#scheduleTimings").html("<option value=''>select schedule timings</option>");
         }
     });
-});
+
 $(document).on("change","#client",function(){
     var val = $(this).val();
     $.ajax({
@@ -207,12 +190,6 @@ $("#server").html(server_text);
     
 	});
 });
-
-
-
-
-
-
 
     function getServer(val) {
 	

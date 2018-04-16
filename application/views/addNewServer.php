@@ -21,8 +21,8 @@
                         <h3 class="box-title">Enter Server Details</h3>
                     </div><!-- /.box-header -->
                     <!-- form start -->
-                    
-                    <form role="form" id="addServer" action="<?php echo base_url() ?>addNewServer2" method="post" role="form">
+                     
+                    <form role="form" id="addServer" action="<?php echo base_url() ?>add-server" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -100,7 +100,7 @@
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name="add_server" value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>
@@ -140,8 +140,7 @@
     
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1//js/froala_editor.pkgd.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()

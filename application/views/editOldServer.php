@@ -66,7 +66,7 @@ if(!empty($clients))
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" action="<?php echo base_url() ?>editServer" method="post" id="editServer" role="form">
+                    <form role="form" action="<?php echo base_url() ?>edit-server/<?php echo $id; ?>" method="post" id="editServer" role="form">
                         <div class="box-body">
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -146,7 +146,7 @@ if(!empty($clients))
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name="edit_server" value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>
@@ -186,7 +186,7 @@ if(!empty($clients))
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/editUser.js" type="text/javascript"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1//js/froala_editor.pkgd.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()

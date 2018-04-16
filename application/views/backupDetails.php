@@ -16,28 +16,32 @@
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
-                    <tr>
-                      <th>Name</th>
-                      <th>Server IP</th>
-                      <th>Hostname</th>
-                      <th>Username</th>
-                      <th>Password</th>
-                      <th>Details</th>
-                    </tr>
-                    <?php
+                  <?php
                     if(!empty($servers))
                     {
                         foreach($servers as $record)
                         { 
                     ?>
+                   
                     <tr>
-                      <td><?php echo $record->name ?></td>
-                      <td><?php echo $record->server ?></td>
-                      <td><?php echo $record->hostname ?></td>
-                      <td><?php echo $record->username ?></td>
-                      <td><?php echo $record->password ?></td>
-                      <td><?php echo $record->details ?></td>
+                      <th>Server Name</th> <td><?php echo $record->name ?></td>
                     </tr>
+                    <tr>
+                      <th>Server IP</th> <td><?php echo $record->server ?></td>
+                      </tr>
+                    <tr>
+                      <th>Hostname</th><td><?php echo $record->hostname ?></td>
+                      </tr>
+                    <tr>
+                      <th>Username</th><td><?php echo $record->username ?></td>
+                      </tr>
+                    <tr>
+                      <th>Password</th><td><?php echo $record->password ?></td>
+                      </tr>
+                    <tr>
+                      <th>Details</th> <td><?php echo $record->details ?></td>
+                    </tr>
+                   
                     <?php
                         }
                     }
@@ -57,28 +61,28 @@
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
-                    <tr>
-                      <th>User</th>
-                      <th>Client</th>
-                      <th>Server</th>
-                      <th>Schedule Type</th>
-                      <th>Schedule Timings</th>
-                    </tr>
-                    <?php
+                  <?php
                     if(!empty($backupInfo))
                     {
-                        foreach($backupInfo as $backup)
-                        { 
+                      
                     ?>
                     <tr>
-                      <td><?php echo $backup->UserName ?></td>
-                      <td><?php echo $backup->ClientName ?></td>
-                      <td><?php echo $backup->ServerName ?></td>
-                      <td><?php echo $backup->scheduleType ?></td>
-                      <td><?php echo $backup->scheduleTimings ?></td>
+                      <th>User</th> <td><?php echo $backupInfo['UserName'] ?></td>
+                    </tr>
+                    <tr>
+                      <th>Client</th> <td><?php echo $backupInfo['ClientName'] ?></td>
+                      </tr>
+                    <tr>
+                      <th>Server</th> <td><?php echo $backupInfo['ServerName'] ?></td>
+                      </tr>
+                      <tr>
+                      <th>Schedule Type</th> <td><?php echo $backupInfo['scheduleType'] ?></td>
+                      </tr>
+                    <tr>
+                      <th>Schedule Timings</th> <td><?php echo $backupInfo['scheduleTimings'] ?></td>
                     </tr>
                     <?php
-                        }
+                        
                     }
                     ?>
                   </table>
@@ -99,36 +103,38 @@
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
-                    <tr>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>State</th>
-                    <th>Zip</th>
-                    <th>Status</th>
-                    </tr>
-                    <?php
+                  <?php
                     if(!empty($clients))
                     {
                         foreach($clients as $cl)
                         { 
-                    ?>
-                    <tr>
-                    <td><?php echo $cl->name ?></td>
-                    <td><?php echo $cl->phone ?></td>
-                    <td><?php echo $cl->email ?></td>
-                    <td><?php echo $cl->address ?></td>
-                    <td><?php echo $cl->city ?></td>
-                    <td><?php echo $cl->state ?></td>
-                    <td><?php echo $cl->zip ?></td>
-                    <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
-                    </tr>
-                    <?php
                         }
                     }
                     ?>
+                    <tr>
+                    <th>Client Name</th> <td><?php echo $cl->name ?></td>
+                    </tr>
+                      <tr>
+                    <th>Phone Number</th><td><?php echo $cl->phone ?></td>
+                    </tr>
+                      <tr>
+                    <th>Email</th> <td><?php echo $cl->email ?></td>
+                    </tr>
+                      <tr>
+                    <th>Address</th><td><?php echo $cl->address ?></td>
+                    </tr>
+                      <tr>
+                    <th>City</th><td><?php echo $cl->city ?></td>
+                    </tr>
+                      <tr>
+                    <th>State</th><td><?php echo $cl->state ?></td>
+                    </tr>
+                      <tr>
+                    <th>Zip</th><td><?php echo $cl->zip ?></td>
+                    </tr>
+                      <tr>
+                    <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
+                    </tr>
                   </table>
                   
                 </div><!-- /.box-body -->

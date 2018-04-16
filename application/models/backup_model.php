@@ -45,12 +45,72 @@ class Backup_model extends CI_Model
         $this->db->join('tbl_servers as Server', 'Server.id = BaseTbl.serverId','left');
 
         $this->db->where('BaseTbl.isDeleted', 0);
+       
         $this->db->limit($page, $segment);
         
         $query = $this->db->get();
         $result = $query->result();    
         //print_r($result); die;    
         return $result;
+    }
+
+    function searchBackups($searchText = '', $page, $segment,$search_data)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
+         BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
+         Client.name As ClientName,Server.name As ServerName');
+         //$this->db->select('BaseTbl.*');
+        $this->db->from('tbl_backups as BaseTbl');
+        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+        $this->db->join('tbl_servers as Server', 'Server.id = BaseTbl.serverId','left');
+
+        $this->db->where('BaseTbl.isDeleted', 0);
+        
+        if($search_data['userId']!=null){
+             $this->db->where('BaseTbl.userId', $search_data['userId']);
+        }
+        if($search_data['clientId']!=null){
+             $this->db->where('BaseTbl.clientId', $search_data['clientId']);
+        }
+        if($search_data['serverId']!=null){
+            $this->db->where('BaseTbl.serverId', $search_data['serverId']);
+        }
+        if($search_data['scheduleType']!=null){
+             $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
+        }
+        if($search_data['scheduleTimings']!=null){
+             $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
+         }
+        $this->db->limit($page, $segment);
+        
+        $query = $this->db->get();
+        $result = $query->result();    
+           
+        return $result;
+    }
+
+
+    function membersBackups($searchText = '', $page, $segment,$userId)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
+        BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
+        Client.name As ClientName,Server.name As ServerName');
+        //$this->db->select('BaseTbl.*');
+       $this->db->from('tbl_backups as BaseTbl');
+       $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+       $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+       $this->db->join('tbl_servers as Server', 'Server.id = BaseTbl.serverId','left');
+
+       $this->db->where('BaseTbl.isDeleted', 0);
+       $this->db->where('BaseTbl.userId', $userId);
+      
+       $this->db->limit($page, $segment);
+       
+       $query = $this->db->get();
+       $result = $query->result();    
+       //print_r($result); die;    
+       return $result;
     }
      /**
      * This function is used to get the servers information by id
@@ -160,10 +220,10 @@ class Backup_model extends CI_Model
         $this->db->where('BaseTbl.id', $id);
         $query = $this->db->get();
         
-        return $query->result();
+        return $query->row_array();
     }
     
-    
+     
     /**
      * This function is used to update the server information
      * @param array $backupInfo : This is servers updated information
@@ -172,8 +232,8 @@ class Backup_model extends CI_Model
     function editBackup($backupInfo, $id)
     {
         $this->db->where('id', $id);
-        $this->db->update('tbl_servers', $backupInfo);
-        
+        $this->db->update('tbl_backups', $backupInfo);
+        //print_r($this->db);die;
         return TRUE;
     }
     

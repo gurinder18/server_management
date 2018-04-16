@@ -34,11 +34,12 @@
                     <?php
                     if(!empty($serverRecords))
                     {
+						$i = 1;
                         foreach($serverRecords as $record)
                         { 
                     ?>
                     <tr>
-                      <td><?php echo $record->id ?></td>
+                      <td><?php echo $i ?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->server ?></td>
@@ -50,6 +51,7 @@
                       </td>
                     </tr>
                     <?php
+						$i++;
                         }
                     }
                     ?>

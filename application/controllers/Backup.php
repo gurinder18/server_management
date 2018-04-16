@@ -37,11 +37,24 @@ class Backup extends BaseController
      * This function is used to load the server list
      */
    
-    function backups()
+    function backups($limit = NULL)
     {
         if($this->isAdmin() == TRUE)
         {
-            $this->loadThis();
+            $this->load->model('backup_model');
+            $searchText = $this->input->post('searchText');
+            $data['searchText'] = $searchText;
+                    
+            $this->load->library('pagination');
+                    
+            $count = $this->backup_model->backupListingCount($searchText);
+            
+            $returns = $this->paginationCompress ( "backups/", $count, 5 );
+            $data['backupRecords'] = $this->backup_model->membersBackups($searchText, $returns["page"], $returns["segment"],$this->vendorId);
+            $data['clients'] = $this->backup_model->getClients();
+            $data['users'] = $this->backup_model->getUsers();
+            $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+            $this->loadViews("backups", $this->global, $data, NULL);
         }
         else
         {
@@ -54,13 +67,37 @@ class Backup extends BaseController
             
             $count = $this->backup_model->backupListingCount($searchText);
 
-			$returns = $this->paginationCompress ( "servers/", $count, 5 );
-            
-            $data['backupRecords'] = $this->backup_model->backups($searchText, $returns["page"], $returns["segment"]);
-            $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-            //print_r($data);
-            $this->loadViews("backups", $this->global, $data, NULL);
-        }
+            $returns = $this->paginationCompress ( "backups/", $count, 5 );
+            if(isset($_GET['search_backup'])!='Submit')
+            {
+                $data['backupRecords'] = $this->backup_model->backups($searchText, $returns["page"], $returns["segment"]);
+                $data['clients'] = $this->backup_model->getClients();
+                $data['users'] = $this->backup_model->getUsers();
+                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                //print_r($data);
+                $this->loadViews("backups", $this->global, $data, NULL);
+            }
+            elseif(isset($_GET['search_backup'])=='Submit')
+            {
+                $search_data['userId'] = $this->input->get('user');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['serverId'] = $this->input->get('server');
+                $search_data['scheduleType'] = $this->input->get('scheduleType');
+                $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
+
+                $data['backupRecords'] = $this->backup_model->searchBackups($searchText, $returns["page"], $returns["segment"],$search_data);
+               
+                $data['clients'] = $this->backup_model->getClients();
+                $data['users'] = $this->backup_model->getUsers();
+                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                //print_r($data);
+                $this->loadViews("backups", $this->global, $data, NULL);
+               
+               
+            }else{}
+            }
+
+        
     }
     function backupDetails($id)
     {
@@ -77,12 +114,13 @@ class Backup extends BaseController
             
            // $data['roles'] = $this->user_model->getUserRoles();
             $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
-            foreach($data['backupInfo'] as $backup)
+            foreach($data as $backup)
             {
-                $clientId=$backup->clientId;
-                $serverId=$backup->serverId;
+                $clientId=$backup['clientId'];
+                $serverId=$backup['serverId'];
             }
             $data['clients'] = $this->backup_model->getClientById($clientId);
+			//print_r($data);
             $data['servers'] = $this->backup_model->getServerById($serverId);
             
             $this->global['pageTitle'] = 'Orion eSolutions : Backup Details';
@@ -106,7 +144,7 @@ class Backup extends BaseController
     }
     
     /**
-     * This function is used to load the add new form
+     * This function is used to load the add new form and to add new backup
      */
     function addBackup()
     {
@@ -114,8 +152,8 @@ class Backup extends BaseController
         {
             $this->loadThis();
         }
-        else
-        {
+        elseif(isset($_POST['add_backup'])!='Submit'){
+			
             $this->load->model('backup_model');
             $data['clients'] = $this->backup_model->getClients();
             $data['users'] = $this->backup_model->getUsers();
@@ -123,25 +161,8 @@ class Backup extends BaseController
            
             $this->loadViews("addNewBackup", $this->global, $data, NULL);
         }
-    }
-    function getServers($clientId)
-    {
-        $data['servers'] = $this->backup_model->getServers($clientId);
-        echo json_encode($data);
-    }
-    
-    /**
-     * This function is used to add new server to the system
-     */
-    function addBackup2()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
-            $this->load->library('form_validation');
+       elseif(isset($_POST['add_backup'])=='Submit'){
+			$this->load->library('form_validation');
             
             $this->form_validation->set_rules('user','User','trim|required|numeric');
             $this->form_validation->set_rules('client','Client','trim|required|numeric');
@@ -152,7 +173,9 @@ class Backup extends BaseController
            
             if($this->form_validation->run() == FALSE)
             {
+                unset($_POST['add_backup']);
                 $this->addBackup();
+                
             }
             else
             {
@@ -181,96 +204,91 @@ class Backup extends BaseController
                 
                 redirect('backups');
             }
-        }
+		}else{}
+    }
+    function getServers($clientId)
+    {
+        $data['servers'] = $this->backup_model->getServers($clientId);
+        echo json_encode($data);
     }
 
-    
     /**
      * This function is server load server edit information
-     * @param number $id : Optional : This is server id
+     * @param number $id : Optional : This is user id
      */
-    function edit($id = NULL)
+    function editBackup($id = NULL)
     {
         if($this->isAdmin() == TRUE )
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['edit_backup'])!='Submit')
         {
             if($id == null)
             {
                 redirect('backups');
             }
-            
-           // $data['roles'] = $this->user_model->getUserRoles();
+           
+           
             $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
-            
             $data['clients'] = $this->backup_model->getClients();
             $data['users'] = $this->backup_model->getUsers();
             $this->global['pageTitle'] = 'Orion eSolutions : Edit Backup';
-           //print_r($data);
+           
             $this->loadViews("editBackup", $this->global, $data, NULL);
-        }
+
+           }elseif(isset($_POST['edit_backup'])=='Submit'){
+                $this->load->library('form_validation');
+				$id = $this->input->post('id');
+				
+				$this->form_validation->set_rules('user','User','trim|required|numeric');
+				$this->form_validation->set_rules('client','Client','trim|required|numeric');
+				$this->form_validation->set_rules('server','Server','trim|required|numeric');
+				$this->form_validation->set_rules('scheduleType','ScheduleType','trim|required|max_length[100]|xss_clean');
+				$this->form_validation->set_rules('scheduleTimings','ScheduleTimings','trim|required|max_length[100]|xss_clean');
+				$this->form_validation->set_rules('information','Information','trim|xss_clean');
+			   
+				if($this->form_validation->run() == FALSE)
+				{
+                    unset($_POST['edit_backup']);
+					$this->editBackup($id);
+				}
+				else
+				{
+					$userId = $this->input->post('user');
+					$clientId = $this->input->post('client');
+					$serverId = $this->input->post('server');
+					$scheduleType = $this->input->post('scheduleType');
+					$scheduleTimings = $this->input->post('scheduleTimings');
+					$information = $this->input->post('information');
+					
+					$backupInfo = array();
+					
+					$backupInfo = array('userId'=>$userId,'clientId'=>$clientId,'serverId'=>$serverId,
+					'scheduleType'=>$scheduleType,'scheduleTimings'=>$scheduleTimings,'information'=>$information,
+					 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+					
+					$result = $this->backup_model->editBackup($backupInfo, $id);
+					
+					if($result == true)
+					{
+						$this->session->set_flashdata('success', 'Backup updated successfully');
+					}
+					else
+					{
+						$this->session->set_flashdata('error', 'Backup updation failed');
+					}
+					
+					redirect('edit-backup/'.$id);
+				}
+			}else{}
     }
     
     
     /**
      * This function is used to edit the server information
      */
-    function editBackup()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
-            $this->load->library('form_validation');
-            
-            $id = $this->input->post('id');
-            
-            $this->form_validation->set_rules('user','User','trim|required|numeric');
-            $this->form_validation->set_rules('client','Client','trim|required|numeric');
-            $this->form_validation->set_rules('server','Server','trim|required|numeric');
-            $this->form_validation->set_rules('scheduleType','ScheduleType','trim|required|max_length[100]|xss_clean');
-            $this->form_validation->set_rules('scheduleTimings','ScheduleTimings','trim|required|max_length[100]|xss_clean');
-            $this->form_validation->set_rules('information','Information','trim|xss_clean');
-           
-            if($this->form_validation->run() == FALSE)
-            {
-                $this->edit($id);
-            }
-            else
-            {
-                $userId = $this->input->post('user');
-                $clientId = $this->input->post('client');
-                $serverId = $this->input->post('server');
-                $scheduleType = $this->input->post('scheduleType');
-                $scheduleTimings = $this->input->post('scheduleTimings');
-                $information = $this->input->post('information');
-                
-                $backupInfo = array();
-                
-                $backupInfo = array('userId'=>$userId,'clientId'=>$clientId,'serverId'=>$serverId,
-                'scheduleType'=>$scheduleType,'scheduleTimings'=>$scheduleTimings,'information'=>$information,
-                 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
-                
-                $result = $this->backup_model->editBackup($backupInfo, $id);
-                
-                if($result == true)
-                {
-                    $this->session->set_flashdata('success', 'Backup updated successfully');
-                }
-                else
-                {
-                    $this->session->set_flashdata('error', 'Backup updation failed');
-                }
-                
-                redirect('edit-backup/'.$id);
-            }
-        }
-    }
-
+   
 
     /**
      * This function is used to delete the server using id

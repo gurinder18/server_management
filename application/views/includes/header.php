@@ -114,18 +114,33 @@
                 <span>Users</span>
               </a>
             </li>
+            <?php 
+            }
+            if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
+            {
+            ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>servers">
                 <i class="fa fa-list-alt"></i>
                 <span>Servers</span>
               </a>
             </li>
+            <?php 
+            }
+             if($role == ROLE_ADMIN)
+             {
+            ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>clients">
                 <i class="fa fa-user"></i>
                 <span>Clients</span>
               </a>
             </li>
+            <?php 
+             }
+            if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
+            {
+            ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>backups">
                 <i class="fa fa-arrow-circle-up"></i>

@@ -56,7 +56,7 @@ class User extends BaseController
             $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
             
             $this->global['pageTitle'] = 'Orion eSolutions : User Listing';
-            
+          
             $this->loadViews("users", $this->global, $data, NULL);
         }
     }
@@ -64,21 +64,64 @@ class User extends BaseController
     /**
      * This function is used to load the add new form
      */
-    function addNew()
+    function addUser()
     {
         if($this->isAdmin() == TRUE)
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['add_user'])!='Submit')
         {
             $this->load->model('user_model');
             $data['roles'] = $this->user_model->getUserRoles();
             
             $this->global['pageTitle'] = 'Orion eSolutions : Add New User';
 
-            $this->loadViews("addNew", $this->global, $data, NULL);
+            $this->loadViews("addNewUser", $this->global, $data, NULL);
         }
+        elseif(isset($_POST['add_user'])=='Submit'){
+            $this->load->library('form_validation');
+            
+            $this->form_validation->set_rules('name','Full Name','trim|required|max_length[128]|xss_clean');
+            $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
+            $this->form_validation->set_rules('password','Password','required|max_length[20]');
+            $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
+            $this->form_validation->set_rules('role','Role','trim|required|numeric');
+            $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
+
+            if($this->form_validation->run() == FALSE)
+            {
+                unset($_POST['add_user']);
+                $this->addUser();
+            }
+            else
+            {
+                $name = ucwords(strtolower($this->input->post('name')));
+                $email = $this->input->post('email');
+                $password = $this->input->post('password');
+                $roleId = $this->input->post('role');
+                $mobile = $this->input->post('mobile');
+                $status = $this->input->post('status');
+                
+                $userInfo = array( 'name'=> $name,'email'=>$email, 'password'=>getHashedPassword($password),'mobile'=>$mobile,
+                'roleId'=>$roleId, 'status'=>$status,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                
+                $this->load->model('user_model');
+                $result = $this->user_model->addUser($userInfo);
+                
+                if($result > 0)
+                {
+                    $this->session->set_flashdata('success', 'New User created successfully');
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'User creation failed');
+                }
+                
+                redirect('users');
+            }
+        }else{}
     }
 
     /**
@@ -98,72 +141,21 @@ class User extends BaseController
         if(empty($result)){ echo("true"); }
         else { echo("false"); }
     }
-    
-    /**
-     * This function is used to add new user to the system
-     */
-    function addNewUser()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
-            $this->load->library('form_validation');
-            
-            $this->form_validation->set_rules('fname','Full Name','trim|required|max_length[128]|xss_clean');
-            $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            $this->form_validation->set_rules('password','Password','required|max_length[20]');
-            $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
-            $this->form_validation->set_rules('role','Role','trim|required|numeric');
-            $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
-            
-            if($this->form_validation->run() == FALSE)
-            {
-                $this->addNew();
-            }
-            else
-            {
-                $name = ucwords(strtolower($this->input->post('fname')));
-                $email = $this->input->post('email');
-                $password = $this->input->post('password');
-                $roleId = $this->input->post('role');
-                $mobile = $this->input->post('mobile');
-                
-                $userInfo = array('email'=>$email, 'password'=>getHashedPassword($password), 'roleId'=>$roleId, 'name'=> $name,
-                                    'mobile'=>$mobile, 'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                $this->load->model('user_model');
-                $result = $this->user_model->addNewUser($userInfo);
-                
-                if($result > 0)
-                {
-                    $this->session->set_flashdata('success', 'New User created successfully');
-                }
-                else
-                {
-                    $this->session->set_flashdata('error', 'User creation failed');
-                }
-                
-                redirect('users');
-            }
-        }
-    }
-
-    
+   
     /**
      * This function is used load user edit information
      * @param number $userId : Optional : This is user id
      */
-    function editOld($userId = NULL)
+    function editUser($userId = NULL)
     {
         if($this->isAdmin() == TRUE )
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['edit_user'])!='Submit')
         {
+
+            
             if($userId == null)
             {
                 redirect('users');
@@ -173,22 +165,10 @@ class User extends BaseController
             $data['userInfo'] = $this->user_model->getUserInfo($userId);
             
             $this->global['pageTitle'] = 'Orion eSolutions : Edit User';
-            
-            $this->loadViews("editOld", $this->global, $data, NULL);
+           
+            $this->loadViews("editUser", $this->global, $data, NULL);
         }
-    }
-    
-    
-    /**
-     * This function is used to edit the user information
-     */
-    function editUser()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
+        elseif(isset($_POST['edit_user'])=='Submit')
         {
             $this->load->library('form_validation');
             
@@ -196,14 +176,16 @@ class User extends BaseController
             
             $this->form_validation->set_rules('name','Full Name','trim|required|max_length[128]|xss_clean');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            $this->form_validation->set_rules('password','Password','required|matches[cpassword]|max_length[20]');
-            $this->form_validation->set_rules('cpassword','Confirm Password','required|matches[password]|max_length[20]');
+            $this->form_validation->set_rules('password','Password','required|max_length[20]');
+            $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
             $this->form_validation->set_rules('role','Role','trim|required|numeric');
             $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
-            
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
+
             if($this->form_validation->run() == FALSE)
             {
-                $this->editOld($userId);
+                unset($_POST['edit_user']);
+                $this->editUser($userId);
             }
             else
             {
@@ -212,18 +194,19 @@ class User extends BaseController
                 $password = $this->input->post('password');
                 $roleId = $this->input->post('role');
                 $mobile = $this->input->post('mobile');
-                
+                $status = $this->input->post('status');
+
                 $userInfo = array();
-                
+               
                 if(empty($password))
                 {
-                    $userInfo = array('email'=>$email, 'roleId'=>$roleId, 'name'=>$name,
-                                    'mobile'=>$mobile, 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                    $userInfo = array('name'=>$name,'email'=>$email, 'roleId'=>$roleId,  'mobile'=>$mobile, 
+                    'status'=>$status, 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
                 }
                 else
                 {
-                    $userInfo = array('email'=>$email, 'password'=>getHashedPassword($password), 'roleId'=>$roleId,
-                        'name'=>ucwords($name), 'mobile'=>$mobile, 'updatedBy'=>$this->vendorId, 
+                    $userInfo = array('name'=>ucwords($name),'email'=>$email, 'password'=>getHashedPassword($password), 
+                    'mobile'=>$mobile, 'roleId'=>$roleId, 'status'=>$status, 'updatedBy'=>$this->vendorId, 
                         'updatedDtm'=>date('Y-m-d H:i:s'));
                 }
                 
@@ -240,9 +223,10 @@ class User extends BaseController
                 
                 redirect('edit-user/'.$userId);
             }
-        }
+        }else{}
     }
-
+    
+    
 
     /**
      * This function is used to delete the user using userId

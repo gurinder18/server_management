@@ -63,13 +63,13 @@ class Client extends BaseController
     /**
      * This function is used to load the add new form
      */
-    function add()
+    function addClient()
     {
         if($this->isAdmin() == TRUE)
         {
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['add_client'])!='Submit')
         {
             $this->load->model('client_model');
             //$data['roles'] = $this->user_model->getUserRoles();
@@ -78,51 +78,22 @@ class Client extends BaseController
 
             $this->loadViews("addNewClient", $this->global, NULL, NULL);
         }
-    }
-
-    /**
-     * This function is used to check whether email already exist or not
-     */
-    function checkEmailExists()
-    {
-        $userId = $this->input->post("userId");
-        $email = $this->input->post("email");
-
-        if(empty($userId)){
-            $result = $this->user_model->checkEmailExists($email);
-        } else {
-            $result = $this->user_model->checkEmailExists($email, $userId);
-        }
-
-        if(empty($result)){ echo("true"); }
-        else { echo("false"); }
-    }
-    
-    /**
-     * This function is used to add new client to the system
-     */
-    function addClient()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
+        elseif(isset($_POST['add_client'])=='Submit'){
             $this->load->library('form_validation');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('phone','Phone','max_length[10]|xss_clean');
-            $this->form_validation->set_rules('email','Email','trim|valid_email|xss_clean|max_length[100]');
-            $this->form_validation->set_rules('address','Address','trim|xss_clean');
-            $this->form_validation->set_rules('city','City','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('status','Status','trim|numeric');
+            $this->form_validation->set_rules('phone','Phone','required|max_length[10]|numeric');
+            $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[100]');
+            $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
+            $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('state','State','trim|required|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|numeric');
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
            
             if($this->form_validation->run() == FALSE)
             {
-                $this->add();
+                unset($_POST['add_client']);
+                $this->addClient();
             }
             else
             {
@@ -152,21 +123,39 @@ class Client extends BaseController
                 
                 redirect('clients');
             }
-        }
+        }else{}
     }
 
+    /**
+     * This function is used to check whether email already exist or not
+     */
+    function checkEmailExists()
+    {
+        $userId = $this->input->post("userId");
+        $email = $this->input->post("email");
+
+        if(empty($userId)){
+            $result = $this->user_model->checkEmailExists($email);
+        } else {
+            $result = $this->user_model->checkEmailExists($email, $userId);
+        }
+
+        if(empty($result)){ echo("true"); }
+        else { echo("false"); }
+    }
     
+   
     /**
      * This function is used load client edit information
      * @param number $id : Optional : This is client id
      */
-    function edit($id = NULL)
+    function editClient($id = NULL)
     {
         if($this->isAdmin() == TRUE )
         {   
             $this->loadThis();
         }
-        else
+        elseif(isset($_POST['edit_client'])!='Submit')
         {
             if($id == null)
             {
@@ -180,36 +169,24 @@ class Client extends BaseController
             
             $this->loadViews("editClient", $this->global, $data, NULL);
         }
-    }
-    
-    
-    /**
-     * This function is used to edit the client information
-     */
-    function editClient()
-    {
-        if($this->isAdmin() == TRUE)
-        {
-            $this->loadThis();
-        }
-        else
-        {
+        elseif(isset($_POST['edit_client'])=='Submit'){
             $this->load->library('form_validation');
             
             $id = $this->input->post('id');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('phone','Phone','max_length[10]|xss_clean');
-            $this->form_validation->set_rules('email','Email','trim|valid_email|xss_clean|max_length[100]');
-            $this->form_validation->set_rules('address','Address','trim|xss_clean');
-            $this->form_validation->set_rules('city','City','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('status','Status','trim|numeric');
+            $this->form_validation->set_rules('phone','Phone','required|max_length[10]|numeric');
+            $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[100]');
+            $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
+            $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('state','State','trim|required|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|numeric');
+            $this->form_validation->set_rules('status','Status','trim|required|numeric');
             
             if($this->form_validation->run() == FALSE)
             {
-                $this->edit($id);
+                unset($_POST['edit_client']);
+                $this->editClient($id);
             }
             else
             {
@@ -241,10 +218,9 @@ class Client extends BaseController
                 
                 redirect('edit-client/'.$id);
             }
-        }
+        }else{}
     }
-
-
+    
     /**
      * This function is used to delete the client using id
      * @return boolean $result : TRUE / FALSE
