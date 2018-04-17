@@ -39,7 +39,48 @@ class Server extends BaseController
    
     function serverListing()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isMember() == TRUE)
+        {
+            $this->load->model('server_model');
+        
+            $searchText = $this->input->post('searchText');
+            $data['searchText'] = $searchText;
+            
+            $this->load->library('pagination');
+            
+            $count = $this->server_model->serverListingCount($searchText);
+            $returns = $this->paginationCompress ( "servers/", $count, 5 );
+
+            if(isset($_GET['search_backup'])!='Submit')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $serverId = $this->server_model->getUsersBackups($this->vendorId);
+             // print_r($serverId);
+                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$serverId);
+               
+                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                //print_r($data);
+              
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
+            elseif(isset($_GET['search_backup'])=='Submit')
+            {
+                $search_data['name'] = $this->input->get('name');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['server'] = $this->input->get('server');
+                $search_data['hostname'] = $this->input->get('hostname');
+                $search_data['status'] = $this->input->get('status');
+
+
+                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId,$search_data);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                //print_r($data);
+                $this->loadViews("servers", $this->global, $data, NULL);
+               
+            }else{}
+           
+        }
+        elseif($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -53,15 +94,32 @@ class Server extends BaseController
             $this->load->library('pagination');
             
             $count = $this->server_model->serverListingCount($searchText);
-
-			$returns = $this->paginationCompress ( "servers/", $count, 5 );
+            $returns = $this->paginationCompress ( "servers/", $count, 5 );
             
-            $data['serverRecords'] = $this->server_model->serverListing($searchText, $returns["page"], $returns["segment"]);
-            $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-            //print_r($data);
-            $this->loadViews("servers", $this->global, $data, NULL);
+            if(isset($_GET['search_server'])!='Submit')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $data['serverRecords'] = $this->server_model->serverListing($searchText, $returns["page"], $returns["segment"]);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                //print_r($data);
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
+            elseif(isset($_GET['search_server'])=='Submit')
+            {
+                $search_data['name'] = $this->input->get('name');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['server'] = $this->input->get('server');
+                $search_data['hostname'] = $this->input->get('hostname');
+                $search_data['status'] = $this->input->get('status');
+
+                $data['clients'] = $this->server_model->getClients();
+                $data['serverRecords'] = $this->server_model->searchServer($searchText, $returns["page"], $returns["segment"],$search_data);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                //print_r($data);
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }else{}
         }
-    } 
+    }  
     function checkUserExists()
     {
         $id = $this->input->post("id");
@@ -82,7 +140,7 @@ class Server extends BaseController
      */
     function addServer()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -128,7 +186,7 @@ class Server extends BaseController
                 'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
                 
                 $this->load->model('server_model');
-                $result = $this->server_model->addNewServer2($serverInfo);
+                $result = $this->server_model->addNewServer($serverInfo);
                 
                 if($result > 0)
                 {
@@ -150,7 +208,7 @@ class Server extends BaseController
      */
     function editServer($id = NULL)
     {
-        if($this->isAdmin() == TRUE )
+        if($this->isAdmin() == FALSE )
         {
             $this->loadThis();
         }
@@ -226,20 +284,49 @@ class Server extends BaseController
      */
     function deleteServer()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             echo(json_encode(array('status'=>'access')));
         }
-        else
+        elseif(isset($_POST['delete_server'])!='Delete')
         {
+
             $id = $this->input->post('id');
             $serverInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
             
             $result = $this->server_model->deleteServer($id, $serverInfo);
             
-            if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
-            else { echo(json_encode(array('status'=>FALSE))); }
+            if ($result > 0)
+            { 
+                echo(json_encode(array('status'=>TRUE))); 
+            }
+            else 
+            {
+                echo(json_encode(array('status'=>FALSE))); 
+            }
         }
+        elseif(isset($_POST['delete_server'])=='Delete')
+        {
+            $del = $this->input->post('delete_servers');
+            if($del!=null)
+            {
+                foreach($del as $id):
+                    //$id = $this->input->post('id');
+                    $serverInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                    
+                    $result = $this->server_model->deleteServer($id, $serverInfo);
+                endforeach;
+                if ($result > 0)
+                {  
+                    redirect("servers");
+                }
+            }else
+            {
+                redirect("servers");
+            }
+        }
+        else{}
+
     }
     
     function pageNotFound()

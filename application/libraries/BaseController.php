@@ -40,10 +40,12 @@ class BaseController extends CI_Controller {
 			$this->vendorId = $this->session->userdata ( 'userId' );
 			$this->name = $this->session->userdata ( 'name' );
 			$this->roleText = $this->session->userdata ( 'roleText' );
+			$this->roleSlug = $this->session->userdata ( 'slug' );
 			
 			$this->global ['name'] = $this->name;
 			$this->global ['role'] = $this->role;
 			$this->global ['role_text'] = $this->roleText;
+			$this->global ['role_slug'] = $this->roleSlug;
 		}
 	}
 	
@@ -51,7 +53,17 @@ class BaseController extends CI_Controller {
 	 * This function is used to check the access
 	 */
 	function isAdmin() {
-		if ($this->role != ROLE_ADMIN) {
+		if ($this->roleSlug == 'sys.admin') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * This function is used to check the access
+	 */
+	function isMember() {
+		if ($this->roleSlug == 'member') {
 			return true;
 		} else {
 			return false;
@@ -68,16 +80,7 @@ class BaseController extends CI_Controller {
 			return false;
 		}
 	}
-	/**
-	 * This function is used to check the access
-	 */
-	function isMember() {
-		if ($this->role == ROLE_MANAGER) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	
 	
 	/**
 	 * This function is used to load the set of views

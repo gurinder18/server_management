@@ -89,7 +89,7 @@
                                             <option value="0">Deactive</option>
                                         </select>
                                     </div>
-                                </div> 
+                                </div>  
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="details">Other Details</label>

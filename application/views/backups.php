@@ -9,7 +9,10 @@
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
+                <?php if($role==1){ ?>
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>add-backup"><i class="fa fa-plus"></i> Add New</a>
+                    <a class="btn btn-primary" href="<?php echo base_url(); ?>schedule-backups"><i class="fa fa-plus"></i> Add Schedule</a>
+                <?php } ?>
                 </div>
             </div>
         </div>
@@ -23,6 +26,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
+                      <th></th>
                       <th>Id</th>
                       <th>User</th>
                       <th>Client</th>
@@ -32,10 +36,11 @@
                       <th class="text-center">Actions</th>
                     </tr>
                     <tr>
+                    <td></td> 
                     <td>#</td>
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
                     
-                        <td>
+                        <td><?php if($role==1){ ?>
                             <select class="form-control required" id="user" name="user" > 
                                 <option value="">Select User</option>
                                 <?php
@@ -48,6 +53,7 @@
                                 <?php
                                         }
                                     }
+                                }
                                 ?>
                             </select>
                         </td>
@@ -90,6 +96,8 @@
                         </td>
                         </form>
                     </tr>
+                    <form role="form" id="deleteBackup" action="<?php echo base_url() ?>deleteBackup" method="post" role="form">
+                    
                     <?php
                     if(!empty($backupRecords))
                     {
@@ -98,6 +106,7 @@
                         { 
                     ?>
                     <tr>
+                        <td><?php if($role==1){ ?><input type="checkbox" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
                       <td><?php echo $i ?></td>
                       <td><?php echo $record->UserName ?></td>
                       <td><?php echo $record->ClientName ?></td>
@@ -106,23 +115,34 @@
                       <td><?php echo $record->scheduleTimings ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-detail" href="<?php echo base_url().'backup-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
-                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
-                          <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
+                          <?php if($role==1){ ?>
+                             <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
+                              <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
+                          <?php } ?>
                       </td>
                     </tr>
                     <?php
 						$i++;
                         }
-                    }
+                       if($role==1){ 
+                    ?>
+                    <tr>
+                        <td colspan='3'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></td>
+                    </tr>
+                    </form>
+                    <?php
+                    }}
                     else{
-                        echo "<tr><td style='color:red'>No Record Found</td></tr>";
+                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
                     }
                     
                     ?>
                   </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
-                    <?php echo $this->pagination->create_links(); ?>
+                    <?php echo $this->pagination->create_links(); 
+                   //if (isset($links)) {  echo $links;}
+                    ?>
                 </div>
               </div><!-- /.box -->
             </div>

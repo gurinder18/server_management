@@ -36,7 +36,7 @@ class Client extends BaseController
      */
     function clients()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -65,7 +65,7 @@ class Client extends BaseController
      */
     function addClient()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -151,7 +151,7 @@ class Client extends BaseController
      */
     function editClient($id = NULL)
     {
-        if($this->isAdmin() == TRUE )
+        if($this->isAdmin() == FALSE )
         {   
             $this->loadThis();
         }
@@ -227,20 +227,46 @@ class Client extends BaseController
      */
     function deleteClient()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             echo(json_encode(array('status'=>'access')));
         }
-        else
+        elseif(isset($_POST['delete_client'])!='Delete')
         {
             $id = $this->input->post('id');
             $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
             
             $result = $this->client_model->deleteClient($id, $clientInfo);
             
-            if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
-            else { echo(json_encode(array('status'=>FALSE))); }
-        }
+            if ($result > 0) 
+            { 
+                echo(json_encode(array('status'=>TRUE))); 
+            }
+            else 
+            { 
+                echo(json_encode(array('status'=>FALSE))); 
+            }
+        }elseif(isset($_POST['delete_client'])=='Delete')
+            {
+                $del = $this->input->post('delete_clients');
+                if($del!=null)
+                {
+                    foreach($del as $id):
+                        $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                        
+                        $result = $this->client_model->deleteClient($id, $clientInfo);
+                    endforeach;
+                    if ($result > 0)
+                    {  
+                        redirect("clients");
+                    }
+                }else
+                {
+                    redirect("clients");
+                }
+            }
+            else{}
+    
     }
     
     

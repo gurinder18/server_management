@@ -33,11 +33,13 @@
                       <th>Hostname</th><td><?php echo $record->hostname ?></td>
                       </tr>
                     <tr>
+                    <?php if($role==1){ ?>
                       <th>Username</th><td><?php echo $record->username ?></td>
                       </tr>
                     <tr>
                       <th>Password</th><td><?php echo $record->password ?></td>
                       </tr>
+                    <?php } ?>
                     <tr>
                       <th>Details</th> <td><?php echo $record->details ?></td>
                     </tr>
@@ -114,6 +116,7 @@
                     <tr>
                     <th>Client Name</th> <td><?php echo $cl->name ?></td>
                     </tr>
+                    <?php if($role==1){ ?>
                       <tr>
                     <th>Phone Number</th><td><?php echo $cl->phone ?></td>
                     </tr>
@@ -135,6 +138,7 @@
                       <tr>
                     <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                     </tr>
+                    <?php } ?>
                   </table>
                   
                 </div><!-- /.box-body -->

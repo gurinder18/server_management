@@ -27,7 +27,7 @@ class Server_model extends CI_Model
     
 
     /**
-     * This function is used to get the user listing count
+     * This function is used to get the user listing count for admin
      * @param string $searchText : This is optional search text
      * @param number $page : This is pagination offset
      * @param number $segment : This is pagination limit
@@ -48,6 +48,102 @@ class Server_model extends CI_Model
         $result = $query->result();    
         //print_r($result); die;    
         return $result;
+    }
+ 
+    function searchServer($searchText = '', $page, $segment,$search_data)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
+         //$this->db->select('BaseTbl.*');
+         $this->db->from('tbl_servers as BaseTbl');
+        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+
+        $this->db->where('BaseTbl.isDeleted', 0);
+        
+        if($search_data['name']!=null){
+             $this->db->where('BaseTbl.name', $search_data['name']);
+        }
+        if($search_data['clientId']!=null){
+             $this->db->where('BaseTbl.clientId', $search_data['clientId']);
+        }
+        if($search_data['server']!=null){
+            $this->db->where('BaseTbl.server', $search_data['server']);
+        }
+        if($search_data['hostname']!=null){
+             $this->db->where('BaseTbl.hostname', $search_data['hostname']);
+        }
+        if($search_data['status']!=null){
+             $this->db->where('BaseTbl.status', $search_data['status']);
+         }
+        $this->db->limit($page, $segment);
+        
+        $query = $this->db->get();
+        $result = $query->result();    
+           
+        return $result;
+    }
+
+    /**
+     * This function is used to get the user listing count for member
+     * @param string $searchText : This is optional search text
+     * @param number $page : This is pagination offset
+     * @param number $segment : This is pagination limit
+     * @return array $result : This is result
+     */
+    function membersServers($searchText = '', $page, $segment,$serverId,$search_data=NULL)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
+        // $this->db->select('BaseTbl.*'," Client.*");
+        $this->db->from('tbl_servers as BaseTbl');
+        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+        
+        $this->db->where('BaseTbl.isDeleted', 0);
+        $this->db->limit($page, $segment);
+        
+        //$this->db->where('BaseTbl.userId', $id->serverId);
+       // print_r($serverId);
+       foreach($serverId as $ser){
+           
+             $this->db->where('BaseTbl.id', $ser->serverId);
+        }
+        if($search_data['name']!=null){
+            $this->db->where('BaseTbl.name', $search_data['name']);
+       }
+       if($search_data['clientId']!=null){
+            $this->db->where('BaseTbl.clientId', $search_data['clientId']);
+       }
+       if($search_data['server']!=null){
+           $this->db->where('BaseTbl.server', $search_data['server']);
+       }
+       if($search_data['hostname']!=null){
+            $this->db->where('BaseTbl.hostname', $search_data['hostname']);
+       }
+       if($search_data['status']!=null){
+            $this->db->where('BaseTbl.status', $search_data['status']);
+        }
+
+       $this->db->limit($page, $segment);
+       
+       $query = $this->db->get();
+       $result = $query->result();    
+       //print_r($query);
+       return $result;
+    }
+
+    /**
+     * This function is used to get the backups information
+     * @return array $result : This is result of the query
+     */
+    function getUsersBackups($userId)
+    {
+        $this->db->select('id,serverId');
+        $this->db->from('tbl_backups');
+        $this->db->where('isDeleted !=', 1);
+        $this->db->where('userId', $userId);
+        $query = $this->db->get();
+    
+        return $query->result();
     }
     /**
      * This function is used to get the clients information
@@ -81,7 +177,7 @@ class Server_model extends CI_Model
      * This function is used to add new server to system
      * @return number $insert_id : This is last inserted id
      */
-    function addNewServer2($serverInfo)
+    function addNewServer($serverInfo)
     {
         $this->db->trans_start();
         $this->db->insert('tbl_servers', $serverInfo);
@@ -126,7 +222,7 @@ class Server_model extends CI_Model
         return TRUE;
     }
     
-    
+     
     
     /**
      * This function is used to delete the server information

@@ -402,12 +402,13 @@ class CI_Pagination {
 		// Note: DO NOT change the operator to === here!
 		if ($this->total_rows == 0 OR $this->per_page == 0)
 		{
+			
 			return '';
 		}
 
 		// Calculate the total number of pages
 		$num_pages = (int) ceil($this->total_rows / $this->per_page);
-
+		
 		// Is there only one page? Hm... nothing more to do here then.
 		if ($num_pages === 1)
 		{
@@ -443,10 +444,11 @@ class CI_Pagination {
 
 		$query_string = '';
 		$query_string_sep = (strpos($base_url, '?') === FALSE) ? '?' : '&amp;';
-
+		
 		// Are we using query strings?
 		if ($this->page_query_string === TRUE)
 		{
+			
 			// If a custom first_url hasn't been specified, we'll create one from
 			// the base_url, but without the page item.
 			if ($first_url === '')
@@ -466,6 +468,7 @@ class CI_Pagination {
 		}
 		else
 		{
+			
 			// Standard segment mode.
 			// Generate our saved query string to append later after the page number.
 			if ( ! empty($get))
@@ -513,7 +516,7 @@ class CI_Pagination {
 				$this->cur_page = str_replace(array($this->prefix, $this->suffix), '', $this->cur_page);
 			}
 		}
-		else
+		else 
 		{
 			$this->cur_page = (string) $this->cur_page;
 		}
@@ -601,7 +604,7 @@ class CI_Pagination {
 				$i = ($this->use_page_numbers) ? $loop : ($loop * $this->per_page) - $this->per_page;
 
 				$attributes = sprintf('%s %s="%d"', $this->_attributes, $this->data_page_attr, $loop);
-
+				
 				if ($i >= $base_page)
 				{
 					if ($this->cur_page === $loop)

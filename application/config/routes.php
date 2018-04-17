@@ -49,12 +49,9 @@ $route['dashboard'] = 'user';
 $route['logout'] = 'user/logout';
 $route['users'] = 'user/userListing';
 $route['users/(:num)'] = "user/userListing/$1";
-//$route['add-user'] = "user/addNew";
 
 $route['add-user'] = "user/addUser";
-//$route['edit-user'] = "user/editOld";
 $route['edit-user/(:num)'] = "user/editUser/$1";
-//$route['editUser'] = "user/editUser";
 $route['deleteUser'] = "user/deleteUser";
 $route['loadChangePass'] = "user/loadChangePass";
 $route['changePassword'] = "user/changePassword";
@@ -72,33 +69,26 @@ $route['createPasswordUser'] = "login/createPasswordUser";
 $route['servers'] = 'server/serverListing';
 $route['servers/(:num)'] = "server/serverListing/$1";
 $route['add-server'] = "server/addServer";
-//$route['addNewServer2'] = "server/addNewServer2";
-//$route['edit-server'] = "server/editOldServer";
 $route['edit-server/(:num)'] = "server/editServer/$1";
-//$route['editServer'] = "server/editServer";
 $route['deleteServer'] = "server/deleteServer";
 
 /*********** CLIENT DEFINED ROUTES *******************/
 $route['clients'] = 'client/clients';
 $route['clients/(:num)'] = "client/clients/$1";
 $route['add-client'] = "client/addClient";
-//$route['edit-client'] = "client/edit";
 $route['edit-client/(:num)'] = "client/editClient/$1";
-//$route['editClient'] = "client/editClient";
 $route['deleteClient'] = "client/deleteClient";
 
 /*********** BACKUPS DEFINED ROUTES *******************/
 $route['backups'] = 'backup/backups';
 $route['backups/(:num)'] = "backup/backups/$1";
 $route['add-backup'] = "backup/addBackup";
-//$route['addBackup'] = "backup/addBackup2";
 $route['getServers/(:num)'] = "backup/getServers/$1";
 $route['backup-details/(:num)'] = "backup/backupDetails/$1";
-//$route['edit-backup'] = "backup/editBackup";
 $route['edit-backup/(:num)'] = "backup/editBackup/$1";
-//$route['editBackup'] = "backup/editBackup";
 $route['deleteBackup'] = "backup/deleteBackup";
 
+$route['schedule-backups'] = 'backup/scheduleBackups';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

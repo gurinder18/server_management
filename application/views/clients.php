@@ -23,6 +23,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
+                      <th></th>
                       <th>Id</th>
                       <th>Name</th>
                       <th>Phone</th>
@@ -34,6 +35,8 @@
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
+                    <form role="form" id="deleteServer" action="<?php echo base_url() ?>deleteClient" method="post" role="form">
+                    
                     <?php
                     if(!empty($clientRecords))
                     {
@@ -42,6 +45,7 @@
                         { 
                     ?>
                     <tr>
+                      <td><input type="checkbox" value="<?php echo$record->id; ?>" name="delete_clients[]"/></td>
                       <td><?php echo $i?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->phone ?></td>
@@ -58,7 +62,16 @@
                     </tr>
                     <?php
 						$i++;
-					   }
+                       }
+                    ?>
+                     <tr>
+                        <td colspan="3"><input type="submit" class="btn btn-sm btn-danger " name="delete_client" value="Delete"/></td>
+                    </tr>
+                    </form>
+                    <?php
+                    }
+                    else{
+                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
                     }
                     ?>
                   </table>

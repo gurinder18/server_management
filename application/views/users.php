@@ -23,6 +23,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
+                      <th></th>
                       <th>Id</th>
                       <th>Name</th>
                       <th>Email</th>
@@ -31,14 +32,17 @@
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
+                    <form role="form" id="deleteUser" action="<?php echo base_url() ?>deleteUser" method="post" role="form">
+                    
                     <?php
                     if(!empty($userRecords))
                     {
 						$i = 1;
                         foreach($userRecords as $record)
-                        { 
+                        {  
                     ?>
-                    <tr>
+                    <tr> 
+                      <td><input type="checkbox" value="<?php echo$record->userId; ?>" name="delete_users[]"/></td>
                       <td><?php echo $i ?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->email ?></td>
@@ -53,6 +57,15 @@
                     <?php
 							$i++;
                         } 
+                    ?>
+                    <tr>
+                        <td colspan='3'><input type="submit" class="btn btn-sm btn-danger " name="delete_user" value="Delete"/></td>
+                    </tr>
+                    </form>
+                    <?php
+                    }
+                    else{
+                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
                     }
                     ?>
                   </table>

@@ -36,7 +36,7 @@ class User extends BaseController
      */
     function userListing()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -48,7 +48,7 @@ class User extends BaseController
             $data['searchText'] = $searchText;
             
             $this->load->library('pagination');
-            
+             
             $count = $this->user_model->userListingCount($searchText);
 
 			$returns = $this->paginationCompress ( "users/", $count, 5 );
@@ -66,7 +66,7 @@ class User extends BaseController
      */
     function addUser()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             $this->loadThis();
         }
@@ -148,7 +148,7 @@ class User extends BaseController
      */
     function editUser($userId = NULL)
     {
-        if($this->isAdmin() == TRUE )
+        if($this->isAdmin() == FALSE )
         {
             $this->loadThis();
         }
@@ -238,7 +238,7 @@ class User extends BaseController
         {
             echo(json_encode(array('status'=>'access')));
         }
-        else
+        elseif(isset($_POST['delete_user'])!='Delete')
         {
             $userId = $this->input->post('userId');
             $userInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
@@ -248,6 +248,27 @@ class User extends BaseController
             if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
             else { echo(json_encode(array('status'=>FALSE))); }
         }
+        elseif(isset($_POST['delete_user'])=='Delete')
+        {
+            $del = $this->input->post('delete_users');
+            if($del!=null)
+            {
+                foreach($del as $userId):
+                   
+                    $userInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                    
+                    $result = $this->user_model->deleteUser($userId, $userInfo);
+                endforeach;
+                if ($result > 0)
+                {  
+                    redirect("users");
+                }
+            }else
+            {
+                redirect("users");
+            }
+        }
+        else{}
     }
     
     /**
