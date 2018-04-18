@@ -40,10 +40,10 @@
                             <select class="form-control required" id="name" name="name" > 
                                 <option value="">Select Server</option>
                                 <?php
-                                   foreach($serverRecords as $record)
+                                   foreach($servers as $ser)
                                     {
                                 ?>
-                                <option value="<?php echo $record->name ?>"><?php echo $record->name ?></option>
+                                <option value="<?php echo $ser->name ?>"><?php echo $ser->name ?></option>
                                 <?php
                                     }
                                 ?>

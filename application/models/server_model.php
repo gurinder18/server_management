@@ -90,23 +90,23 @@ class Server_model extends CI_Model
      * @param number $segment : This is pagination limit
      * @return array $result : This is result
      */
-    function membersServers($searchText = '', $page, $segment,$serverId,$search_data=NULL)
+    function membersServers($searchText = '', $page, $segment,$userId,$search_data=NULL)
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
         $this->db->from('tbl_servers as BaseTbl');
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+        $this->db->join('tbl_backups as Backups', 'Backups.serverId = BaseTbl.id','left');
         
         $this->db->where('BaseTbl.isDeleted', 0);
-        $this->db->limit($page, $segment);
-        
+        $this->db->where('Backups.userId', $userId);
         //$this->db->where('BaseTbl.userId', $id->serverId);
        // print_r($serverId);
-       foreach($serverId as $ser){
+      // foreach($serverId as $ser){
            
-             $this->db->where('BaseTbl.id', $ser->serverId);
-        }
+          //   $this->db->where('BaseTbl.id', $serverId);
+       // }
         if($search_data['name']!=null){
             $this->db->where('BaseTbl.name', $search_data['name']);
        }

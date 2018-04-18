@@ -20,7 +20,7 @@
                     if(!empty($servers))
                     {
                         foreach($servers as $record)
-                        { 
+                        {  
                     ?>
                    
                     <tr>

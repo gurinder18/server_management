@@ -51,19 +51,18 @@ class Server extends BaseController
             $count = $this->server_model->serverListingCount($searchText);
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
 
-            if(isset($_GET['search_backup'])!='Submit')
+            if(isset($_GET['search_server'])!='Submit')
             {
                 $data['clients'] = $this->server_model->getClients();
-                $serverId = $this->server_model->getUsersBackups($this->vendorId);
-             // print_r($serverId);
-                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$serverId);
+                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
+                $data['servers'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
                
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
               
                 $this->loadViews("servers", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_backup'])=='Submit')
+            elseif(isset($_GET['search_server'])=='Submit')
             {
                 $search_data['name'] = $this->input->get('name');
                 $search_data['clientId'] = $this->input->get('client');
@@ -71,7 +70,8 @@ class Server extends BaseController
                 $search_data['hostname'] = $this->input->get('hostname');
                 $search_data['status'] = $this->input->get('status');
 
-
+                $data['servers'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
+                $data['clients'] = $this->server_model->getClients();
                 $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId,$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 //print_r($data);
@@ -136,7 +136,7 @@ class Server extends BaseController
     }
     
     /**
-     * This function is used to load the add new form
+     * This function is used to load the add new server
      */
     function addServer()
     {

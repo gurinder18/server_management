@@ -386,6 +386,7 @@ class Backup extends BaseController
                 if($result==1)
                 {
                     echo "Schedule successfully added";
+                    redirect("backups");
                 }
             }
             if($scheduleType=='Weekly')
@@ -398,6 +399,7 @@ class Backup extends BaseController
                     if($result==1)
                     {
                         echo "Schedule successfully added";
+                        redirect("backups");
                     }
                 }
             }
@@ -411,13 +413,12 @@ class Backup extends BaseController
                     if($result==1)
                     {
                         echo "Schedule successfully added";
+                        redirect("backups");
                     }
                 }
             }
         endforeach;
        
-       // print_r($result);
-        //$this->loadViews("backups", $this->global, NULL, NULL);
     }
 }
 
