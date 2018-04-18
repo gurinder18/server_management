@@ -41,13 +41,36 @@
                       </tr>
                     <?php } ?>
                     <tr>
-                      <th>Details</th> <td><?php echo $record->details ?></td>
+                      <th>Details</th> 
+                      <td>
+                        <?php 
+                          if(isset($_POST['read_more'])!='Read more')
+                          {
+                             echo substr("$record->details",0,30),"..." ;
+                        ?>
+
+                        <form method=post>
+                           <input type="submit" class="btn btn-primary" name='read_more' value="Read more" />
+                        <form>
+                        <?php
+                          }
+                          else
+                          { 
+                            echo $record->details; 
+                          }
+                        ?>
+                      </td>
                     </tr>
-                   
                     <?php
-                        }
+                         }
+                       }
+                       else{
+                    ?>
+                    <tr><td>Server does not exist</td></tr>
+                    <?php
                     }
                     ?>
+                   
                   </table>
                   
                 </div><!-- /.box-body -->
@@ -111,7 +134,6 @@
                         foreach($clients as $cl)
                         { 
                         }
-                    }
                     ?>
                     <tr>
                     <th>Client Name</th> <td><?php echo $cl->name ?></td>
@@ -138,7 +160,12 @@
                       <tr>
                     <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                     </tr>
-                    <?php } ?>
+                    <?php }}else{
+                    ?>
+                    <tr><td>Client does not exist</td></tr>
+                    <?php
+                    }
+                    ?>
                   </table>
                   
                 </div><!-- /.box-body -->

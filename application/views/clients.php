@@ -65,13 +65,13 @@
                        }
                     ?>
                      <tr>
-                        <td colspan="3"><input type="submit" class="btn btn-sm btn-danger " name="delete_client" value="Delete"/></td>
+                        <td colspan="11"><input type="submit" class="btn btn-sm btn-danger " name="delete_client" value="Delete"/></td>
                     </tr>
                     </form>
                     <?php
                     }
                     else{
-                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
+                        echo "<tr><td colspan='11' style='color:red'>No Record Found</td></tr>";
                     }
                     ?>
                   </table>

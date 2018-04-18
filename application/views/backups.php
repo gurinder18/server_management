@@ -119,7 +119,7 @@
                              <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                               <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                           <?php } ?>
-                      </td>
+                      </td> 
                     </tr>
                     <?php
 						$i++;
@@ -127,13 +127,13 @@
                        if($role==1){ 
                     ?>
                     <tr>
-                        <td colspan='3'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></td>
+                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></td>
                     </tr>
                     </form>
                     <?php
                     }}
                     else{
-                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
+                        echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
                     }
                     
                     ?>

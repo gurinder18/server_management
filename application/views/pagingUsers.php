@@ -51,7 +51,7 @@
                       <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-user/'.$record->userId; ?>"><i class="fa fa-pencil"></i></a>
-                          <a class="btn btn-sm btn-danger deleteUser" href="#" data-id="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
+                          <a class="btn btn-sm btn-danger deleteUser" href="#" data-userid="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
                     <?php
@@ -59,13 +59,13 @@
                         } 
                     ?>
                     <tr>
-                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_user" value="Delete"/></td>
+                        <td colspan='3'><input type="submit" class="btn btn-sm btn-danger " name="delete_user" value="Delete"/></td>
                     </tr>
                     </form>
                     <?php
                     }
                     else{
-                        echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
+                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
                     }
                     ?>
                   </table>

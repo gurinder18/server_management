@@ -9,7 +9,9 @@
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
+                <?php if($role==1){ ?>
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>add-server"><i class="fa fa-plus"></i> Add New</a>
+                <?php } ?>
                 </div>
             </div>
         </div>
@@ -93,7 +95,7 @@
                         { 
                     ?>
                     <tr>
-                      <td><input type="checkbox" value="<?php echo$record->id; ?>" name="delete_servers[]"/></td>
+                        <td><?php if($role==1){ ?><input type="checkbox" value="<?php echo $record->id; ?>" name="delete_servers[]"/><?php } ?></td>
                       <td><?php echo $i ?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->ClientName ?></td>
@@ -101,8 +103,10 @@
                       <td><?php echo $record->hostname ?></td>
                       <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
+                        <?php if($role==1){ ?>
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-server/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                           <a class="btn btn-sm btn-danger deleteServer" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
+                        <?php } ?>
                       </td>
                     </tr> 
                     <?php
@@ -110,13 +114,15 @@
                         }
                     ?>
                     <tr>
-                        <td colspan='3'><input type="submit" class="btn btn-sm btn-danger " name="delete_server" value="Delete"/></td>
+                    <?php if($role==1){ ?>
+                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_server" value="Delete"/></td>
+                    <?php } ?>
                     </tr>
                     </form>
                     <?php
                     }
                     else{
-                        echo "<tr><td colspan='2' style='color:red'>No Record Found</td></tr>";
+                        echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
                     }
                     ?>
                   </table>

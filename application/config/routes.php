@@ -90,5 +90,7 @@ $route['deleteBackup'] = "backup/deleteBackup";
 
 $route['schedule-backups'] = 'backup/scheduleBackups';
 
+$route['paging-users'] = 'paging/custom';
+//$route['paging-users/(:num)'] = "paging/userListing/$1";
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

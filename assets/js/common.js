@@ -6,11 +6,11 @@
 jQuery(document).ready(function(){
 	
 	jQuery(document).on("click", ".deleteUser", function(){
-		var userId = $(this).data("userid"),
+		var userId = $(this).data("id"),
 			hitURL = baseURL + "deleteUser",
 			currentRow = $(this);
 		
-		var confirmation = confirm("Are you sure to delete this user ?");
+		var confirmation = confirm("Are you sure to delete this user ?"+userId);
 		
 		if(confirmation)
 		{

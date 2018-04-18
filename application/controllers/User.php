@@ -18,7 +18,9 @@ class User extends BaseController
     {
         parent::__construct();
         $this->load->model('user_model');
-        $this->isLoggedIn();   
+        $this->isLoggedIn(); 
+        // load Pagination library
+        $this->load->library('pagination'); 
     }
     
     /**
@@ -44,16 +46,10 @@ class User extends BaseController
         {
             $this->load->model('user_model');
         
-            $searchText = $this->input->post('searchText');
-            $data['searchText'] = $searchText;
-            
-            $this->load->library('pagination');
-             
-            $count = $this->user_model->userListingCount($searchText);
-
+            $count = $this->user_model->userListingCount();
 			$returns = $this->paginationCompress ( "users/", $count, 5 );
             
-            $data['userRecords'] = $this->user_model->userListing($searchText, $returns["page"], $returns["segment"]);
+            $data['userRecords'] = $this->user_model->userListing($returns["page"], $returns["segment"]);
             
             $this->global['pageTitle'] = 'Orion eSolutions : User Listing';
           
@@ -152,43 +148,34 @@ class User extends BaseController
         {
             $this->loadThis();
         }
-        elseif(isset($_POST['edit_user'])!='Submit')
+        $input = $this->input->post();
+      
+        if(isset($input['name']))
         {
-
             
-            if($userId == null)
-            {
-                redirect('users');
-            }
-            
-            $data['roles'] = $this->user_model->getUserRoles();
-            $data['userInfo'] = $this->user_model->getUserInfo($userId);
-            
-            $this->global['pageTitle'] = 'Orion eSolutions : Edit User';
-           
-            $this->loadViews("editUser", $this->global, $data, NULL);
-        }
-        elseif(isset($_POST['edit_user'])=='Submit')
-        {
             $this->load->library('form_validation');
             
             $userId = $this->input->post('userId');
-            
-            $this->form_validation->set_rules('name','Full Name','trim|required|max_length[128]|xss_clean');
+           
+            $this->form_validation->set_rules('name','Name','trim|required|max_length[128]|xss_clean');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            $this->form_validation->set_rules('password','Password','required|max_length[20]');
-            $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
+            //$this->form_validation->set_rules('password','Password','required|max_length[20]');
+           // $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
             $this->form_validation->set_rules('role','Role','trim|required|numeric');
-            $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
+            $this->form_validation->set_rules('mobile','Mobile','required|min_length[10]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|required|numeric');
 
             if($this->form_validation->run() == FALSE)
             {
-                unset($_POST['edit_user']);
-                $this->editUser($userId);
+                //print_r($input); die;
+                //unset($input['name']);
+               // unset($_POST['name']);
+               
+                //$this->editUser($userId);
             }
             else
             {
+                $userId = $this->input->post('userId');
                 $name = ucwords(strtolower($this->input->post('name')));
                 $email = $this->input->post('email');
                 $password = $this->input->post('password');
@@ -223,7 +210,20 @@ class User extends BaseController
                 
                 redirect('edit-user/'.$userId);
             }
-        }else{}
+        }
+        //elseif(isset($_POST['edit_user'])!='Submit')
+       // {
+            if($userId == null)
+            {
+                redirect('users');
+            }
+            
+            $data['roles'] = $this->user_model->getUserRoles();
+            $data['userInfo'] = $this->user_model->getUserInfo($userId);
+            
+            $this->global['pageTitle'] = 'Orion eSolutions : Edit User';
+            $this->loadViews("editUser", $this->global, $data, NULL);
+        //}
     }
     
     
@@ -234,7 +234,7 @@ class User extends BaseController
      */
     function deleteUser()
     {
-        if($this->isAdmin() == TRUE)
+        if($this->isAdmin() == FALSE)
         {
             echo(json_encode(array('status'=>'access')));
         }
@@ -245,8 +245,14 @@ class User extends BaseController
             
             $result = $this->user_model->deleteUser($userId, $userInfo);
             
-            if ($result > 0) { echo(json_encode(array('status'=>TRUE))); }
-            else { echo(json_encode(array('status'=>FALSE))); }
+            if ($result > 0) 
+            { 
+                echo(json_encode(array('status'=>TRUE))); 
+            }
+            else 
+            { 
+                echo(json_encode(array('status'=>FALSE))); 
+            }
         }
         elseif(isset($_POST['delete_user'])=='Delete')
         {
@@ -262,6 +268,7 @@ class User extends BaseController
                 if ($result > 0)
                 {  
                     redirect("users");
+                    unset($_POST['delete_user']);
                 }
             }else
             {

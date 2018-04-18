@@ -43,19 +43,19 @@ class Server extends BaseController
         {
             $this->load->model('server_model');
         
-            $searchText = $this->input->post('searchText');
-            $data['searchText'] = $searchText;
+           
             
             $this->load->library('pagination');
             
-            $count = $this->server_model->serverListingCount($searchText);
+            $count = $this->server_model->membersServersCount($this->vendorId);
+           
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
 
             if(isset($_GET['search_server'])!='Submit')
             {
                 $data['clients'] = $this->server_model->getClients();
-                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
-                $data['servers'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
+                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
+                $data['servers'] = $this->server_model->membersServers( $returns["page"], $returns["segment"],$this->vendorId);
                
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 
@@ -70,9 +70,9 @@ class Server extends BaseController
                 $search_data['hostname'] = $this->input->get('hostname');
                 $search_data['status'] = $this->input->get('status');
 
-                $data['servers'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId);
+                $data['servers'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
                 $data['clients'] = $this->server_model->getClients();
-                $data['serverRecords'] = $this->server_model->membersServers($searchText, $returns["page"], $returns["segment"],$this->vendorId,$search_data);
+                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId,$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 //print_r($data);
                 $this->loadViews("servers", $this->global, $data, NULL);
@@ -88,18 +88,16 @@ class Server extends BaseController
         {
             $this->load->model('server_model');
         
-            $searchText = $this->input->post('searchText');
-            $data['searchText'] = $searchText;
-            
             $this->load->library('pagination');
             
-            $count = $this->server_model->serverListingCount($searchText);
+            $count = $this->server_model->serverListingCount();
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
             
             if(isset($_GET['search_server'])!='Submit')
             {
                 $data['clients'] = $this->server_model->getClients();
-                $data['serverRecords'] = $this->server_model->serverListing($searchText, $returns["page"], $returns["segment"]);
+                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
+                $data['serverRecords'] = $this->server_model->serverListing( $returns["page"], $returns["segment"]);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 //print_r($data);
                 $this->loadViews("servers", $this->global, $data, NULL);
@@ -112,8 +110,9 @@ class Server extends BaseController
                 $search_data['hostname'] = $this->input->get('hostname');
                 $search_data['status'] = $this->input->get('status');
 
+                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
                 $data['clients'] = $this->server_model->getClients();
-                $data['serverRecords'] = $this->server_model->searchServer($searchText, $returns["page"], $returns["segment"],$search_data);
+                $data['serverRecords'] = $this->server_model->searchServer($returns["page"], $returns["segment"],$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 //print_r($data);
                 $this->loadViews("servers", $this->global, $data, NULL);
