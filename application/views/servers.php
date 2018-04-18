@@ -25,8 +25,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th></th>
-                      <th>Id</th>
+                      <th><input type="checkbox" id="delete_all" /></th>
                       <th>Name</th>
                       <th>Client</th>
                       <th>Server IP</th>
@@ -37,7 +36,6 @@
                     <tr>
                     <form role="form" id="searchServer" action="<?php echo base_url() ?>servers" method="get" role="form">
                         <td></td>
-                        <td>#</td>
                         <td>
                             <select class="form-control required" id="name" name="name" > 
                                 <option value="">Select Server</option>
@@ -90,13 +88,11 @@
                     <?php
                     if(!empty($serverRecords))
                     {
-						$i = 1;
                         foreach($serverRecords as $record)
                         { 
                     ?>
                     <tr>
-                        <td><?php if($role==1){ ?><input type="checkbox" value="<?php echo $record->id; ?>" name="delete_servers[]"/><?php } ?></td>
-                      <td><?php echo $i ?></td>
+                      <td><?php if($role==1){ ?><input class="delete_server" type="checkbox" value="<?php echo $record->id; ?>" name="delete_servers[]"/><?php } ?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->server ?></td>
@@ -109,10 +105,7 @@
                         <?php } ?>
                       </td>
                     </tr> 
-                    <?php
-                            $i++;
-                        }
-                    ?>
+                    <?php } ?>
                     <tr>
                     <?php if($role==1){ ?>
                         <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_server" value="Delete"/></td>
@@ -147,4 +140,15 @@
             jQuery("#searchList").submit();
         });
     });
+    $(document).ready(function () {
+    $("#delete_all").click(function () {
+        $(".delete_server").prop('checked', $(this).prop('checked'));
+    });
+    
+    $(".delete_server").change(function(){
+        if (!$(this).prop("checked")){
+            $("#delete_all").prop("checked",false);
+        }
+    });
+});
 </script>

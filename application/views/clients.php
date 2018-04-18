@@ -23,8 +23,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th></th>
-                      <th>Id</th>
+                      <th><input type="checkbox" id="delete_all" /></th>
                       <th>Name</th>
                       <th>Phone</th>
                       <th>Email</th>
@@ -45,8 +44,7 @@
                         { 
                     ?>
                     <tr>
-                      <td><input type="checkbox" value="<?php echo$record->id; ?>" name="delete_clients[]"/></td>
-                      <td><?php echo $i?></td>
+                      <td><input type="checkbox" class="delete_client" value="<?php echo$record->id; ?>" name="delete_clients[]"/></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->phone ?></td>
                       <td><?php echo $record->email ?></td>
@@ -96,4 +94,15 @@
             jQuery("#searchList").submit();
         });
     });
+    $(document).ready(function () {
+    $("#delete_all").click(function () {
+        $(".delete_client").prop('checked', $(this).prop('checked'));
+    });
+    
+    $(".delete_client").change(function(){
+        if (!$(this).prop("checked")){
+            $("#delete_all").prop("checked",false);
+        }
+    });
+});
 </script>

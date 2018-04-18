@@ -23,8 +23,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th></th>
-                      <th>Id</th>
+                      <th><input type="checkbox" id="delete_all" /></th>
                       <th>Name</th>
                       <th>Email</th>
                       <th>Mobile</th>
@@ -37,13 +36,11 @@
                     <?php
                     if(!empty($userRecords))
                     {
-						$i = 1;
                         foreach($userRecords as $record)
                         {  
                     ?>
                     <tr> 
-                      <td><input type="checkbox" value="<?php echo$record->userId; ?>" name="delete_users[]"/></td>
-                      <td><?php echo $i ?></td>
+                      <td><input type="checkbox" class="delete_user" value="<?php echo$record->userId; ?>" name="delete_users[]"/></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->email ?></td>
                       <td><?php echo $record->mobile ?></td>
@@ -54,10 +51,7 @@
                           <a class="btn btn-sm btn-danger deleteUser" href="#" data-id="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
-                    <?php
-							$i++;
-                        } 
-                    ?>
+                    <?php  }  ?>
                     <tr>
                         <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_user" value="Delete"/></td>
                     </tr>
@@ -90,4 +84,15 @@
             jQuery("#searchList").submit();
         });
     });
+    $(document).ready(function () {
+    $("#delete_all").click(function () {
+        $(".delete_user").prop('checked', $(this).prop('checked'));
+    });
+    
+    $(".delete_user").change(function(){
+        if (!$(this).prop("checked")){
+            $("#delete_all").prop("checked",false);
+        }
+    });
+});
 </script>

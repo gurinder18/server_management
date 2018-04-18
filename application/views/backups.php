@@ -26,8 +26,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th></th>
-                      <th>Id</th>
+                      <th><input type="checkbox" id="delete_all" /></th>
                       <th>User</th>
                       <th>Client</th>
                       <th>Server</th>
@@ -37,7 +36,6 @@
                     </tr>
                     <tr>
                     <td></td> 
-                    <td>#</td>
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
                     
                         <td><?php if($role==1){ ?>
@@ -101,13 +99,11 @@
                     <?php
                     if(!empty($backupRecords))
                     {
-						$i = 1;
                         foreach($backupRecords as $record)
                         { 
                     ?>
                     <tr>
-                        <td><?php if($role==1){ ?><input type="checkbox" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
-                      <td><?php echo $i ?></td>
+                      <td><?php if($role==1){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
                       <td><?php echo $record->UserName ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->ServerName ?></td>
@@ -122,7 +118,6 @@
                       </td> 
                     </tr>
                     <?php
-						$i++;
                         }
                        if($role==1){ 
                     ?>
@@ -188,14 +183,24 @@ $(document).on("change","#client",function(){
         var obj = JSON.parse(data);
         var servers = obj.servers;
         var server_text = '';
-        $.each(servers, function(i, item) {
-            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
-})
-$("#server").html(server_text);
-     
+        $.each(servers, function(i, item) 
+        {
+            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';      
+        })
+        $("#server").html(server_text);
     }
+    });
+});
+$(document).ready(function () {
+    $("#delete_all").click(function () {
+        $(".delete_backup").prop('checked', $(this).prop('checked'));
+    });
     
-	});
+    $(".delete_backup").change(function(){
+        if (!$(this).prop("checked")){
+            $("#delete_all").prop("checked",false);
+        }
+    });
 });
 
 </script>

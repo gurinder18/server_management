@@ -171,6 +171,7 @@ class Backup_model extends CI_Model
         $this->db->from('tbl_users');
         $this->db->where('roleId =', 2);
         $this->db->where('isDeleted !=', 1);
+        $this->db->where('status', 1);
         $query = $this->db->get();
     
         return $query->result();
@@ -184,6 +185,7 @@ class Backup_model extends CI_Model
         $this->db->select('id, name');
         $this->db->from('tbl_clients');
         $this->db->where('isDeleted !=', 1);
+        $this->db->where('status', 1);
         $query = $this->db->get();
     
         return $query->result();
@@ -198,6 +200,7 @@ class Backup_model extends CI_Model
         $this->db->from('tbl_servers');
         $this->db->where('clientId', $clientId);
         $this->db->where_not_in('isDeleted', [1]);
+        $this->db->where('status', 1);
         $query = $this->db->get();
         if(count($query)>0){
             return $query->result_array();
@@ -215,6 +218,7 @@ class Backup_model extends CI_Model
         $this->db->from('tbl_clients');
         $this->db->where('id =', $clientId);
         $this->db->where('isDeleted !=', 1);
+        $this->db->where('status', 1);
         $query = $this->db->get();
         //print_r($query->result());
         return $query->result();
@@ -229,6 +233,7 @@ class Backup_model extends CI_Model
         $this->db->from('tbl_servers');
         $this->db->where('id =', $serverId);
         $this->db->where('isDeleted !=', 1);
+        $this->db->where('status', 1);
         $query = $this->db->get();
     
         return $query->result();
