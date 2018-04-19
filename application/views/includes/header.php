@@ -98,14 +98,14 @@
             </li>
             
             <?php
-            if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
+            if($role_slug == "sys.admin" || $role_slug == "member")
             {
             ?>
             
              
             <?php
             }
-            if($role == ROLE_ADMIN)
+            if($role_slug == "sys.admin")
             {
             ?>
             <li class="treeview">
@@ -116,7 +116,7 @@
             </li>
             <?php 
             }
-            if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
+            if($role_slug == "sys.admin" || $role_slug == "member")
             {
             ?>
             <li class="treeview">
@@ -127,7 +127,7 @@
             </li>
             <?php 
             }
-             if($role == ROLE_ADMIN)
+             if($role_slug == "sys.admin")
              {
             ?>
             <li class="treeview">
@@ -138,13 +138,24 @@
             </li>
             <?php 
              }
-            if($role == ROLE_ADMIN || $role == ROLE_MANAGER)
+            if($role_slug == "sys.admin" || $role_slug == "member")
             {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>backups">
                 <i class="fa fa-arrow-circle-up"></i>
                 <span>Backups</span>
+              </a>
+            </li>
+            <?php
+            } 
+            if( $role_slug == "member")
+            {
+            ?>
+            <li class="treeview">
+              <a href="<?php echo base_url(); ?>schedules">
+                <i class="fa fa-arrow-circle-up"></i>
+                <span>Backup Schedules</span>
               </a>
             </li>
             <?php

@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.1
  * @since : 15 November 2016
  */
-class Backup extends BaseController
+class Schedule extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -35,93 +35,51 @@ class Backup extends BaseController
      * This function is used to load the server list
      */
    
-    function backups($limit = NULL)
+    function schedules($limit = NULL)
     {
         if($this->isMember() == TRUE)
         {
-            $this->load->model('backup_model');
+            $this->load->model('schedule_model');
                    
             $this->load->library('pagination');
-                    
-            $count = $this->backup_model->memberbackupCount(null,null,$this->vendorId,null);
-            $returns = $this->paginationCompress ( "backups/", $count, 5 );
+            $current_date = date('d-m-Y');    
+            $count = $this->schedule_model->schedulesCount(null,null,null, $current_date,$this->vendorId);
+            $returns = $this->paginationCompress ( "schedules/", $count, 5 );
 
             if(isset($_GET['search_backup'])!='Submit')
             {
-                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                //$current_date = date('d-m-Y');
+                $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],null, $current_date,$this->vendorId);
+                $returns = $this->paginationCompress ( "schedules/", $count, 5 );
+                $data['scheduleRecords'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                $data['clients'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                $data['servers'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                $this->global['pageTitle'] = 'Orion eSolutions : Schedules Listing';
                 //print_r($data);
               
-               
-                $this->loadViews("backups", $this->global, $data, NULL);
+                $this->loadViews("schedules", $this->global, $data, NULL);
             }
             elseif(isset($_GET['search_backup'])=='Submit')
             {
-                $search_data['userId'] = $this->input->get('user');
-                $search_data['clientId'] = $this->input->get('client');
                 $search_data['serverId'] = $this->input->get('server');
-                $search_data['scheduleType'] = $this->input->get('scheduleType');
-                $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
-
-                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId, $search_data);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->membersBackups($returns["page"], $returns["segment"],$this->vendorId,$search_data);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                $search_data['serverIP'] = $this->input->get('serverIP');
+                $search_data['hostname'] = $this->input->get('hostname');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['status'] = $this->input->get('status');
+               
+                $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],$search_data, $current_date,$this->vendorId);
+                $returns = $this->paginationCompress ( "schedules/", $count, 5 );
+                $data['scheduleRecords'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],$search_data,$current_date,$this->vendorId);
+                $data['clients'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                $data['servers'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                $this->global['pageTitle'] = 'Orion eSolutions : Schedule Listing';
                 //print_r($data);
-                $this->loadViews("backups", $this->global, $data, NULL);
+                $this->loadViews("schedules", $this->global, $data, NULL);
                
             }else{}
-           
         }
-        elseif($this->isAdmin() == TRUE)
-        {
-            $this->load->model('backup_model');
-        
-            
-            $this->load->library('pagination');
-            
-            $count = $this->backup_model->backupListingCount();
-
-            $returns = $this->paginationCompress ( "backups/", $count, 5 );
-            if(isset($_GET['search_backup'])!='Submit')
-            {
-                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],null);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-               // $data["links"] = $this->pagination->create_links();
-                $this->loadViews("backups", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_backup'])=='Submit')
-            {
-                $search_data['userId'] = $this->input->get('user');
-                $search_data['clientId'] = $this->input->get('client');
-                $search_data['serverId'] = $this->input->get('server');
-                $search_data['scheduleType'] = $this->input->get('scheduleType');
-                $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
-
-                $count = $this->backup_model->backupListingCount( $search_data);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],$search_data);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-                $this->loadViews("backups", $this->global, $data, NULL);
-               
-            }else{}
-        }else{} 
-
-        
     }
-    function backupDetails($id)
+    function scheduleDetails($id)
     {
         if($this->isAdmin() == FALSE  && $this->isMember() == FALSE)
         {
@@ -131,25 +89,67 @@ class Backup extends BaseController
         {
             if($id == null)
             {
-                redirect('backups');
+                redirect('schedules');
             }
+            $this->load->model('schedule_model');
             
-           // $data['roles'] = $this->user_model->getUserRoles();
-            $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
-            foreach($data as $backup)
-            {
-                $clientId=$backup['clientId'];
-                $serverId=$backup['serverId'];
-            }
-            $data['clients'] = $this->backup_model->getClientById($clientId);
-			//print_r($data);
-            $data['servers'] = $this->backup_model->getServerById($serverId);
-            
-            $this->global['pageTitle'] = 'Orion eSolutions : Backup Details';
-          
-            $this->loadViews("backupDetails", $this->global, $data, NULL);
+            $data['scheduleInfo'] = $this->schedule_model->getScheduleInfo($id);
+           
+            $this->global['pageTitle'] = 'Orion eSolutions : Schedule Details';
+         
+            $this->loadViews("scheduleDetails", $this->global, $data, NULL);
         }
     }
+
+      /**
+     * This function is server update schedule  status
+     * @param number $id : Optional : This is user id
+     */
+    function updateScheduleStatus($id = NULL)
+    {
+        if($this->isMember() == FALSE )
+        {
+            $this->loadThis();
+        }
+        if(isset($_POST['backup_status'])=='Submit'){
+                 $this->load->model('schedule_model');
+                $this->load->library('form_validation');
+				$id = $this->input->post('id');
+				
+				$this->form_validation->set_rules('backupStatus','BackupStatus','trim|required|numeric');
+				
+				if($this->form_validation->run() == FALSE)
+				{
+                    unset($_POST['backup_status']);
+					$this->updateScheduleStatus($id);
+				}
+				else
+				{
+                    $id = $this->input->post('scheduleId');
+                    $status = $this->input->post('backupStatus');
+                    
+					$scheduleInfo = array();
+					
+					$scheduleInfo = array('status'=>$status,
+					 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+					
+					$result = $this->schedule_model->updateScheduleStatus($scheduleInfo, $id);
+					
+					if($result == true)
+					{
+						$this->session->set_flashdata('success', 'Schedule status updated successfully');
+					}
+					else
+					{
+						$this->session->set_flashdata('error', 'Schedule status updation failed');
+					}
+					
+					redirect('schedule-details/'.$id);
+				}
+			}
+    }
+
+
     function checkUserExists()
     {
         $id = $this->input->post("id");
@@ -234,77 +234,7 @@ class Backup extends BaseController
         echo json_encode($data);
     }
 
-    /**
-     * This function is server load server edit information
-     * @param number $id : Optional : This is user id
-     */
-    function editBackup($id = NULL)
-    {
-        if($this->isAdmin() == FALSE )
-        {
-            $this->loadThis();
-        }
-        elseif(isset($_POST['edit_backup'])!='Submit')
-        {
-            if($id == null)
-            {
-                redirect('backups');
-            }
-           
-           
-            $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
-            $data['clients'] = $this->backup_model->getClients();
-            $data['users'] = $this->backup_model->getUsers();
-            $this->global['pageTitle'] = 'Orion eSolutions : Edit Backup';
-           
-            $this->loadViews("editBackup", $this->global, $data, NULL);
-
-           }elseif(isset($_POST['edit_backup'])=='Submit'){
-                $this->load->library('form_validation');
-				$id = $this->input->post('id');
-				
-				$this->form_validation->set_rules('user','User','trim|required|numeric');
-				$this->form_validation->set_rules('client','Client','trim|required|numeric');
-				$this->form_validation->set_rules('server','Server','trim|required|numeric');
-				$this->form_validation->set_rules('scheduleType','ScheduleType','trim|required|max_length[100]|xss_clean');
-				$this->form_validation->set_rules('scheduleTimings','ScheduleTimings','trim|required|max_length[100]|xss_clean');
-				$this->form_validation->set_rules('information','Information','trim|xss_clean');
-			   
-				if($this->form_validation->run() == FALSE)
-				{
-                    unset($_POST['edit_backup']);
-					$this->editBackup($id);
-				}
-				else
-				{
-					$userId = $this->input->post('user');
-					$clientId = $this->input->post('client');
-					$serverId = $this->input->post('server');
-					$scheduleType = $this->input->post('scheduleType');
-					$scheduleTimings = $this->input->post('scheduleTimings');
-					$information = $this->input->post('information');
-					
-					$backupInfo = array();
-					
-					$backupInfo = array('userId'=>$userId,'clientId'=>$clientId,'serverId'=>$serverId,
-					'scheduleType'=>$scheduleType,'scheduleTimings'=>$scheduleTimings,'information'=>$information,
-					 'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
-					
-					$result = $this->backup_model->editBackup($backupInfo, $id);
-					
-					if($result == true)
-					{
-						$this->session->set_flashdata('success', 'Backup updated successfully');
-					}
-					else
-					{
-						$this->session->set_flashdata('error', 'Backup updation failed');
-					}
-					
-					redirect('edit-backup/'.$id);
-				}
-			}else{}
-    }
+  
     
     /**
      * This function is used to delete the server using id

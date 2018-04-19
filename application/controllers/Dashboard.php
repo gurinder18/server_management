@@ -9,7 +9,7 @@ require APPPATH . '/libraries/BaseController.php';
  * @version : 1.1
  * @since : 15 November 2016
  */
-class Backup extends BaseController
+class Dashboard extends BaseController
 {
     /**
      * This is default constructor of the class
@@ -17,7 +17,7 @@ class Backup extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('backup_model');
+        $this->load->model('dashboard_model');
         $this->isLoggedIn();   
     }
   
@@ -35,91 +35,29 @@ class Backup extends BaseController
      * This function is used to load the server list
      */
    
-    function backups($limit = NULL)
+    function dashboardSchedule()
     {
         if($this->isMember() == TRUE)
         {
-            $this->load->model('backup_model');
-                   
-            $this->load->library('pagination');
-                    
-            $count = $this->backup_model->memberbackupCount(null,null,$this->vendorId,null);
-            $returns = $this->paginationCompress ( "backups/", $count, 5 );
-
-            if(isset($_GET['search_backup'])!='Submit')
-            {
-                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-              
-               
-                $this->loadViews("backups", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_backup'])=='Submit')
-            {
-                $search_data['userId'] = $this->input->get('user');
-                $search_data['clientId'] = $this->input->get('client');
-                $search_data['serverId'] = $this->input->get('server');
-                $search_data['scheduleType'] = $this->input->get('scheduleType');
-                $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
-
-                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId, $search_data);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->membersBackups($returns["page"], $returns["segment"],$this->vendorId,$search_data);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-                $this->loadViews("backups", $this->global, $data, NULL);
-               
-            }else{}
-           
+            $this->load->model('dashboard_model');
+                
+                $current_date = date('d-m-Y');
+                $data['count'] = $this->dashboard_model->scheduleCount( $current_date,$this->vendorId);
+               // $returns = $this->paginationCompress ( "backups/", $count, 5 );
+               // $data['backupRecords'] = $this->dashboard_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
+               // $data['clients'] = $this->dashboard_model->getClients();
+                //$data['users'] = $this->dashboard_model->getUsers();
+                $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
+                
+                $this->loadViews("dashboard", $this->global, $data, NULL);
         }
         elseif($this->isAdmin() == TRUE)
         {
-            $this->load->model('backup_model');
-        
-            
-            $this->load->library('pagination');
-            
-            $count = $this->backup_model->backupListingCount();
-
-            $returns = $this->paginationCompress ( "backups/", $count, 5 );
-            if(isset($_GET['search_backup'])!='Submit')
-            {
-                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],null);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-               // $data["links"] = $this->pagination->create_links();
-                $this->loadViews("backups", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_backup'])=='Submit')
-            {
-                $search_data['userId'] = $this->input->get('user');
-                $search_data['clientId'] = $this->input->get('client');
-                $search_data['serverId'] = $this->input->get('server');
-                $search_data['scheduleType'] = $this->input->get('scheduleType');
-                $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
-
-                $count = $this->backup_model->backupListingCount( $search_data);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],$search_data);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-                $this->loadViews("backups", $this->global, $data, NULL);
-               
-            }else{}
-        }else{} 
-
-        
+            $this->load->model('dashboard_model');
+            $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
+                
+            $this->loadViews("dashboard", $this->global, NULL, NULL);
+        }   
     }
     function backupDetails($id)
     {
@@ -368,7 +306,7 @@ class Backup extends BaseController
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
         $this->current_date = date("d");
-        $this->current_fulldate = date('d-m-Y');
+        $this->current_fulldate = date('d-m-Y');;
        
         foreach($result as $res):
             $clientId =  $res->clientId;

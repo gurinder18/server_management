@@ -2,43 +2,80 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-arrow-circle-up"></i> Backups Management
+        <i class="fa fa-calendar-check-o"></i>Schedules Management
       </h1>
     </section>
     <section class="content">
         <div class="row">
-            <div class="col-xs-12 text-right">
-                <div class="form-group">
-                <?php if($role==1){ ?>
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>add-backup"><i class="fa fa-plus"></i> Add New</a>
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>schedule-backups"><i class="fa fa-plus"></i> Add Schedule</a>
-                <?php } ?>
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Backups List</h3>
+                    <h3 class="box-title">Today's Schedules List</h3>
                     
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
                       <th><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
-                      <th>User</th>
+                      <th>Server Name</th>
+                      <th>Server IP</th>
+                      <th>Hostname</th>
                       <th>Client</th>
-                      <th>Server</th>
-                      <th>Schedule Type</th>
-                      <th>Schedule Timings</th>
+                      <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
                     <tr>
                     <td></td> 
-                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
-                    
-                        <td><?php if($role_slug=="sys.admin"){ ?>
+                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>schedules" method="get" role="form">
+                        <td>
+                            <select class="form-control required" id="server" name="server" > 
+                                <option value="">Select server</option>
+                                <?php
+                                    if(!empty($servers))
+                                    {
+                                        foreach ($servers as $br)
+                                        { 
+                                ?>
+                                <option value="<?php echo $br->serverId ?>"><?php echo $br->ServerName ?></option>
+                                <?php
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control required" id="serverIP" name="serverIP" maxlength="128" placeholder="Search Server IP">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" placeholder="Search Hostname">
+                        </td>
+                        <td>
+                            <select class="form-control required" id="client" name="client" > 
+                                <option value="">Select Client</option>
+                                <?php
+                                    if(!empty($clients))
+                                    {
+                                        foreach ($clients as $cl)
+                                        { 
+                                ?>
+                                <option value="<?php echo $cl->clientId ?>"><?php echo $cl->ClientName ?></option>
+                                <?php
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control required" id="status" name="status" > 
+                                <option value="">Select Status</option>
+                                <option value="1">Pending</option>
+                                <option value="2">Inprogress</option>
+                                <option value="3">Completed</option>
+                                <option value="4">Failed</option>
+                            </select>
+                        </td>
+                        <?php if($role_slug=="sys.admin"){ ?>
+                        <td>
                             <select class="form-control required" id="user" name="user" > 
                                 <option value="">Select User</option>
                                 <?php
@@ -51,44 +88,10 @@
                                 <?php
                                         }
                                     }
-                                }
                                 ?>
                             </select>
                         </td>
-                        <td>
-                            <select class="form-control required" id="client" name="client" > 
-                                <option value="">Select Client</option>
-                                <?php
-                                    if(!empty($clients))
-                                    {
-                                        foreach ($clients as $cl)
-                                        { 
-                                ?>
-                                <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control required" id="server" name="server" > 
-                                <option value="">Select server</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control required" id="scheduleType" name="scheduleType" > 
-                                <option value="">Select schedule type</option>
-                                <option value="Daily">Daily</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Monthly">Monthly</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                                <option value="">Select schedule timings</option>
-                            </select>
-                        </td>
+                        <?php } ?>
                         <td> 
                             <input type="submit" class="btn btn-primary" name='search_backup' value="Submit" />
                         </td>
@@ -97,24 +100,20 @@
                     <form role="form" id="deleteBackup" action="<?php echo base_url() ?>deleteBackup" method="post" role="form">
                     
                     <?php
-                    if(!empty($backupRecords))
+                    if(!empty($scheduleRecords))
                     {
-                        foreach($backupRecords as $record)
+                        foreach($scheduleRecords as $record)
                         { 
                     ?>
                     <tr>
                       <td><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
-                      <td><?php echo $record->UserName ?></td>
-                      <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->ServerName ?></td>
-                      <td><?php echo $record->scheduleType ?></td>
-                      <td><?php echo $record->scheduleTimings ?></td>
+                      <td><?php echo $record->ServerIP ?></td>
+                      <td><?php echo $record->ServerHostname ?></td>
+                      <td><?php echo $record->ClientName ?></td>
+                      <td><?php echo $record->ScheduleStatus ?></td>
                       <td class="text-center">
-                          <a class="btn btn-sm btn-detail" href="<?php echo base_url().'backup-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
-                          <?php if($role_slug=="sys.admin"){ ?>
-                             <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
-                              <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
-                          <?php } ?>
+                          <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
                       </td> 
                     </tr>
                     <?php
@@ -173,24 +172,6 @@
         }
     });
 
-$(document).on("change","#client",function(){
-    var val = $(this).val();
-    $.ajax({
-	type: "POST",
-	url: baseURL + "getServers/"+val,
-	data:'clientId='+val,
-	success: function(data){
-        var obj = JSON.parse(data);
-        var servers = obj.servers;
-        var server_text = '';
-        $.each(servers, function(i, item) 
-        {
-            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';      
-        })
-        $("#server").html(server_text);
-    }
-    });
-});
 $(document).ready(function () {
     $("#delete_all").click(function () {
         $(".delete_backup").prop('checked', $(this).prop('checked'));

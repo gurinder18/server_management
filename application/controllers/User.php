@@ -152,7 +152,6 @@ class User extends BaseController
       
         if(isset($input['name']))
         {
-            
             $this->load->library('form_validation');
             
             $userId = $this->input->post('userId');

@@ -6,16 +6,17 @@
       </h1>
     </section>
     <section class="content">
-        
-        <div class="row">
+      <div class="row">
+         <div class="col-xs-8">
+         <div class="row">
             <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Server Details</h3>
+                    <h3 class="box-title ">Server Details</h3>
                     
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                  <table class="table table-hover">
+                <div class="box-body table-responsive">
+                  <table class="table table-hover ">
                   <?php
                     if(!empty($servers))
                     {
@@ -44,15 +45,23 @@
                       <th>Details</th> 
                       <td>
                         <?php 
+                          $str_length = strlen($record->details);
+                          if($str_length>30){
                           if(isset($_POST['read_more'])!='Read more')
-                          {
+                          { 
+                           
                              echo substr("$record->details",0,30),"..." ;
                         ?>
 
                         <form method=post>
-                           <input type="submit" class="btn btn-primary" name='read_more' value="Read more" />
+                           <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
                         <form>
                         <?php
+                            }
+                            else
+                            { 
+                              echo $record->details; 
+                           }
                           }
                           else
                           { 
@@ -84,7 +93,7 @@
                     <h3 class="box-title">Backup Details</h3>
                     
                 </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
+                <div class="box-body table-responsive">
                   <table class="table table-hover">
                   <?php
                     if(!empty($backupInfo))
@@ -119,61 +128,80 @@
               </div><!-- /.box -->
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Client Details</h3>
-                    
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                  <table class="table table-hover">
+         </div>
+         <div class="col-xs-4">
+            <div class="box">
+                <div class="box-body box-profile text-center">
+                <h3 class="box-title">Client</h3>
+                  <img class="profile-user-img img-responsive img-circle " src="<?php echo base_url(); ?>/assets/dist/img/no_image.png" alt="User profile picture">
                   <?php
-                    if(!empty($clients))
-                    {
+                      if(!empty($clients))
+                      {
                         foreach($clients as $cl)
-                        { 
-                        }
-                    ?>
-                    <tr>
-                    <th>Client Name</th> <td><?php echo $cl->name ?></td>
-                    </tr>
-                    <?php if($role==1){ ?>
-                      <tr>
-                    <th>Phone Number</th><td><?php echo $cl->phone ?></td>
-                    </tr>
-                      <tr>
-                    <th>Email</th> <td><?php echo $cl->email ?></td>
-                    </tr>
-                      <tr>
-                    <th>Address</th><td><?php echo $cl->address ?></td>
-                    </tr>
-                      <tr>
-                    <th>City</th><td><?php echo $cl->city ?></td>
-                    </tr>
-                      <tr>
-                    <th>State</th><td><?php echo $cl->state ?></td>
-                    </tr>
-                      <tr>
-                    <th>Zip</th><td><?php echo $cl->zip ?></td>
-                    </tr>
-                      <tr>
-                    <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
-                    </tr>
-                    <?php }}else{
-                    ?>
-                    <tr><td>Client does not exist</td></tr>
-                    <?php
-                    }
-                    ?>
-                  </table>
-                  
-                </div><!-- /.box-body -->
-                <div class="box-footer clearfix">
-                </div>
-              </div><!-- /.box -->
+                        { }
+                  ?>
+                  <p class="text-muted text-center"><h4><?php echo $cl->name ?></h4></p>
+                         <!-- Button trigger modal -->
+                         <?php if($role_slug=="sys.admin"){ ?>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                            View Details
+                        </button>
+                         <?php } ?>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header"> 
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h2 class="modal-title" id="exampleModalLabel">Client details</h2>
+                                       
+                                    </div>
+                                    <div class="modal-body">
+                                    <table class="table table-hover">
+                                      <tr>
+                                         <th>Name</th><td><?php echo $cl->name ?></td>
+                                      </tr>
+                                      <tr>
+                                         <th>Contact No.</th><td><?php echo $cl->phone ?></td>
+                                      </tr>
+                                      <tr>
+                                         <th>Email</th> <td><?php echo $cl->email ?></td>
+                                      </tr>
+                                      <tr>
+                                        <th>Address</th><td><?php echo $cl->address ?></td>
+                                      </tr>
+                                      <tr>
+                                        <th>City</th><td><?php echo $cl->city ?></td>
+                                      </tr>
+                                      <tr>
+                                         <th>State</th><td><?php echo $cl->state ?></td>
+                                      </tr>
+                                      <tr>
+                                        <th>Zip</th><td><?php echo $cl->zip ?></td>
+                                      </tr>
+                                      <tr>
+                                       <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
+                                      </tr>
+                                      <?php }else{ ?>
+                                      <tr><td>Client does not exist</td></tr>
+                                      <?php } ?>
+                                  </table>
+                                    </div>
+                                    <?php if($role_slug=="sys.admin" && !empty($clients)){  ?>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </div>   
+                     </div>
+                  </div><!-- /.box -->
             </div>
-        </div>
+      </div>
+                        
     </section>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/common.js" charset="utf-8"></script>

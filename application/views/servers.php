@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
-                <?php if($role==1){ ?>
+                <?php if($role_slug=="sys.admin"){ ?>
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>add-server"><i class="fa fa-plus"></i> Add New</a>
                 <?php } ?>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th><input type="checkbox" id="delete_all" /></th>
+                      <th> <?php if($role_slug=="sys.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
                       <th>Name</th>
                       <th>Client</th>
                       <th>Server IP</th>
@@ -43,7 +43,7 @@
                                    foreach($servers as $ser)
                                     {
                                 ?>
-                                <option value="<?php echo $ser->name ?>"><?php echo $ser->name ?></option>
+                                <option value="<?php echo $ser->name ?>"><?php echo $ser->name; ?></option>
                                 <?php
                                     }
                                 ?>
@@ -92,14 +92,14 @@
                         { 
                     ?>
                     <tr>
-                      <td><?php if($role==1){ ?><input class="delete_server" type="checkbox" value="<?php echo $record->id; ?>" name="delete_servers[]"/><?php } ?></td>
+                      <td><?php if($role_slug=="sys.admin"){ ?><input class="delete_server" type="checkbox" value="<?php echo $record->id; ?>" name="delete_servers[]"/><?php } ?></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->server ?></td>
                       <td><?php echo $record->hostname ?></td>
                       <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
-                        <?php if($role==1){ ?>
+                        <?php if($role_slug=="sys.admin"){ ?>
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-server/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                           <a class="btn btn-sm btn-danger deleteServer" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                         <?php } ?>
@@ -107,7 +107,7 @@
                     </tr> 
                     <?php } ?>
                     <tr>
-                    <?php if($role==1){ ?>
+                    <?php if($role_slug=="sys.admin"){ ?>
                         <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_server" value="Delete"/></td>
                     <?php } ?>
                     </tr>

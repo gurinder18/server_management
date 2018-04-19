@@ -9,6 +9,7 @@
     
     <section class="content">
         <div class="row">
+        <?php if($role_slug=="sys.admin"){ ?>
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
               <div class="small-box bg-aqua">
@@ -47,20 +48,22 @@
                 </div>
                 <a href="<?php echo base_url(); ?>userListing" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-            </div><!-- ./col -->
+            </div><?php } ?><!-- ./col -->
+            <?php if($role_slug=="member"){ ?>
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
               <div class="small-box bg-red">
+
                 <div class="inner">
-                  <h3>65</h3>
-                  <p>Reopened Issue</p>
+                  <h3><?php echo $count; ?></h3>
+                  <p>Pending schedules</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-pie-graph"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="<?php echo base_url(); ?>schedules" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-            </div><!-- ./col -->
+            </div><?php } ?><!-- ./col -->
           </div>
     </section>
 </div>

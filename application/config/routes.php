@@ -45,8 +45,9 @@ $route['404_override'] = 'error';
 /*********** USER DEFINED ROUTES *******************/
 
 $route['loginMe'] = 'login/loginMe';
-$route['dashboard'] = 'user';
+//$route['dashboard'] = 'user';
 $route['logout'] = 'user/logout';
+$route['dashboard'] = 'dashboard/dashboardSchedule';
 $route['users'] = 'user/userListing';
 $route['users/(:num)'] = "user/userListing/$1";
 
@@ -88,9 +89,16 @@ $route['backup-details/(:num)'] = "backup/backupDetails/$1";
 $route['edit-backup/(:num)'] = "backup/editBackup/$1";
 $route['deleteBackup'] = "backup/deleteBackup";
 
-$route['schedule-backups'] = 'backup/scheduleBackups';
+/*********** SCHEDULES DEFINED ROUTES *******************/
+$route['schedules'] = 'schedule/schedules';
+$route['schedules/(:num)'] = "schedule/schedules/$1";
 
-$route['paging-users'] = 'paging/custom';
+$route['schedule-details/(:num)'] = "schedule/scheduleDetails/$1";
+$route['schedule-update-status/(:num)'] = "schedule/updateScheduleStatus/$1";
+
+$route['schedule-backups'] = 'backup/scheduleBackups';
+//$route['paging-users'] = 'paging/custom';
+
 //$route['paging-users/(:num)'] = "paging/userListing/$1";
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
