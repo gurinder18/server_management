@@ -95,8 +95,13 @@ $route['schedules/(:num)'] = "schedule/schedules/$1";
 
 $route['schedule-details/(:num)'] = "schedule/scheduleDetails/$1";
 $route['schedule-update-status/(:num)'] = "schedule/updateScheduleStatus/$1";
+$route['add-comment/(:num)'] = "schedule/addComment/$1";
 
 $route['schedule-backups'] = 'backup/scheduleBackups';
+
+$route['file-upload'] = 'schedule/fileupload';
+
+
 //$route['paging-users'] = 'paging/custom';
 
 //$route['paging-users/(:num)'] = "paging/userListing/$1";

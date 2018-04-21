@@ -137,7 +137,18 @@ class Client_model extends CI_Model
     {
         $this->db->where('id', $id);
         $this->db->update('tbl_clients', $clientInfo);
+        if($this->db->affected_rows()>0)
+        {
+            $this->db->where('clientId', $id);
+      
+            $this->db->update('tbl_servers', $clientInfo);  
+            if($this->db->affected_rows()>0)
+            {
+                $this->db->where('clientId', $id);
         
+                $this->db->update('tbl_backups', $clientInfo);  
+            }
+        }
         return $this->db->affected_rows();
     }
 

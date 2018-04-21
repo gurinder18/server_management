@@ -36,7 +36,7 @@
                                         foreach ($servers as $br)
                                         { 
                                 ?>
-                                <option value="<?php echo $br->serverId ?>"><?php echo $br->ServerName ?></option>
+                                <option value="<?php echo $br['id'] ?>"><?php echo $br['name'] ?></option>
                                 <?php
                                         }
                                     }
@@ -58,7 +58,7 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl->clientId ?>"><?php echo $cl->ClientName ?></option>
+                                <option value="<?php echo $cl['id'] ?>"><?php echo $cl['name'] ?></option>
                                 <?php
                                         }
                                     }

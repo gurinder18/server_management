@@ -1,3 +1,6 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -6,169 +9,345 @@
       </h1>
     </section>
     <section class="content">
-      <div class="row">
-         <div class="col-xs-8">
-         <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title ">Servers Details</h3>
-                    
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive">
-                  <table class="table table-hover ">
-                  <?php if(!empty($scheduleInfo)){ ?>
-                    <tr>
-                      <th>Server Name</th> <td><?php echo $scheduleInfo['ServerName'] ?></td>
-                    </tr>
-                    <tr>
-                      <th>Server IP</th> <td><?php echo $scheduleInfo['ServerIP'] ?></td>
-                      </tr>
-                    <tr>
-                      <th>Hostname</th><td><?php echo $scheduleInfo['ServerHostname'] ?></td>
-                    </tr>
-                    <tr>
-                      <th>Details</th> 
-                      <td>
-                        <?php 
-                          $str_length = strlen($scheduleInfo['ServerDetails']);
-                          if($str_length>30){
-                          if(isset($_POST['read_more'])!='Read more')
-                          { 
-                            $details = $scheduleInfo['ServerDetails'];
-                             echo substr("$details",0,30),"..." ;
-                        ?>
-
-                        <form method=post>
-                           <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
-                        <form>
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title ">Servers Details</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <table class="table table-hover ">
+                            <?php 
+                                if(!empty($scheduleInfo))
+                                { 
+                            ?>
+                            <tr>
+                                <th>Client Name</th> <td><?php echo $scheduleInfo['ClientName'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Server Name</th> <td><?php echo $scheduleInfo['ServerName'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Server IP</th> <td><?php echo $scheduleInfo['ServerIP'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Hostname</th><td><?php echo $scheduleInfo['ServerHostname'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Details</th> 
+                                <td>
+                                    <?php 
+                                        $str_length = strlen($scheduleInfo['ServerDetails']);
+                                        if($str_length>30)
+                                        {
+                                            if(isset($_POST['read_more'])!='Read more')
+                                            { 
+                                                $details = $scheduleInfo['ServerDetails'];
+                                                echo substr("$details",0,30),"..." ;
+                                    ?>
+                                    <form method=post>
+                                        <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
+                                    <form>
+                                    <?php
+                                            }
+                                            else
+                                            { 
+                                                echo $scheduleInfo['ServerDetails']; 
+                                            }
+                                        }
+                                        else
+                                        { 
+                                            echo $scheduleInfo['ServerDetails']; 
+                                        }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php
+                                }
+                                else{
+                            ?>
+                            <tr>
+                                <td>Server does not exist</td>
+                            </tr>
+                            <?php
+                                }
+                            ?>
+                        </table>
+                    </div><!-- /.box-body -->
+                </div><!-- /.box -->
+            </div>
+            <div class="col-xs-4">
+                <div class="box">
+                    <div class="box-body box-profile text-center">
+                        <h3 class="box-title">Schedule details</h3>
                         <?php
-                            }
-                            else
-                            { 
-                              echo $scheduleInfo['ServerDetails']; 
-                            }
-                          }
-                          else
-                          { 
-                            echo $scheduleInfo['ServerDetails']; 
-                          }
+                            if(!empty($scheduleInfo))
+                            {
                         ?>
-                      </td>
-                    </tr>
-                    <?php
-                         
-                       }
-                       else{
-                    ?>
-                    <tr><td>Server does not exist</td></tr>
-                    <?php
-                    }
-                    ?>
-                  </table>
-                </div><!-- /.box-body -->
-              </div><!-- /.box -->
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Date</th><td><?php echo $scheduleInfo['date'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Schedule type</th><td><?php echo $scheduleInfo['scheduleType'] ?></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th> <td><?php echo $scheduleInfo['ScheduleStatus'] ?></td>
+                            </tr>
+                        </table>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleStatusModal">
+                            Update Status
+                        </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="scheduleStatusModal" tabindex="-1" role="dialog" aria-labelledby="scheduleStatusModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header"> 
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h2 class="modal-title" id="scheduleStatusModalLabel">Client details</h2>
+                                        
+                                        </div>
+                                           <div class="modal-body">
+                                                <table class="table table-hover">
+                                                    <tr>
+                                                        <form role="form" id="scheduleDetails" action="<?php echo base_url() ?>schedule-update-status/<?php echo $scheduleInfo['id']?>" method="post" role="form">
+                                                        <th>Backup Status</th>
+                                                            <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
+                                                        <td> 
+                                                            <select class="form-control required" id="backupStatus" name="backupStatus" >
+                                                            <?php $selected = "selected";  ?>
+                                                            <option value="">Select Status</option>
+                                                            <option value="1" <?php if($scheduleInfo['status']==1){ echo $selected;  } ?>>Pending</option>
+                                                            <option value="2" <?php if($scheduleInfo['status']==2){ echo $selected;  } ?>>Inprogress</option>
+                                                            <option value="3" <?php if($scheduleInfo['status']==3){ echo $selected;  } ?>>Completed</option>
+                                                            <option value="4" <?php if($scheduleInfo['status']==4){ echo $selected;  } ?>>Failed</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                               
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary" id="backup_status" name="backup_status" >Submit</button>
+                                                </form>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>   
+                    </div>
+                </div><!-- /.box -->
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12">
-              <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">Client Details</h3>
-                    
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive">
-                  <table class="table table-hover">
-                  <?php
-                    if(!empty($scheduleInfo))
-                    {
-                      
-                    ?>
-                    <tr>
-                      <th>Name</th> <td><?php echo $scheduleInfo['ClientName'] ?></td>
-                    </tr>
-                    <?php
-                    }
-                    ?>
-                  </table>
-                </div><!-- /.box-body -->
-                <div class="box-footer clearfix">
+            <div class="col-xs-12 text-right">
+                <div class="form-group">
+                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
+                 <i class="fa fa-plus"></i> Add Comment
+                        </button>
                 </div>
-              </div><!-- /.box -->
             </div>
         </div>
-      
-         </div>
-         <div class="col-xs-4">
-            <div class="box">
-                <div class="box-body box-profile text-center">
-                <h3 class="box-title">Schedule details</h3>
-                <?php
-                    if(!empty($scheduleInfo))
-                    {
-                ?>
-                <table class="table table-hover">
-                    <tr>
-                        <th>Date</th><td><?php echo $scheduleInfo['date'] ?></td>
-                    </tr>
-                    <tr>
-                        <th>Schedule type</th><td><?php echo $scheduleInfo['scheduleType'] ?></td>
-                    </tr>
-                    <tr>
-                        <th>Status</th> <td><?php echo $scheduleInfo['ScheduleStatus'] ?></td>
-                    </tr>
-                </table>
-                <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleStatusModal">
-                        Update Status
-                    </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="scheduleStatusModal" tabindex="-1" role="dialog" aria-labelledby="scheduleStatusModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header"> 
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        <h2 class="modal-title" id="scheduleStatusModalLabel">Client details</h2>
-                                       
-                                    </div>
-                                    <div class="modal-body">
-                                    <form role="form" id="scheduleDetails" action="<?php echo base_url() ?>schedule-update-status/<?php echo $scheduleInfo['id'] ?>" method="post" role="form">
-                                    <table class="table table-hover">
-                                        <tr>
-                                            <th>Backup Status</th>
-                                            <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
-                                            <td> 
-                                                <select class="form-control required" id="backupStatus" name="backupStatus" >
-                                                    <?php $selected = "selected";  ?>
-                                                    <option value="">Select Status</option>
-                                                    <option value="1" <?php if($scheduleInfo['status']==1){ echo $selected;  } ?>>Pending</option>
-                                                    <option value="2" <?php if($scheduleInfo['status']==2){ echo $selected;  } ?>>Inprogress</option>
-                                                    <option value="3" <?php if($scheduleInfo['status']==3){ echo $selected;  } ?>>Completed</option>
-                                                    <option value="4" <?php if($scheduleInfo['status']==4){ echo $selected;  } ?>>Failed</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                  </table>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="submit" class="btn btn-primary" name="backup_status" >Submit</button>
-                                    </div>
-                                </form>
-                                </div>
-                            </div>
-                        </div>   
-                     </div>
-                  </div><!-- /.box -->
+          <!-- Modal -->
+            <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header"> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                                <h2 class="modal-title" id="addCommentModalLabel">Add comment</h2>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover">
+                                <tr>
+                                    <form role="form" id="addComment" action="<?php echo base_url() ?>file-upload" method="post" enctype="multipart/form-data" role="form">
+                                    <th>Backup Status</th>
+                                    <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
+                                    <input type="hidden" id="userId" name="userId" value="<?php echo $scheduleInfo['userId'] ?>" />
+                                    
+                                    <td> 
+                                        <input type="hidden" class="form-control required" id="statusId" name="statusId" value="<?php echo $scheduleInfo['status'] ?>" maxlength="128">
+                                        <?php
+                                            if($scheduleInfo['status']==1)
+                                            {
+                                                echo "Pending";
+                                            }
+                                            if($scheduleInfo['status']==2)
+                                            {
+                                                echo "Inprogress";
+                                            } 
+                                            if($scheduleInfo['status']==3)
+                                            {
+                                                echo "Completed";
+                                            } 
+                                            if($scheduleInfo['status']==4)
+                                            {
+                                                echo "Cancelled";
+                                            } 
+                                        ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Attachment</th>
+                                    <td>
+                                        <input type="file" class="form-control" id="attachment"  name="attachment" maxlength="128">
+                                   </td>
+                                </tr>
+                                <tr>
+                                    <th>Comment</th>
+                                    <td>
+                                        <textarea class="form-control" id="comment" name="comment"></textarea>
+                                   </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="add_comment" name="add_comment" >Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-      </div>
-                        
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Comments</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Attachment</th>
+                                <th>Comment</th>
+                            </tr>
+                            <?php
+                                if(!empty($commentInfo))
+                                {  
+                                    foreach($commentInfo AS $comments)
+                                    {
+
+                            ?>
+                            <tr>
+                                <td><?php echo date('d-m-Y H:i:s') ?></td>
+                                <td>
+                                    <?php 
+                                        if($comments->statusId==1)
+                                        {
+                                            echo "Pending";
+                                        }
+                                        if($comments->statusId==2)
+                                        {
+                                            echo "Inprogress";
+                                        } 
+                                        if($comments->statusId==3)
+                                        {
+                                            echo "Completed";
+                                        } 
+                                        if($comments->statusId==4)
+                                        {
+                                            echo "Cancelled";
+                                        } 
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php 
+                                        if($comments->file=='')
+                                        {
+                                            echo "No attachment";
+                                        } 
+                                        else
+                                        {
+                                    ?>
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attachmentModal">
+                                            View
+                                        </button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header"> 
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            <h2 class="modal-title" id="attachmentModalLabel">Attachments</h2>
+                                                        
+                                                        </div>
+                                                        <div class="modal-body">
+                                                                <table class="table table-hover">
+                                                                    <tr>
+                                                                       <td id="attachfiles">
+                                                                            <?php echo $comments->file ?>
+                                                                       </td> 
+                                                                    </tr>
+                                                                </table>
+                                                            
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        <?php } ?>
+                                                    </div>
+                                                </div>
+                                            </div>  
+                                </td>
+                                <td>
+                                <?php 
+                                    $str_length = strlen($comments->userComment);
+                                    if($str_length>30){
+                                    if(isset($_POST['read_more'])!='Read more')
+                                    { 
+                                    
+                                        echo substr("$comments->userComment",0,30),"..." ;
+                                    ?>
+
+                                    <form method=post>
+                                    <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
+                                    <form>
+                                    <?php
+                                        }
+                                        else
+                                        { 
+                                        echo $comments->userComment; 
+                                    }
+                                    }
+                                    else
+                                    { 
+                                        echo $comments->userComment; 
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            <?php
+                                }}
+                                else
+                                {
+                            ?>
+                            <tr class="danger">
+                                    <td colspan="4">No comments</td>
+                            </tr>
+                            <?php
+                                }
+                            ?>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <div class="box-footer clearfix">
+                    </div>
+                </div><!-- /.box -->
+            </div>
+        </div>
     </section>
 </div>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/common.js" charset="utf-8"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/ajaxfileupload.js" charset="utf-8"></script>
 <script type="text/javascript">
     jQuery(document).ready(function(){
         jQuery('ul.pagination li a').click(function (e) {
@@ -179,4 +358,48 @@
             jQuery("#searchList").submit();
         });
     });
+    $(function() {
+        $('#addComment').submit(function(e) {
+            e.preventDefault();
+            var hitUrl = "<?php echo base_url(); ?>file-upload";
+        
+            $.ajax({
+                type            : "POST",
+                url 			: hitUrl, 
+                secureuri		:false,
+                fileElementId	:'attachment',
+                dataType		: 'json',
+                data			: {
+                    'scheduleId'			: $('#scheduleId').val(),
+                    'userId'				: $('#userId').val(),
+                    'statusId'				: $('#statusId').val(),
+                    'comment'				: $('#comment').val()
+                },
+                success	: function (data,status)
+                {alert(data.msg);
+                    if(data.status != 'error')
+                    {
+                        $('#attachfiles').html('<p>Reloading files...</p>');
+                        refresh_files();
+                        $('#comment').val('');
+                    }
+                    alert(data.msg);
+                }
+            });
+            return false;
+        });
+    });
+    function refresh_files()
+    {
+        $.get(realpath(APPPATH . '../assets/files'))
+        .success(function (data){
+            $('#attachfiles').html(data);
+        });
+    }
+</script>
+<script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
+<script>
+  $(function() {
+    $('textarea').froalaEditor()
+  });
 </script>

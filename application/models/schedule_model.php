@@ -16,7 +16,7 @@ class Schedule_model extends CI_Model
       
         $this->db->where('BaseTbl.date', $date);
         $this->db->where('BaseTbl.userId', $userId);
-        $this->db->where('BaseTbl.status', 1);
+       // $this->db->where('BaseTbl.status', 1);
        
        // $this->db->where('BaseTbl.isDeleted', 0);
         //$this->db->where('BaseTbl.roleId !=', 1);
@@ -45,7 +45,7 @@ class Schedule_model extends CI_Model
       
         $this->db->where('BaseTbl.date', $date);
         $this->db->where('BaseTbl.userId', $userId);
-        $this->db->where('BaseTbl.status', 1);
+        //$this->db->where('BaseTbl.status', 1);
        
         $likeCriteria='';
         if( $search_data['serverIP']!=null) {
@@ -78,6 +78,41 @@ class Schedule_model extends CI_Model
         return $result;
     }
 
+    /**
+     * This function is used to get the clients information
+     * @return array $result : This is result of the query
+     */
+    function getClients()
+    {
+        $this->db->select('id, name');
+        $this->db->from('tbl_clients');
+        $this->db->where_not_in('isDeleted', [1]);
+        $this->db->where('status', 1);
+        $query = $this->db->get();
+        if(count($query)>0){
+            return $query->result_array();
+        }
+        return [];
+    }
+    /**
+     * This function is used to get the servers information by client id
+     * @return array $result : This is result of the query
+     */
+    function getServers()
+    {
+        $this->db->select(['id','name']);
+        $this->db->from('tbl_servers');
+        //$this->db->where('clientId', $clientId);
+        $this->db->where_not_in('isDeleted', [1]);
+        $this->db->where('status', 1);
+        $query = $this->db->get();
+        if(count($query)>0){
+            return $query->result_array();
+        }
+        return [];
+        
+    }
+
      /**
      * This function used to get schedule information by id
      * @param number $id : This is server id
@@ -102,6 +137,53 @@ class Schedule_model extends CI_Model
         
         return $query->row_array();
     }
+  /**
+     * This function used to get comment information by id
+     * @param number $id : This is server id
+     * @return array $result : This is schedule information
+     */
+    function getCommentInfo($scheduleId)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.userId, BaseTbl.statusId, BaseTbl.userComment,
+        Attach.filePath As file');
+        $this->db->from('tbl_backup_comments as BaseTbl');
+
+        $this->db->join('tbl_backup_attachments as Attach', 'Attach.commentId = BaseTbl.id','left');
+        
+        $this->db->where('BaseTbl.scheduleId', $scheduleId);
+        $query = $this->db->get();
+        $result = $query->result();    
+        
+        return $result;
+    }
+
+      /**
+     * This function is used to add new comment to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addComment($commentInfo,$attachmentInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_backup_comments', $commentInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+      
+        if(!$attachmentInfo==null && $insert_id >0)
+        {
+            $addAttachment = array('scheduleId'=>$attachmentInfo['scheduleId'],'commentId'=>$insert_id,
+            'filePath'=>$attachmentInfo['filePath'],'createdDtm'=>date('Y-m-d H:i:s'));
+            //print_r($addAttachment);die;
+            $this->db->trans_start();
+            $this->db->insert('tbl_backup_attachments', $addAttachment);
+            
+            $attachment_id = $this->db->insert_id();
+           
+        }
+        $this->db->trans_complete();
+        return $insert_id;
+    }
+    
     
     /**
      * This function is used to get the backups
@@ -243,38 +325,7 @@ class Schedule_model extends CI_Model
     
         return $query->result();
     }
-    /**
-     * This function is used to get the clients information
-     * @return array $result : This is result of the query
-     */
-    function getClients()
-    {
-        $this->db->select('id, name');
-        $this->db->from('tbl_clients');
-        $this->db->where('isDeleted !=', 1);
-        $this->db->where('status', 1);
-        $query = $this->db->get();
     
-        return $query->result();
-    }
-    /**
-     * This function is used to get the servers information by client id
-     * @return array $result : This is result of the query
-     */
-    function getServers($clientId)
-    {
-        $this->db->select(['id','name']);
-        $this->db->from('tbl_servers');
-        $this->db->where('clientId', $clientId);
-        $this->db->where_not_in('isDeleted', [1]);
-        $this->db->where('status', 1);
-        $query = $this->db->get();
-        if(count($query)>0){
-            return $query->result_array();
-        }
-        return [];
-        
-    }
      /**
      * This function is used to get the client information by id
      * @return array $result : This is result of the query
@@ -305,22 +356,7 @@ class Schedule_model extends CI_Model
     
         return $query->result();
     }
-    /**
-     * This function is used to add new server to system
-     * @return number $insert_id : This is last inserted id
-     */
-    function addBackup($backupInfo)
-    {
-        $this->db->trans_start();
-        $this->db->insert('tbl_backups', $backupInfo);
-        
-        $insert_id = $this->db->insert_id();
-        
-        $this->db->trans_complete();
-        
-        return $insert_id;
-    }
-    
+  
    
      
     /**

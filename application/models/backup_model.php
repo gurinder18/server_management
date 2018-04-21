@@ -7,7 +7,7 @@ class Backup_model extends CI_Model
     
      * @return number $count : This is row count
      */
-    function backupListingCount($search_data=null)
+    function backupListingCount( $page, $segment,$search_data=null)
     {
         $this->db->select('BaseTbl.id,BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId,
         BaseTbl.scheduleType, BaseTbl.scheduleTimings, BaseTbl.information');
@@ -28,10 +28,10 @@ class Backup_model extends CI_Model
        if($search_data['scheduleTimings']!=null){
             $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
         }
-       // $this->db->where('BaseTbl.isDeleted', 0);
+        $this->db->where('BaseTbl.isDeleted', 0);
         //$this->db->where('BaseTbl.roleId !=', 1);
+        $this->db->limit($page, $segment);
         $query = $this->db->get();
-        
         return count($query->result());
     }
     
@@ -43,7 +43,7 @@ class Backup_model extends CI_Model
      * @param number $segment : This is pagination limit
      * @return array $result : This is result
      */
-    function backups( $page, $segment,$search_data)
+    function backups( $page, $segment,$search_data=null)
     {
         $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
          BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,

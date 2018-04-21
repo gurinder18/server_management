@@ -55,7 +55,6 @@ class Backup extends BaseController
                 $data['users'] = $this->backup_model->getUsers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
                 //print_r($data);
-              
                
                 $this->loadViews("backups", $this->global, $data, NULL);
             }
@@ -86,8 +85,7 @@ class Backup extends BaseController
             
             $this->load->library('pagination');
             
-            $count = $this->backup_model->backupListingCount();
-
+            $count = $this->backup_model->backupListingCount(null,null,null);
             $returns = $this->paginationCompress ( "backups/", $count, 5 );
             if(isset($_GET['search_backup'])!='Submit')
             {
@@ -107,7 +105,7 @@ class Backup extends BaseController
                 $search_data['scheduleType'] = $this->input->get('scheduleType');
                 $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
 
-                $count = $this->backup_model->backupListingCount( $search_data);
+                $count = $this->backup_model->backupListingCount(null,null, $search_data);
                 $returns = $this->paginationCompress ( "backups/", $count, 5 );
                 $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],$search_data);
                 $data['clients'] = $this->backup_model->getClients();
