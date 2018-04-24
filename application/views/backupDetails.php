@@ -115,6 +115,35 @@
                     <tr>
                       <th>Schedule Timings</th> <td><?php echo $backupInfo['scheduleTimings'] ?></td>
                     </tr>
+                    <tr>
+                      <th>Details</th> 
+                      <td>
+                        <?php 
+                          $str_length = strlen($backupInfo['information']);
+                          if($str_length>30){
+                          if(isset($_POST['read_more_info'])!='Read more')
+                          { 
+                           
+                             echo substr($backupInfo['information'],0,30),"..." ;
+                        ?>
+
+                        <form method=post>
+                           <input type="submit" class="btn btn-xs" name='read_more_info' value="Read more" />
+                        <form>
+                        <?php
+                            }
+                            else
+                            { 
+                              echo $backupInfo['information']; 
+                           }
+                          }
+                          else
+                          { 
+                            echo $backupInfo['information']; 
+                          }
+                        ?>
+                      </td>
+                    </tr>
                     <?php
                         
                     }

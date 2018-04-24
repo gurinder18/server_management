@@ -89,8 +89,10 @@
                                             <option value="0">Deactive</option>
                                         </select>
                                     </div>
-                                </div>  
-                                <div class="col-md-6">
+                                </div> 
+                            </div>
+                            <div class="row"> 
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="details">Other Details</label>
                                        <textarea class="form-control" id="details" name="details"></textarea>

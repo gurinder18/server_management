@@ -68,7 +68,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="server">Server *</label>
-                                        <select class="form-control required" id="server" name="server" > 
+                                        <select class="form-control required" id="server" name="server[]" multiple="multiple" > 
                                             <option value="">Select server</option>
                                         </select>
                                     </div>
@@ -148,6 +148,8 @@
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 
+<link href="<?php echo base_url(); ?>assets/bootstrap/css/bootstrap-multiselect.css" rel="stylesheet" type="text/css">
+<script src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-multiselect.js" type="text/javascript"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()
@@ -183,16 +185,17 @@ $(document).on("change","#client",function(){
         var server_text = '';
         $.each(servers, function(i, item) {
             server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
-})
-$("#server").html(server_text);
-     
+        })
+        $("#server").html(server_text);
     }
-    
 	});
 });
-
-    function getServer(val) {
+function getServer(val) {
 	
 }
-   
+$(function () {
+    $('#server').multiselect({
+        includeSelectAllOption: true
+    });
+});
 </script>

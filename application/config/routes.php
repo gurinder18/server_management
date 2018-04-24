@@ -99,7 +99,13 @@ $route['add-comment/(:num)'] = "schedule/addComment/$1";
 
 $route['schedule-backups'] = 'backup/scheduleBackups';
 
-$route['file-upload'] = 'schedule/fileupload';
+$route['file-upload'] = 'schedule/addComment';
+
+/*********** BACKUP REPORT DEFINED ROUTES *******************/
+$route['backup-report'] = 'report/backupReport';
+$route['backup-report/(:num)'] = "report/backupReport/$1";
+
+$route['backups-report'] = "report/allBackupReport";
 
 
 //$route['paging-users'] = 'paging/custom';

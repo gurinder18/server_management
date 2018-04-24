@@ -12,23 +12,10 @@
         <?php if($role_slug=="sys.admin"){ ?>
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
-              <div class="small-box bg-aqua">
-                <div class="inner">
-                  <h3>150</h3>
-                  <p>New Tasks</p>
-                </div>
-                <div class="icon">
-                  <i class="ion ion-bag"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-              </div>
-            </div><!-- ./col -->
-            <div class="col-lg-3 col-xs-6">
-              <!-- small box -->
               <div class="small-box bg-green">
                 <div class="inner">
-                  <h3>53<sup style="font-size: 20px">%</sup></h3>
-                  <p>Completed Tasks</p>
+                  <h3><?php echo $todayBackupCount; ?></h3>
+                  <p>Todays Backups</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-stats-bars"></i>
@@ -38,25 +25,27 @@
             </div><!-- ./col -->
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
-              <div class="small-box bg-yellow">
+              <div class="small-box bg-red">
                 <div class="inner">
-                  <h3>44</h3>
-                  <p>New User</p>
+                  <h3><?php echo $pendingBackupCount; ?></h3>
+                  <p>Today's Pending Backups</p>
                 </div>
                 <div class="icon">
-                  <i class="ion ion-person-add"></i>
+                  <i class="ion ion-bag"></i>
                 </div>
-                <a href="<?php echo base_url(); ?>userListing" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-            </div><?php } ?><!-- ./col -->
+            </div><!-- ./col -->
+           
+         <?php } ?>
             <?php if($role_slug=="member"){ ?>
             <div class="col-lg-3 col-xs-6">
               <!-- small box -->
               <div class="small-box bg-red">
 
                 <div class="inner">
-                  <h3><?php echo $count; ?></h3>
-                  <p>Pending schedules</p>
+                  <h3><?php echo $pendingBackupCount; ?></h3>
+                  <p>Pending backups</p>
                 </div>
                 <div class="icon">
                   <i class="ion ion-pie-graph"></i>
@@ -66,4 +55,4 @@
             </div><?php } ?><!-- ./col -->
           </div>
     </section>
-</div>
+</div> 

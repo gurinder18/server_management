@@ -3,7 +3,7 @@
 require APPPATH . '/libraries/BaseController.php';
 
 /**
- * Class : Server (ServerController)
+ * Class : Backup (BackupController)
  * User Class to control all user related operations.
  * @author : Kishor Mali
  * @version : 1.1
@@ -22,7 +22,7 @@ class Backup extends BaseController
     }
   
     /**
-     * This function used to load the first screen of the server
+     * This function used to load the first screen of the backup
      */
     public function index()
     {
@@ -32,7 +32,7 @@ class Backup extends BaseController
     }
     
     /**
-     * This function is used to load the server list
+     * This function is used to load the backup list
      */
    
     function backups($limit = NULL)

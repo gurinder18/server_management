@@ -57,13 +57,13 @@
               <!-- User Account: style can be found in dropdown.less -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="<?php echo base_url(); ?>assets/dist/img/avatar.png" class="user-image" alt="User Image"/>
+                  <img src="<?php echo base_url(); ?>assets/dist/img/user.jpg" class="user-image" alt="User Image"/>
                   <span class="hidden-xs"><?php echo $name; ?></span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="<?php echo base_url(); ?>assets/dist/img/avatar.png" class="img-circle" alt="User Image" />
+                    <img src="<?php echo base_url(); ?>assets/dist/img/user.jpg" class="img-circle" alt="User Image" />
                     <p>
                       <?php echo $name; ?>
                       <small><?php echo $role_text; ?></small>
@@ -96,17 +96,9 @@
                 <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
               </a>
             </li>
-            
             <?php
-            if($role_slug == "sys.admin" || $role_slug == "member")
-            {
-            ?>
-            
-             
-            <?php
-            }
-            if($role_slug == "sys.admin")
-            {
+              if($role_slug == "sys.admin")
+              {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>users">
@@ -115,9 +107,9 @@
               </a>
             </li>
             <?php 
-            }
-            if($role_slug == "sys.admin" || $role_slug == "member")
-            {
+              }
+              if($role_slug == "sys.admin" || $role_slug == "member")
+              {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>servers">
@@ -126,9 +118,9 @@
               </a>
             </li>
             <?php 
-            }
-             if($role_slug == "sys.admin")
-             {
+              }
+              if($role_slug == "sys.admin")
+              {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>clients">
@@ -137,9 +129,9 @@
               </a>
             </li>
             <?php 
-             }
-            if($role_slug == "sys.admin" || $role_slug == "member")
-            {
+              }
+              if($role_slug == "sys.admin" || $role_slug == "member")
+              {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>backups">
@@ -148,9 +140,20 @@
               </a>
             </li>
             <?php
-            } 
-            if( $role_slug == "member")
-            {
+              }
+              if($role_slug == "sys.admin")
+              {
+            ?>
+            <li class="treeview">
+              <a href="<?php echo base_url(); ?>backup-report">
+                <i class="fa fa-th"></i>
+                <span>Report</span>
+              </a>
+            </li>
+            <?php
+              } 
+              if( $role_slug == "member")
+              {
             ?>
             <li class="treeview">
               <a href="<?php echo base_url(); ?>schedules">
@@ -159,7 +162,7 @@
               </a>
             </li>
             <?php
-            }
+             }
             ?>
           </ul>
         </section>

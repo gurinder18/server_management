@@ -5,7 +5,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-calendar-check-o"></i>Schedules Management
+        <i class="fa fa-calendar-check-o"></i>Backup Schedule Details
       </h1>
     </section>
     <section class="content">
@@ -96,14 +96,9 @@
                             </tr>
                         </table>
                         <!-- Button trigger modal -->
-                        <?php
-                            if($role_slug=="member")
-                            { 
-                        ?>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleStatusModal">
                             Update Status
                         </button>
-                            <?php } ?>
                             <!-- Modal -->
                             <div class="modal fade" id="scheduleStatusModal" tabindex="-1" role="dialog" aria-labelledby="scheduleStatusModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
@@ -151,14 +146,9 @@
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
-                <?php
-                    if($role_slug=="member")
-                    { 
-                ?>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
-                    <i class="fa fa-plus"></i> Add Comment
-                </button>
-                <?php } ?>
+                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
+                 <i class="fa fa-plus"></i> Add Comment
+                        </button>
                 </div>
             </div>
         </div>

@@ -144,7 +144,7 @@ class Schedule_model extends CI_Model
      */
     function getCommentInfo($scheduleId)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.userId, BaseTbl.statusId, BaseTbl.userComment,
+        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.userId, BaseTbl.statusId AS CommentStatus, BaseTbl.userComment,
         Attach.filePath As file');
         $this->db->from('tbl_backup_comments as BaseTbl');
 
@@ -372,75 +372,6 @@ class Schedule_model extends CI_Model
         return TRUE;
     }
     
-    
-    
-    /**
-     * This function is used to delete the server information
-     * @param number $id : This is server id
-     * @return boolean $result : TRUE / FALSE
-     */
-    function deleteBackup($id, $backupInfo)
-    {
-        $this->db->where('id', $id);
-        $this->db->update('tbl_backups', $backupInfo);
-    
-        return $this->db->affected_rows();
-    }
-     /**
-     * This function is used to check whether email id is already exist or not
-     * @param {string} $email : This is email id
-     * @param {number} $userId : This is user id
-     * @return {mixed} $result : This is searched result
-     */
-    function checkUserExists($username, $id = 0)
-    {
-        $this->db->select("username");
-        $this->db->from("tbl_servers");
-        $this->db->where("username", $username);   
-        $this->db->where("isDeleted", 0);
-        if($id != 0){
-            $this->db->where("id !=", $id);
-        }
-        $query = $this->db->get();
-
-        return $query->result();
-    }
-     /**
-     * This function is used to get the backup schedule information
-     */
-    function getBackups()
-    {
-        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
-        BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
-        Client.name As ClientName,Server.name As ServerName');
-        //$this->db->select('BaseTbl.*');
-       $this->db->from('tbl_backups as BaseTbl');
-       $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
-       $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
-       $this->db->join('tbl_servers as Server', 'Server.id = BaseTbl.serverId','left');
-
-       $this->db->where('BaseTbl.isDeleted', 0);
-      
-       $query = $this->db->get();
-       $result = $query->result();    
-       
-       return $result;
-    }
-     /**
-     * This function is used to get the add backup schedule information
-     */
-    function addBackupSchedule($scheduleInfo)
-    {
-        $this->db->trans_start();
-        $this->db->insert('tbl_backup_schedule', $scheduleInfo);
-        
-        $insert_id = $this->db->insert_id();
-        
-        $this->db->trans_complete();
-        
-        return $insert_id;
-    }
-
 }
 
   

@@ -159,11 +159,11 @@
     $(document).on("change","#scheduleType",function() {
         var val = $(this).val();
         if (val == "Daily") {
-            $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option><option value='Day'>Day</option><option value='Night'>Night</option>");
         } else if (val == "Weekly") {
-            $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option><option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
         } else if (val == "Monthly") {
-           var date =  ''; 
+           var date =  "<option value=''>Select schedule timings</option>"; 
             for (var i = 1; i <= 31; i++){
                 date += "<option value='"+i+"'>"+i+"</option>";
             }

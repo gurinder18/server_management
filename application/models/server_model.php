@@ -54,15 +54,18 @@ class Server_model extends CI_Model
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
 
         $this->db->where('BaseTbl.isDeleted', 0);
+        $likeCriteria = "";
         if( $search_data['server']!=null) {
             $likeCriteria = "( BaseTbl.server  LIKE '%".$search_data['server']."%')";
+            $this->db->where($likeCriteria);
                           
         }
         if($search_data['hostname']!=null ) {
             $likeCriteria = "(BaseTbl.hostname  LIKE '%".$search_data['hostname']."%' )";
+            $this->db->where($likeCriteria);
                           
         }
-        $this->db->where($likeCriteria);
+       
         if($search_data['name']!=null){
              $this->db->where('BaseTbl.name', $search_data['name']);
         }

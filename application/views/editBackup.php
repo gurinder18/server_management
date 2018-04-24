@@ -32,21 +32,20 @@
                                         <select class="form-control required" id="user" name="user" > 
                                             <option value="">Select User</option>
                                             <?php
-                                            
-                                            if(!empty($users))
-                                            {
-                                                foreach ($users as $us)
-                                                { 
-                                                    $sele = '';
-                                                    
-                                                    if($us->userId == $backupInfo['userId']) {
-                                                        $sele = 'selected';
-                                                    }   
-                                                    ?>
-                                                    <option value="<?php echo $us->userId ?>" <?php echo $sele; ?>><?php echo $us->name; ?></option>
-                                                    <?php
+                                                if(!empty($users))
+                                                {
+                                                    foreach ($users as $us)
+                                                    { 
+                                                        $sele = '';
+                                                        
+                                                        if($us->userId == $backupInfo['userId']) {
+                                                            $sele = 'selected';
+                                                        }   
+                                                        ?>
+                                                        <option value="<?php echo $us->userId ?>" <?php echo $sele; ?>><?php echo $us->name; ?></option>
+                                                        <?php
+                                                    }
                                                 }
-                                            }
                                             ?>
                                         </select>
                                     </div>
@@ -199,12 +198,7 @@ $(document).on("change","#client",function(){
         var server_text = '';
         $.each(servers, function(i, item) {
            
-          // var select = '';
-           // var serverId = <?php echo $backupInfo['serverId']; ?>;
-         //   if(servers[i].id==serverId){
-            //    select = 'selected';
-          //  }
-            server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
+        server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
 })
 $("#server").html(server_text);
      

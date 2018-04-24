@@ -135,8 +135,10 @@ if(!empty($clients))
                                         <option value="0" <?php if($status == '0') {echo "selected=selected";} ?>>Deactive</option>
                                     </select>
                                     </div>
-                                </div> 
-                                <div class="col-md-6">
+                                </div>
+                            </div>
+                            <div class="row"> 
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="details">Other Details</label>
                                         <textarea class="form-control" id="details" name="details"><?php echo $details; ?></textarea>

@@ -43,7 +43,19 @@
                                    foreach($servers as $ser)
                                     {
                                 ?>
-                                <option value="<?php echo $ser->name ?>"><?php echo $ser->name; ?></option>
+                                <option value="<?php echo $ser->name ?>" 
+                                <?php
+                                    if(!empty($serverRecords))
+                                    {
+                                        foreach($serverRecords as $rec)
+                                        {
+                                            if($rec->name==$ser->name)
+                                            {
+                                                echo "selected";
+                                            } 
+                                        } 
+                                    }
+                                ?>><?php echo $ser->name; ?></option>
                                 <?php
                                     }
                                 ?>
@@ -58,7 +70,7 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
+                                <option value="<?php echo $cl->id ?>" ><?php echo $cl->name ?></option>
                                 <?php
                                         }
                                     }
@@ -84,7 +96,6 @@
                         </form>
                     </tr>
                     <form role="form" id="deleteServer" action="<?php echo base_url() ?>deleteServer" method="post" role="form">
-                    
                     <?php
                     if(!empty($serverRecords))
                     {

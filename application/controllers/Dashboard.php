@@ -37,16 +37,13 @@ class Dashboard extends BaseController
    
     function dashboardSchedule()
     {
+        $current_date = date('d-m-Y');
         if($this->isMember() == TRUE)
         {
             $this->load->model('dashboard_model');
                 
-                $current_date = date('d-m-Y');
-                $data['count'] = $this->dashboard_model->scheduleCount( $current_date,$this->vendorId);
-               // $returns = $this->paginationCompress ( "backups/", $count, 5 );
-               // $data['backupRecords'] = $this->dashboard_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
-               // $data['clients'] = $this->dashboard_model->getClients();
-                //$data['users'] = $this->dashboard_model->getUsers();
+               
+                $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date,$this->vendorId);
                 $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
                 
                 $this->loadViews("dashboard", $this->global, $data, NULL);
@@ -54,9 +51,13 @@ class Dashboard extends BaseController
         elseif($this->isAdmin() == TRUE)
         {
             $this->load->model('dashboard_model');
+           
+            $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date); 
+            $data['todayBackupCount'] = $this->dashboard_model->todaysBackupCount( $current_date); 
+            //print_r($data);
+
             $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
-                
-            $this->loadViews("dashboard", $this->global, NULL, NULL);
+            $this->loadViews("dashboard", $this->global,  $data, NULL);
         }   
     }
     function backupDetails($id)
