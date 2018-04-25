@@ -3,6 +3,7 @@
 $userId = '';
 $name = '';
 $email = '';
+$password = '';
 $mobile = '';
 $roleId = '';
 $status = '';
@@ -14,6 +15,7 @@ if(!empty($userInfo))
         $userId = $uf->userId;
         $name = $uf->name;
         $email = $uf->email;
+        $password = $uf->password;
         $mobile = $uf->mobile;
         $roleId = $uf->roleId;
         $status = $uf->status;
@@ -65,7 +67,7 @@ if(!empty($userInfo))
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" maxlength="10">
+                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" minlength="4">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

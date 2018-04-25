@@ -45,16 +45,16 @@
                                 ?>
                                 <option value="<?php echo $ser->name ?>" 
                                 <?php
-                                    if(!empty($serverRecords))
+                                if(isset($_GET['search_server'])=='Submit')
+                                { 
+                                    if(!($_GET['name']) == NULL)
                                     {
-                                        foreach($serverRecords as $rec)
-                                        {
-                                            if($rec->name==$ser->name)
+                                            if($_GET['name']==$ser->name)
                                             {
                                                 echo "selected";
                                             } 
-                                        } 
                                     }
+                                }
                                 ?>><?php echo $ser->name; ?></option>
                                 <?php
                                     }
@@ -70,7 +70,19 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl->id ?>" ><?php echo $cl->name ?></option>
+                                <option value="<?php echo $cl->id ?>"
+                                <?php
+                                    if(isset($_GET['search_server'])=='Submit'){ 
+                                        if(!($_GET['client']) == NULL)
+                                        {
+                                                if($_GET['client']==$cl->id)
+                                                {
+                                                    echo "selected";
+                                                } 
+                                        }
+                                    }
+                                ?>
+                                 ><?php echo $cl->name ?></option>
                                 <?php
                                         }
                                     }
@@ -78,18 +90,55 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control required" id="server" name="server" maxlength="128" placeholder="Search Server IP">
+                            <input type="text" class="form-control required" id="server" name="server" maxlength="128" placeholder="Search Server IP"
+                            value="<?php
+                                if(isset($_GET['search_server'])=='Submit'){ 
+                                    if(!($_GET['server']) == NULL)
+                                    {
+                                            echo $_GET['server'];
+                                    }
+                                }
+                                ?>"
+                            >
                         </td>
                         <td>
-                            <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" placeholder="Search Hostname">
+                            <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" placeholder="Search Hostname"
+                            value="<?php
+                                if(isset($_GET['search_server'])=='Submit'){ 
+                                    if(!($_GET['hostname']) == NULL)
+                                    {
+                                            echo $_GET['hostname'];
+                                    }
+                                }
+                                ?>"
+                            >
                         </td>
                         <td>
                             <select class="form-control required" id="status" name="status" > 
                                 <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Deactive</option>
+                                <option value="1" 
+                                <?php
+                                if(isset($_GET['search_server'])=='Submit'){ 
+                                    if($_GET['status'] == 1)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Active</option>
+                                <option value="0" 
+                                <?php
+                                if(isset($_GET['search_server'])=='Submit'){ 
+                                    if($_GET['status'] == 0)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                 >Deactive</option>
                             </select>
                         </td>
+                        <?php  ?>
                         <td> 
                             <input type="submit" class="btn btn-primary" name='search_server' value="Submit" />
                         </td>

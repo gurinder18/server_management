@@ -6,11 +6,15 @@
       </h1>
     </section>
     <section class="content">
+        <div class="row pull-right">
+            <a href="<?php echo base_url() ?>export-excel">
+            <i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;Export Excel</a>
+        </div>
         <div class="row">
             <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Schedules List</h3>
+                    <h3 class="box-title">Report</h3>
                     
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
@@ -26,11 +30,31 @@
                       <th class="text-center">Actions</th>
                     </tr>
                     <tr>
+                    <?php 
+                        if(current_url() ==  base_url().'backup-report')
+                        { 
+                    ?>
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
+                    <?php 
+                        }else
+                        {
+                    ?>
+                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups-report" method="get" role="form">
+                    <?php } ?>
                         <td class="date_search">
                             <div class="form-group">
                                 <div class="date">
-                                    <input type="text" class="form-control datepicker" id="datepicker" name="fromDate">
+                                    <input type="text" class="form-control datepicker" id="datepicker" name="fromDate"
+                                    value="<?php
+                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        { 
+                                            if(!($_GET['fromDate']) == NULL)
+                                            {
+                                                    echo $_GET['fromDate'];
+                                            }
+                                        }
+                                     ?>"
+                                    >
                                 </div>
                                 <!-- /.input group -->
                             </div>
@@ -38,7 +62,17 @@
                         <td>
                             <div class="form-group">
                                 <div class="date">
-                                    <input type="text" class="form-control datepicker" id="datepicker" name="toDate">
+                                    <input type="text" class="form-control datepicker" id="datepicker" name="toDate"
+                                    value="<?php
+                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        { 
+                                            if(!($_GET['toDate']) == NULL)
+                                            {
+                                                    echo $_GET['toDate'];
+                                            }
+                                        }
+                                     ?>"
+                                    >
                                 </div>
                                 <!-- /.input group -->
                             </div>
@@ -52,7 +86,19 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl['id'] ?>"><?php echo $cl['name'] ?></option>
+                                <option value="<?php echo $cl['id'] ?>"
+                                <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if(!($_GET['client']) == NULL)
+                                        {
+                                                if($_GET['client']== $cl['id'])
+                                                {
+                                                    echo "selected";
+                                                } 
+                                        }
+                                    }
+                                ?>
+                                ><?php echo $cl['name'] ?></option>
                                 <?php
                                         }
                                     }
@@ -68,7 +114,20 @@
                                         foreach ($servers as $br)
                                         { 
                                 ?>
-                                <option value="<?php echo $br['id'] ?>"><?php echo $br['name'] ?></option>
+                                <option value="<?php echo $br['id'] ?>"
+                                <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                    { 
+                                        if(!($_GET['server']) == NULL)
+                                        {
+                                                if($_GET['server']==$br['id'])
+                                                {
+                                                    echo "selected";
+                                                } 
+                                        }
+                                    }
+                                ?>
+                                ><?php echo $br['name'] ?></option>
                                 <?php
                                         }
                                     }
@@ -84,7 +143,20 @@
                                         foreach ($users as $us)
                                         { 
                                 ?>
-                                <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                <option value="<?php echo $us->userId ?>"
+                                <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                    { 
+                                        if(!($_GET['user']) == NULL)
+                                        {
+                                                if($_GET['user']==$us->userId)
+                                                {
+                                                    echo "selected";
+                                                } 
+                                        }
+                                    }
+                                ?>
+                                ><?php echo $us->name ?></option>
                                 <?php
                                         }
                                     }
@@ -94,10 +166,46 @@
                         <td>
                             <select class="form-control " id="status" name="status" > 
                                 <option value="">Select Status</option>
-                                <option value="1">Pending</option>
-                                <option value="2">Inprogress</option>
-                                <option value="3">Completed</option>
-                                <option value="4">Failed</option>
+                                <option value="1"
+                                <?php
+                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if($_GET['status'] == 1)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Pending</option>
+                                <option value="2"
+                                <?php
+                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if($_GET['status'] == 2)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Inprogress</option>
+                                <option value="3"
+                                <?php
+                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if($_GET['status'] == 3)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Completed</option>
+                                <option value="4"
+                                <?php
+                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if($_GET['status'] == 4)
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Failed</option>
                             </select>
                         </td>
                         <?php if($role_slug=="sys.admin"){ ?>
@@ -116,7 +224,30 @@
                         foreach($scheduleRecords as $record)
                         { 
                     ?>
-                    <tr>
+                    <tr 
+                        <?php
+                            if($record->ScheduleStatus == "Pending")
+                            { 
+                        ?> class="danger"  
+                        <?php 
+                            }
+                            elseif($record->ScheduleStatus == "Inprogress")
+                            {
+                        ?> class="warning"  
+                        <?php 
+                            }
+                            elseif($record->ScheduleStatus == "Completed")
+                            {
+                        ?> class="success"  
+                        <?php       
+                            }
+                            elseif($record->ScheduleStatus == "Failed")
+                            {
+                        ?> class=""  
+                        <?php       
+                            }
+                        ?>
+                    >
                       <td colspan="2" align="center"><?php echo $record->date ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->ServerName ?></td>
@@ -146,16 +277,19 @@
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php 
-                       // if(!current_url() ==  (base_url().'backups-report/')){
+                        $cur_url = current_url();
+                        $url_all = base_url().'backups-report';
+
+                        if(!($cur_url == $url_all)){
                     ?>
                     <a href="<?php echo base_url(); ?>backups-report" >All</a>
                     <?php 
-                        //}
-                        //else{
-                           
-                            echo $this->pagination->create_links();
-                        //}
-                    
+                        }
+                        if($cur_url == $url_all){
+                    ?>
+                    <a href="<?php echo base_url(); ?>backup-report" >Back</a>
+                    <?php }
+                         echo $this->pagination->create_links();
                     ?>
                 </div>
               </div><!-- /.box -->
@@ -180,7 +314,14 @@
         if (val == "Daily") {
             $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
         } else if (val == "Weekly") {
-            $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+            $("#scheduleTimings").html("<option value='Sunday'>Sun</option>"+
+            "<option value='Monday'>Mon</option>"+
+            "<option value='Tuesday'>Tue</option>"+
+            "<option value='Wednesday'>Wed</option>"+
+            "<option value='Thursday'>Thur</option>"+
+            "<option value='Friday'>Fri</option>"+
+            "<option value='Saturday'>Sat</option>");
+         
         } else if (val == "Monthly") {
            var date =  ''; 
             for (var i = 1; i <= 31; i++){

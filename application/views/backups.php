@@ -47,7 +47,20 @@
                                         foreach ($users as $us)
                                         { 
                                 ?>
-                                <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                <option value="<?php echo $us->userId ?>"
+                                <?php
+                                if(isset($_GET['search_backup'])=='Submit')
+                                { 
+                                    if(!($_GET['user']) == NULL)
+                                    {
+                                            if($_GET['user']==$us->userId)
+                                            {
+                                                echo "selected";
+                                            } 
+                                    }
+                                }
+                                ?>
+                                ><?php echo $us->name ?></option>
                                 <?php
                                         }
                                     }
@@ -64,7 +77,20 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
+                                <option value="<?php echo $cl->id ?>"
+                                <?php
+                                if(isset($_GET['search_backup'])=='Submit')
+                                { 
+                                    if(!($_GET['client']) == NULL)
+                                    {
+                                            if($_GET['client']== $cl->id)
+                                            {
+                                                echo "selected";
+                                            } 
+                                    }
+                                }
+                                ?>
+                                ><?php echo $cl->name ?></option>
                                 <?php
                                         }
                                     }
@@ -74,19 +100,85 @@
                         <td>
                             <select class="form-control required" id="server" name="server" > 
                                 <option value="">Select server</option>
+                                <?php
+                                    if(!empty($backupRecords))
+                                    {
+                                        foreach ($backupRecords as $br)
+                                        { 
+                                ?>
+                                <option value="<?php echo $br->serverId ?>"
+                                <?php
+                                       if(isset($_GET['search_backup'])=='Submit')
+                                       { 
+                                           if(!($_GET['server']) == NULL)
+                                           {
+                                                   if($_GET['server']==$br->serverId)
+                                                   {
+                                                       echo "selected";
+                                                   } 
+                                           }
+                                       }
+                                   ?>
+                                   ><?php echo $br->ServerName ?></option>
+                                   <?php
+                                           }
+                                       }
+                                   ?>
                             </select>
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleType" name="scheduleType" > 
                                 <option value="">Select schedule type</option>
-                                <option value="Daily">Daily</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Monthly">Monthly</option>
+                                <option value="Daily" 
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['scheduleType'] =="Daily" )
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                >Daily</option>
+                                <option value="Weekly" 
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['scheduleType'] =="Weekly" )
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                >Weekly</option>
+                                <option value="Monthly" 
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['scheduleType'] =="Monthly" )
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                >Monthly</option>
                             </select>
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                                <option value="">Select schedule timings</option>
+                                <?php
+                                        if(isset($_GET['search_backup'])=='Submit')
+                                        { 
+                                            if(!empty($_GET['scheduleTimings'] ))
+                                            {
+                                                $timing = $_GET['scheduleTimings'];
+                                                foreach($backupRecords as $record)
+                                                {
+                                                    echo "<option value='$record->scheduleTimings'>$timing</option>";
+                                                }
+                                            }
+                                        }
+                                        else{ 
+                                            echo "<option value=''>Select schedule timings</option>";
+                                        }
+                                ?>
                             </select>
                         </td>
                         <td> 
@@ -159,9 +251,17 @@
     $(document).on("change","#scheduleType",function() {
         var val = $(this).val();
         if (val == "Daily") {
-            $("#scheduleTimings").html("<option value=''>Select schedule timings</option><option value='Day'>Day</option><option value='Night'>Night</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+            "<option value='Day'>Day</option><option value='Night'>Night</option>");
         } else if (val == "Weekly") {
-            $("#scheduleTimings").html("<option value=''>Select schedule timings</option><option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+                "<option value='Sunday'>Sunday</option>"+
+                "<option value='Monday'>Monday</option>"+
+                "<option value='Tuesday'>Tuesday</option>"+
+                "<option value='Wednesday'>Wednesday</option>"+
+                "<option value='Thursday'>Thursday</option>"+
+                "<option value='Friday'>Friday</option>"+
+                "<option value='Saturday'>Saturday</option>");
         } else if (val == "Monthly") {
            var date =  "<option value=''>Select schedule timings</option>"; 
             for (var i = 1; i <= 31; i++){
@@ -182,7 +282,7 @@ $(document).on("change","#client",function(){
 	success: function(data){
         var obj = JSON.parse(data);
         var servers = obj.servers;
-        var server_text = '';
+        var server_text = '<option value="">Select server</option>';
         $.each(servers, function(i, item) 
         {
             server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';      

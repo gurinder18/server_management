@@ -80,7 +80,7 @@ class User extends BaseController
             
             $this->form_validation->set_rules('name','Full Name','trim|required|max_length[128]|xss_clean');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            $this->form_validation->set_rules('password','Password','required|max_length[20]');
+            $this->form_validation->set_rules('password','Password','required|min_length[4]');
             $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
             $this->form_validation->set_rules('role','Role','trim|required|numeric');
             $this->form_validation->set_rules('mobile','Mobile Number','required|min_length[10]|xss_clean');
@@ -158,7 +158,7 @@ class User extends BaseController
            
             $this->form_validation->set_rules('name','Name','trim|required|max_length[128]|xss_clean');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[128]');
-            //$this->form_validation->set_rules('password','Password','required|max_length[20]');
+            $this->form_validation->set_rules('password','Password','required|min_length[4]');
            // $this->form_validation->set_rules('cpassword','Confirm Password','trim|required|matches[password]|max_length[20]');
             $this->form_validation->set_rules('role','Role','trim|required|numeric');
             $this->form_validation->set_rules('mobile','Mobile','required|min_length[10]|xss_clean');

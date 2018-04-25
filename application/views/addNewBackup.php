@@ -68,7 +68,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="server">Server *</label>
-                                        <select class="form-control required" id="server" name="server[]" multiple="multiple" > 
+                                        <select class="form-control required" id="server" name="server[]" multiple="muliple" > 
                                             <option value="">Select server</option>
                                         </select>
                                     </div>
@@ -159,11 +159,22 @@
     $(document).on("change","#scheduleType",function() {
         var val = $(this).val();
         if (val == "Daily") {
-            $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+            "<option value='Day'>Day</option>"+
+            "<option value='Night' >Night</option>");
         } else if (val == "Weekly") {
-            $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday'>Fri</option><option value='Saturday'>Sat</option>");
+            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+            "<option value='Sunday'>Sun</option>"+
+            "<option value='Monday' >Mon</option>"+
+            "<option value='Tuesday'>Tue</option>"+
+            "<option value='Wednesday'>Wed</option>"+
+            "<option value='Thursday' >Thur</option>"+
+            "<option value='Friday'>Fri</option>"+
+            "<option value='Saturday'>Sat</option>");
+           var a =  $( "#scheduleTimings option:selected" ).val();
+           
         } else if (val == "Monthly") {
-           var date =  ''; 
+           var date =  "<option value=''>Select schedule timings</option>"; 
             for (var i = 1; i <= 31; i++){
                 date += "<option value='"+i+"'>"+i+"</option>";
             }
@@ -187,15 +198,12 @@ $(document).on("change","#client",function(){
             server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
         })
         $("#server").html(server_text);
+        
+        $('#server').multiselect('dataprovider', server_text);
+         
     }
 	});
+    
 });
-function getServer(val) {
-	
-}
-$(function () {
-    $('#server').multiselect({
-        includeSelectAllOption: true
-    });
-});
+
 </script>

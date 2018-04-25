@@ -106,7 +106,8 @@ $route['backup-report'] = 'report/backupReport';
 $route['backup-report/(:num)'] = "report/backupReport/$1";
 
 $route['backups-report'] = "report/allBackupReport";
-
+$route['backups-report/(:num)'] = "report/allBackupReport/$1";
+$route['export-excel'] = "report/excel";
 
 //$route['paging-users'] = 'paging/custom';
 

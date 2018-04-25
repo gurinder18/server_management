@@ -40,13 +40,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control required" id="password"  name="password" maxlength="10">
+                                        <input type="password" class="form-control required" id="password"  name="password" minlength="4">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="cpassword">Confirm Password</label>
-                                        <input type="password" class="form-control required equalTo" id="cpassword" name="cpassword" maxlength="10">
+                                        <input type="password" class="form-control required equalTo" id="cpassword" name="cpassword" minlength="4">
                                     </div>
                                 </div>
                             </div>

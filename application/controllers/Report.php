@@ -17,9 +17,10 @@ class Report extends BaseController
     {
         parent::__construct();
         $this->load->model('report_model');
+        $this->load->library('excel');
         $this->isLoggedIn();   
     }
-  
+ 
     /**
      * This function used to load the first screen of the reports
      */
@@ -119,7 +120,7 @@ class Report extends BaseController
         }
     }
     /**
-     * This function is used to load the report list
+     * This function is used to load the all backup's report list
      */
    
     function allBackupReport($limit = NULL)
@@ -132,12 +133,12 @@ class Report extends BaseController
             $fromDate=date("Y-m-d", strtotime("-1 month"));
             $toDate=date('Y-m-d');
             $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
-            $returns = $this->paginationCompress ( "backup-report/", $count, 0 );
+            $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
 
             if(isset($_GET['search_BackupSchedule'])!='Submit')
             {
                 $count = $this->report_model->reportCount($returns["page"],$returns["segment"],null, $fromDate,$toDate);
-                $returns = $this->paginationCompress ( "backup-report/", $count, 0 );
+                $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
                 
                 $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
                 $data['clients'] = $this->report_model->getClients();
@@ -194,7 +195,7 @@ class Report extends BaseController
                 $search_data['status'] = $this->input->get('status');
                
                 $count = $this->report_model->reportCount($returns["page"], $returns["segment"],$search_data, null,null);
-                $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
+                $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
                 $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],$search_data, null,null);
                 $data['clients'] = $this->report_model->getClients();
                 $data['servers'] = $this->report_model->getServers();
@@ -360,6 +361,76 @@ class Report extends BaseController
         }
         //echo json_encode(array('status' => $status, 'msg' => $msg));
     }
+    public function excel()
+        {
+                    $this->excel->setActiveSheetIndex(0);
+                    //name the worksheet
+                    $this->excel->getActiveSheet()->setTitle('Countries');
+                    //set cell A1 content with some text
+                    $this->excel->getActiveSheet()->setCellValue('A1', 'Backup Report List');
+                    $this->excel->getActiveSheet()->setCellValue('A4', 'Date');
+
+                    $this->excel->getActiveSheet()->setCellValue('B4', 'Client');
+                    $this->excel->getActiveSheet()->setCellValue('C4', 'Server');
+                    $this->excel->getActiveSheet()->setCellValue('D4', 'User');
+                    $this->excel->getActiveSheet()->setCellValue('E4', 'Status');
+                    $this->excel->getActiveSheet()->setCellValue('F4', 'Day');
+                    //merge cell A1 until C1
+                    $this->excel->getActiveSheet()->mergeCells('A1:F1');
+                    //set aligment to center for that merged cell (A1 to C1)
+                    $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    //make the font become bold
+                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
+                    $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
+                    
+                    for($col = ord('A'); $col <= ord('F'); $col++){ //set column dimension $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(true);
+                        //change the font size
+                        $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
+                        $this->excel->getActiveSheet()->getStyle(chr($col))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    }
+                    //retrive contries table data
+                    $fromDate=date("Y-m-d", strtotime("-1 month"));
+                    $toDate=date('Y-m-d');
+                    $this->load->model('report_model');
+                    $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
+                    $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
+                
+                    $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
+                   // $data['clients'] = $this->report_model->getClients();
+                   // $data['servers'] = $this->report_model->getServers();
+                    //$data['users'] = $this->report_model->getUsers();
+              
+                   // $rs = $this->db->get('countries');
+                    $exceldata="";
+                    foreach ($data['scheduleRecords'] as $rows){
+                        foreach ($rows as $row){
+                            $exceldata[] = $row;
+                        }
+
+                    }
+                    
+                    //Fill data
+                    $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A4');
+                    $this->excel->getActiveSheet()->getStyle('A4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $this->excel->getActiveSheet()->getStyle('B4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $this->excel->getActiveSheet()->getStyle('C4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $this->excel->getActiveSheet()->getStyle('D4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    
+                    
+                    $filename='PHPExcelDemo.xls'; //save our workbook as this file name
+                    header('Content-Type: application/vnd.ms-excel'); //mime type
+                    header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+                    header('Cache-Control: max-age=0'); //no cache
+                    //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+                    //if you want to save it as .XLSX Excel 2007 format
+                    $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5'); 
+                    //force user to download the Excel file without writing it to server's HD
+                    $objWriter->save('php://output');
+        }
+    
 }
 
 ?>

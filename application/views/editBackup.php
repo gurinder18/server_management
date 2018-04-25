@@ -79,7 +79,17 @@
                                     <div class="form-group">
                                         <label for="server">Server *</label>
                                         <select class="form-control required" id="server" name="server" > 
-                                            <option value="">Select server</option>
+                                            <?php
+                                                if(isset($backupInfo['ServerName']))
+                                                {  
+                                                    $ser = $backupInfo['ServerName'];
+                                                    $serId = $backupInfo['serverId'];
+                                                    echo "<option value='$serId'>$ser</option>"; 
+                                                    
+                                                }else{ 
+                                                    echo "<option value=''>Select server</option>";
+                                                } 
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
@@ -103,7 +113,17 @@
                                     <div class="form-group">
                                         <label for="scheduleTimings">Schedule timings *</label>
                                         <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                                            <option value="">Select schedule timings</option>
+                                            
+                                            <?php
+                                                if(isset($backupInfo['scheduleTimings']))
+                                                {  $timing = $backupInfo['scheduleTimings'];
+                                                    echo "<option value='$timing'>$timing</option>"; 
+                                                    
+                                                }else{ 
+                                                    echo "<option value=''>Select schedule timings</option>";
+                                                } 
+                                            ?>
+
                                         </select>
                                     </div> 
                                 </div>
@@ -170,17 +190,28 @@
    $(document).on("change","#scheduleType",function(){
             var val = $(this).val();
             if (val == "Daily") {
-                $("#scheduleTimings").html("<option value='Day'>Day</option><option value='Night'>Night</option>");
+                $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+                "<option value='Day'>Day</option>"+
+                "<option value='Night' >Night</option>");
             } else if (val == "Weekly") {
-                $("#scheduleTimings").html("<option value='Sunday'>Sun</option><option value='Monday'>Mon</option><option value='Tuesday'>Tue</option><option value='Wednesday'>Wed</option><option value='Thursday'>Thur</option><option value='Friday' >Fri</option><option value='Saturday'>Sat</option>");
+                $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+                "<option value='Sunday'>Sun</option>"+
+                "<option value='Monday' >Mon</option>"+
+                "<option value='Tuesday'>Tue</option>"+
+                "<option value='Wednesday'>Wed</option>"+
+                "<option value='Thursday' >Thur</option>"+
+                "<option value='Friday'>Fri</option>"+
+                "<option value='Saturday'>Sat</option>");
+               var a =  $( "#scheduleTimings option:selected" ).val();
+               
             } else if (val == "Monthly") {
-               var date =  ''; 
+               var date =  "<option value=''>Select schedule timings</option>"; 
                 for (var i = 1; i <= 31; i++){
                     date += "<option value='"+i+"'>"+i+"</option>";
                 }
                 $("#scheduleTimings").html(date);
             } else if (val == "") {
-                $("#scheduleTimings").html("<option value=''>select schedule timings</option>");
+                $("#scheduleTimings").html("<option value=''>Select schedule timings</option>");
             }
       
     });
@@ -195,7 +226,7 @@ $(document).on("change","#client",function(){
 	success: function(data){
         var obj = JSON.parse(data);
         var servers = obj.servers;
-        var server_text = '';
+        var server_text = "<option value=''>Select server</option>";
         $.each(servers, function(i, item) {
            
         server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
