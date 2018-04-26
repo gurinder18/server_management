@@ -54,14 +54,14 @@ if(!empty($clientInfo))
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="name">Name</label>
+                                        <label for="name">Name *</label>
                                         <input type="text" class="form-control" id="name" placeholder="Name" name="name" value="<?php echo $name; ?>" maxlength="50">
                                         <input type="hidden" value="<?php echo $id; ?>" name="id" id="id" />    
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="phone">Phone Number</label>
+                                        <label for="phone">Phone Number *</label>
                                         <input type="text" class="form-control" id="phone" placeholder="Phone Number" name="phone" value="<?php echo $phone; ?>" maxlength="10">
                                     </div>
                                 </div>
@@ -69,13 +69,13 @@ if(!empty($clientInfo))
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email">Email address</label>
+                                        <label for="email">Email address *</label>
                                         <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" value="<?php echo $email; ?>" maxlength="100">
                                     </div>
                                 </div>
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="address">Address</label>
+                                        <label for="address">Address *</label>
                                         <input type="text" class="form-control" id="address" placeholder="Address" name="address" value="<?php echo $address; ?>" >  
                                     </div>
                                 </div>
@@ -83,13 +83,13 @@ if(!empty($clientInfo))
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="city">City</label>
+                                        <label for="city">City *</label>
                                         <input type="text" class="form-control" id="city" placeholder="City" name="city" value="<?php echo $city; ?>" maxlength="50">   
                                     </div>
                                 </div>
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="state">State</label>
+                                        <label for="state">State *</label>
                                         <input type="text" class="form-control" id="state" placeholder="State" name="state" value="<?php echo $state; ?>" maxlength="50">   
                                     </div>
                                 </div>
@@ -97,13 +97,13 @@ if(!empty($clientInfo))
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="zip">Zip</label>
+                                        <label for="zip">Zip *</label>
                                         <input type="text" class="form-control" id="zip" placeholder="zip" name="zip" value="<?php echo $zip; ?>" maxlength="50">   
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="status">Status</label>
+                                        <label for="status">Status *</label>
                                         <select class="form-control" id="status" name="status">
                                             <option value="">Select Role</option>
                                             <option value="1" <?php if($cf->status == 1) {echo "selected=selected";} ?>>Active</option>

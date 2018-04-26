@@ -25,14 +25,14 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="name">Full Name</label>
-                                        <input type="text" class="form-control required" id="name" name="name" maxlength="128">
+                                        <input type="text" class="form-control required" id="name" name="name"  value="<?php echo isset($_POST["name"]) ? $_POST["name"] : ''; ?>" maxlength="128">
+                                       
                                     </div>
-                                    
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="email">Email address</label>
-                                        <input type="text" class="form-control required email" id="email"  name="email" maxlength="128">
+                                        <input type="text" class="form-control required email" id="email"  name="email" maxlength="128"  value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="mobile">Mobile Number</label>
-                                        <input type="text" class="form-control required digits" id="mobile" name="mobile" maxlength="10">
+                                        <input type="text" class="form-control required digits" id="mobile" name="mobile" maxlength="10"  value="<?php echo isset($_POST["mobile"]) ? $_POST["mobile"] : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

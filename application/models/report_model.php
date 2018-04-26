@@ -99,7 +99,7 @@ class Report_model extends CI_Model
         }
         
         $this->db->limit($page, $segment);
-
+        $this->db->order_by("BaseTbl.createdAt", "asc");
         $query = $this->db->get();
         $result = $query->result();    
         //print_r( $this->db);

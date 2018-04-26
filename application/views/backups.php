@@ -58,7 +58,7 @@
                                                 echo "selected";
                                             } 
                                     }
-                                }
+                                } 
                                 ?>
                                 ><?php echo $us->name ?></option>
                                 <?php
@@ -163,6 +163,7 @@
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
+                                <option value=''>Select schedule timings</option>
                                 <?php
                                         if(isset($_GET['search_backup'])=='Submit')
                                         { 

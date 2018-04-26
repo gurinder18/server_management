@@ -119,7 +119,7 @@
                                 <option value="1" 
                                 <?php
                                 if(isset($_GET['search_server'])=='Submit'){ 
-                                    if($_GET['status'] == 1)
+                                    if($_GET['status'] == '1')
                                     {
                                         echo "selected";
                                     }
@@ -129,7 +129,7 @@
                                 <option value="0" 
                                 <?php
                                 if(isset($_GET['search_server'])=='Submit'){ 
-                                    if($_GET['status'] == 0)
+                                    if($_GET['status'] == '0')
                                     {
                                         echo "selected";
                                     }

@@ -110,7 +110,7 @@ if(!empty($userInfo))
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" name="edit_user" value="Submit" />
+                            <input type="submit" class="btn btn-primary" name="edit_user" value="Edit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
                         </div>
                     </form>

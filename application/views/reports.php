@@ -6,16 +6,15 @@
       </h1>
     </section>
     <section class="content">
-        <div class="row pull-right">
-            <a href="<?php echo base_url() ?>export-excel">
-            <i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;Export Excel</a>
-        </div>
         <div class="row">
             <div class="col-xs-12">
               <div class="box">
                 <div class="box-header">
                     <h3 class="box-title">Report</h3>
-                    
+                    <div class="pull-right">
+                        <a href="<?php echo base_url() ?>export-excel">
+                        <i class="glyphicon glyphicon-log-in"></i>&nbsp;&nbsp;Export Excel</a>
+                    </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">

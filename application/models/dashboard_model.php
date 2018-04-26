@@ -36,6 +36,7 @@ class Dashboard_model extends CI_Model
         $this->db->from('tbl_backup_schedule as BaseTbl');
        
         $this->db->where('BaseTbl.date', $date);
+      
         
         $query = $this->db->get();
         return count($query->result());

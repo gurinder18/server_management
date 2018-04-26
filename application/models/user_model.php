@@ -14,7 +14,7 @@ class User_model extends CI_Model
         $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
         
         $this->db->where('BaseTbl.isDeleted', 0);
-        $this->db->where('BaseTbl.roleId !=', 1);
+        //$this->db->where('BaseTbl.roleId !=', 1);
         $query = $this->db->get();
         
         return count($query->result());
@@ -103,13 +103,12 @@ class User_model extends CI_Model
         $this->db->select('userId, name, email,password, mobile, roleId,status');
         $this->db->from('tbl_users');
         $this->db->where('isDeleted', 0);
-		$this->db->where('roleId !=', 1);
+		//$this->db->where('roleId !=', 1);
         $this->db->where('userId', $userId);
         $query = $this->db->get();
         
         return $query->result();
     }
-    
     
     /**
      * This function is used to update the user information
@@ -124,8 +123,6 @@ class User_model extends CI_Model
         
         return TRUE;
     }
-    
-    
     
     /**
      * This function is used to delete the user information

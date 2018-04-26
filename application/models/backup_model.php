@@ -71,6 +71,7 @@ class Backup_model extends CI_Model
        if($search_data['scheduleTimings']!=null){
             $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
         }
+        $this->db->order_by("BaseTbl.createdDtm", "asc");
         $this->db->limit($page, $segment);
         
         $query = $this->db->get();
@@ -130,7 +131,7 @@ class Backup_model extends CI_Model
         $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
         BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
         Client.name As ClientName,Server.name As ServerName');
-        //$this->db->select('BaseTbl.*');
+      
        $this->db->from('tbl_backups as BaseTbl');
        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
@@ -151,13 +152,13 @@ class Backup_model extends CI_Model
         if($search_data['scheduleTimings']!=null){
                 $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
         }
-
-       $this->db->limit($page, $segment);
+        $this->db->order_by("BaseTbl.createdDtm", "asc");
+        $this->db->limit($page, $segment);
+            
+        $query = $this->db->get();
+        $result = $query->result();    
         
-       $query = $this->db->get();
-       $result = $query->result();    
-       
-       return $result;
+        return $result;
     }
    
 
@@ -290,8 +291,6 @@ class Backup_model extends CI_Model
         //print_r($this->db);die;
         return TRUE;
     }
-    
-    
     
     /**
      * This function is used to delete the server information

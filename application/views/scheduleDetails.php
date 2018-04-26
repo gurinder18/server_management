@@ -43,11 +43,11 @@
                                             if(isset($_POST['read_more'])!='Read more')
                                             { 
                                                 $details = $scheduleInfo['ServerDetails'];
-                                                echo substr("$details",0,30),"..." ;
+                                                echo substr($details,0,30),"..." ;
                                     ?>
                                     <form method=post>
                                         <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
-                                    <form>
+                                    </form>
                                     <?php
                                             }
                                             else
@@ -112,15 +112,17 @@
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
-                                            <h2 class="modal-title" id="scheduleStatusModalLabel">Client details</h2>
+                                            <h2 class="modal-title" id="scheduleStatusModalLabel">Update Backup Status</h2>
                                         
-                                        </div>
+                                        </div>     
                                            <div class="modal-body">
+                                           <form role="form" id="scheduleDetails" action="<?php echo base_url() ?>schedule-update-status/<?php echo $scheduleInfo['id']?>" method="post" role="form">
+                                         
                                                 <table class="table table-hover">
                                                     <tr>
-                                                        <form role="form" id="scheduleDetails" action="<?php echo base_url() ?>schedule-update-status/<?php echo $scheduleInfo['id']?>" method="post" role="form">
+                                                    
                                                         <th>Backup Status</th>
-                                                            <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
+                                                            <input type="hidden" id="status_scheduleId" name="status_scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
                                                         <td> 
                                                             <select class="form-control required" id="backupStatus" name="backupStatus" >
                                                             <?php $selected = "selected";  ?>
@@ -133,13 +135,13 @@
                                                         </td>
                                                     </tr>
                                                 </table>
-                                               
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary" id="backup_status" name="backup_status" >Submit</button>
+                                                <!--<input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit" />-->
+                                                <input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit">
                                                 </form>
-                                            </div>
+                                            </div> 
                                         <?php } ?>
                                     </div>
                                 </div>
@@ -230,8 +232,10 @@
                             <?php
                                 if(!empty($commentInfo))
                                 {  
+                                   // var_dump($commentInfo);
                                     foreach($commentInfo AS $comments)
                                     {
+                                      
 
                             ?>
                             <tr>
@@ -264,13 +268,15 @@
                                         } 
                                         else
                                         {
+                                            
+                                            $id = $comments->id; 
                                     ?>
                                         <!-- Button trigger modal -->
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attachmentModal">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attachmentModal<?php echo $id; ?>">
                                             View
                                         </button>
                                             <!-- Modal -->
-                                            <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+                                            <div class="modal fade" id="attachmentModal<?php echo $id; ?>" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header"> 
@@ -284,7 +290,8 @@
                                                                 <table class="table table-hover">
                                                                     <tr>
                                                                        <td id="attachfiles">
-                                                                            <?php echo $comments->file ?>
+                                                                      <?php  
+                                                                            echo  $comments->file; ?>
                                                                        </td> 
                                                                     </tr>
                                                                 </table>
@@ -337,7 +344,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                         </div>
-                                                        <?php } ?>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>  
@@ -345,6 +352,7 @@
                             </tr>
                             <?php
                                 }
+                            }
                                 else
                                 {
                             ?>
@@ -394,14 +402,13 @@
                 },
                 success	: function (data,status)
                 {
-                    alert(data.msg);
                     if(data.status != 'error')
                     {
                         $('#attachfiles').html('<p>Reloading files...</p>');
                         refresh_files();
                         $('#comment').val('');
                     }
-                    alert(data.msg);
+                   return false;
                 }
             });
             return false;
@@ -409,7 +416,7 @@
     });
     function refresh_files()
     {
-        $.get(realpath(APPPATH . '../assets/files'))
+        $.get(realpath(APPPATH .'../assets/files'))
         .success(function (data){
             $('#attachfiles').html(data);
         });

@@ -43,7 +43,7 @@ class Report extends BaseController
             $this->load->library('pagination');
            
             $fromDate=date("Y-m-d", strtotime("-1 month"));
-            $toDate=date('Y-m-d');
+            $toDate=date("Y-m-d", strtotime("+1 day"));
             $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
             $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
 
@@ -64,8 +64,11 @@ class Report extends BaseController
             elseif(isset($_GET['search_BackupSchedule'])=='Submit')
             {
                 // converting selected fromDate format(mm/dd/yyyy) into format(yyyy-mm-dd)
+                 // converting selected toDate format(mm/dd/yyyy) into format(yyyy-mm-dd)
+               
                 $from =  $this->input->get('fromDate');
-                if(!$from==null)
+                $to =  $this->input->get('toDate');
+                if($from!=null && $to!=null)
                 {
                     $from2[] = explode("/",$from);
                     foreach($from2 AS $fromDate)
@@ -76,16 +79,7 @@ class Report extends BaseController
                     }
                     $from4 = implode("-",$from3);
                     $search_data['fromDate'] =  $from4;
-                }
-                else
-                {
-                    $search_data['fromDate'] =  null;
-                }
-
-                // converting selected toDate format(mm/dd/yyyy) into format(yyyy-mm-dd)
-                $to =  $this->input->get('toDate');
-                if(!$from==null)
-                {
+                    
                     $to2[] = explode("/",$to);
                     foreach($to2 AS $t)
                     {
@@ -96,11 +90,16 @@ class Report extends BaseController
                     $to4 = implode("-",$to3);
                     $search_data['toDate'] = $to4;
                 }
-                else
+                elseif($from!=null || $to!=null)
                 {
+                    echo "<script>alert('Please select From-date and To-date');</script>";
+                    $search_data['fromDate'] =  null;
                     $search_data['toDate'] =  null;
+                }else{
+                    $search_data['fromDate'] =  null;
+                    $search_data['toDate'] =  null;
+                   
                 }
-
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['serverId'] = $this->input->get('server');
                 $search_data['userId'] = $this->input->get('user');
@@ -119,10 +118,10 @@ class Report extends BaseController
             }
         }
     }
+  
     /**
      * This function is used to load the all backup's report list
      */
-   
     function allBackupReport($limit = NULL)
     {
         $this->load->model('report_model');
@@ -368,48 +367,94 @@ class Report extends BaseController
                     $this->excel->getActiveSheet()->setTitle('Countries');
                     //set cell A1 content with some text
                     $this->excel->getActiveSheet()->setCellValue('A1', 'Backup Report List');
-                    $this->excel->getActiveSheet()->setCellValue('A4', 'Date');
+                    $this->excel->getActiveSheet()->setCellValue('A3', 'Date');
 
-                    $this->excel->getActiveSheet()->setCellValue('B4', 'Client');
-                    $this->excel->getActiveSheet()->setCellValue('C4', 'Server');
-                    $this->excel->getActiveSheet()->setCellValue('D4', 'User');
-                    $this->excel->getActiveSheet()->setCellValue('E4', 'Status');
-                    $this->excel->getActiveSheet()->setCellValue('F4', 'Day');
+                    $this->excel->getActiveSheet()->setCellValue('B3', 'User');
+                    $this->excel->getActiveSheet()->setCellValue('C3', 'Client');
+                    $this->excel->getActiveSheet()->setCellValue('D3', 'Server');
+                    $this->excel->getActiveSheet()->setCellValue('E3', 'Server IP');
+                    $this->excel->getActiveSheet()->setCellValue('F3', 'Hostname');
+                    $this->excel->getActiveSheet()->setCellValue('G3', 'Day');
+                    $this->excel->getActiveSheet()->setCellValue('H3', 'Status');
+                    
                     //merge cell A1 until C1
-                    $this->excel->getActiveSheet()->mergeCells('A1:F1');
+                    $this->excel->getActiveSheet()->mergeCells('A1:H1');
                     //set aligment to center for that merged cell (A1 to C1)
                     $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    //make the font become bold
-                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+                    //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);                    
                     $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
                     $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
                     
-                    for($col = ord('A'); $col <= ord('F'); $col++){ //set column dimension $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(true);
+                     //make the font become bold,change the font size
+                     $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setBold(true);                    
+                     $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setSize(14);
+                     $this->excel->getActiveSheet()->getStyle('A3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                      //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setBold(true);                    
+                    $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setSize(14);
+                    $this->excel->getActiveSheet()->getStyle('B3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                     //make the font become bold,change the font size
+                     $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setBold(true);                    
+                     $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setSize(14);
+                     $this->excel->getActiveSheet()->getStyle('C3')->getFill()->getStartColor()->setARGB('#333');
+                     
+                    //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setBold(true);                    
+                    $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setSize(14);
+                    $this->excel->getActiveSheet()->getStyle('D3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                    //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setBold(true);                    
+                    $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setSize(14);
+                    $this->excel->getActiveSheet()->getStyle('E3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                     //make the font become bold,change the font size
+                     $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setBold(true);                    
+                     $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setSize(14);
+                     $this->excel->getActiveSheet()->getStyle('F3')->getFill()->getStartColor()->setARGB('#333');
+                     
+                    //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setBold(true);                    
+                    $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setSize(14);
+                    $this->excel->getActiveSheet()->getStyle('G3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                    //make the font become bold,change the font size
+                    $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setBold(true);                    
+                    $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setSize(14);
+                    $this->excel->getActiveSheet()->getStyle('H3')->getFill()->getStartColor()->setARGB('#333');
+                    
+                    for($col = ord('A'); $col <= ord('H'); $col++){ //set column dimension $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(true);
                         //change the font size
                         $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
                         $this->excel->getActiveSheet()->getStyle(chr($col))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                     }
                     //retrive contries table data
-                    $fromDate=date("Y-m-d", strtotime("-1 month"));
-                    $toDate=date('Y-m-d');
-                    $this->load->model('report_model');
-                    $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
-                    $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
-                
-                    $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
-                   // $data['clients'] = $this->report_model->getClients();
-                   // $data['servers'] = $this->report_model->getServers();
-                    //$data['users'] = $this->report_model->getUsers();
-              
-                   // $rs = $this->db->get('countries');
-                    $exceldata="";
-                    foreach ($data['scheduleRecords'] as $rows){
-                        foreach ($rows as $row){
-                            $exceldata[] = $row;
-                        }
-
-                    }
                     
+                    $this->load->model('report_model');
+                
+                    $this->db->select('BaseTbl.date,User.name As UserName,Client.name As ClientName,
+                    Server.name As ServerName,Server.server As ServerIP, Server.hostname As ServerHostname,
+                    Backup.scheduleTimings As Day,Status.status As ScheduleStatus');
+
+                    $this->db->from('tbl_backup_schedule as BaseTbl');
+                
+                    $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+                    $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+                    $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+                    $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+                    $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
+
+                    $query = $this->db->get();
+                    
+                    $exceldata="";
+                    foreach ($query->result_array() as  $value)
+                    {
+                        $exceldata[] = $value;
+                    }
+                 
                     //Fill data
                     $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A4');
                     $this->excel->getActiveSheet()->getStyle('A4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -420,16 +465,18 @@ class Report extends BaseController
                     $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
                     
                     
-                    $filename='PHPExcelDemo.xls'; //save our workbook as this file name
+                    $filename='Backup_Report.xls'; //save our workbook as this file name
                     header('Content-Type: application/vnd.ms-excel'); //mime type
                     header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
                     header('Cache-Control: max-age=0'); //no cache
                     //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
                     //if you want to save it as .XLSX Excel 2007 format
                     $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5'); 
+                   //print_r( $objWriter);die;
                     //force user to download the Excel file without writing it to server's HD
                     $objWriter->save('php://output');
         }
+        
     
 }
 

@@ -359,8 +359,21 @@ $config['rewrite_short_tags'] = FALSE;
 | Comma-delimited, e.g. '10.0.1.200,10.0.1.201'
 |
 */
-$config['proxy_ips'] = '';
 
+
+/*
+$config['proxy_ips'] = '';
+// The mail sending protocol.
+$config['protocol'] = 'smtp';
+// SMTP Server Address for Gmail.
+$config['smtp_host'] = 'ssl://smtp.googlemail.com';
+// SMTP Port - the port that you is required
+$config['smtp_port'] = 465;
+// SMTP Username like. (abc@gmail.com)
+$config['smtp_user'] = $sender_email;
+// SMTP Password like (abc***##)
+$config['smtp_pass'] = $user_password;
+*/
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

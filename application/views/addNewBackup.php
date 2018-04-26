@@ -28,7 +28,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="user">Select User *</label>
-                                        <select class="form-control required" id="user" name="user" > 
+                                        <select class="form-control required" id="user" name="user" required> 
                                             <option value="">Select User</option>
                                             <?php
                                             if(!empty($users))
@@ -47,7 +47,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="client">Client *</label>
-                                        <select class="form-control required" id="client" name="client" > 
+                                        <select class="form-control required" id="client" name="client" required> 
                                             <option value="">Select Client</option>
                                             <?php
                                             if(!empty($clients))
@@ -68,7 +68,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="server">Server *</label>
-                                        <select class="form-control required" id="server" name="server[]" multiple="muliple" > 
+                                        <select class="form-control required" id="server" name="server[]" multiple="muliple" required > 
                                             <option value="">Select server</option>
                                         </select>
                                     </div>
@@ -76,7 +76,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="scheduleType">Schedule type *</label>
-                                        <select class="form-control required" id="scheduleType" name="scheduleType" > 
+                                        <select class="form-control required" id="scheduleType" name="scheduleType" required> 
                                             <option value="">Select schedule type</option>
                                             <option value="Daily">Daily</option>
                                             <option value="Weekly">Weekly</option>
@@ -89,7 +89,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="scheduleTimings">Schedule timings *</label>
-                                        <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
+                                        <select class="form-control required" id="scheduleTimings" name="scheduleTimings" required> 
                                             <option value="">Select schedule timings</option>
                                         </select>
                                     </div>
@@ -185,6 +185,7 @@
     });
 
 $(document).on("change","#client",function(){
+ 
     var val = $(this).val();
     $.ajax({
 	type: "POST",
@@ -193,14 +194,20 @@ $(document).on("change","#client",function(){
 	success: function(data){
         var obj = JSON.parse(data);
         var servers = obj.servers;
+       
         var server_text = '';
         $.each(servers, function(i, item) {
             server_text+='<option value="'+servers[i].id+'">'+servers[i].name+'</option>';
-        })
+           
+        }) 
+      
         $("#server").html(server_text);
-        
-        $('#server').multiselect('dataprovider', server_text);
-         
+        $("#server").select2({
+             multiple: true,
+             data : server_text
+             });
+        //$('#server').multiselect('dataprovider', server_text);
+        //$('#server').multiselect('refresh');
     }
 	});
     

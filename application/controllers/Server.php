@@ -39,12 +39,11 @@ class Server extends BaseController
    
     function serverListing()
     {
+        //$this->sendEmail('donotreply.testing.web@gmail.com', '', 'Tester', 'Test please ignore', 'Testbody');
         if($this->isMember() == TRUE)
         {
             $this->load->model('server_model');
         
-           
-            
             $this->load->library('pagination');
             
             $count = $this->server_model->membersServersCount($this->vendorId);
@@ -59,7 +58,6 @@ class Server extends BaseController
                
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 
-              
                 $this->loadViews("servers", $this->global, $data, NULL);
             }
             elseif(isset($_GET['search_server'])=='Submit')

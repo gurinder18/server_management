@@ -83,7 +83,7 @@ class Schedule extends BaseController
             $this->loadThis();
         }
         else
-        {
+        { 
             if($id == null)
             {
                 redirect('schedules');
@@ -94,7 +94,7 @@ class Schedule extends BaseController
             $scheduleId = $data['scheduleInfo'];
           
             $data['commentInfo'] = $this->schedule_model->getCommentInfo( $scheduleId['id']);
-           // print_r($data);
+            //var_dump($data['commentInfo']);
             $this->global['pageTitle'] = 'Orion eSolutions : Schedule Details';
          
             $this->loadViews("scheduleDetails", $this->global, $data, NULL);
@@ -107,14 +107,12 @@ class Schedule extends BaseController
      */
     function updateScheduleStatus($id = NULL)
     {
-        if($this->isMember() == FALSE )
+
+        if(isset($_POST['backup_status'])=='Submit')
         {
-            $this->loadThis();
-        }
-        elseif(isset($_POST['backup_status'])=='Submit'){
-                 $this->load->model('schedule_model');
+                $this->load->model('schedule_model');
                 $this->load->library('form_validation');
-				$id = $this->input->post('scheduleId');
+				$id = $this->input->post('status_scheduleId');
 				
 				$this->form_validation->set_rules('backupStatus','BackupStatus','trim|required|numeric');
 				
@@ -125,7 +123,7 @@ class Schedule extends BaseController
 				}
 				else
 				{
-                    $id = $this->input->post('scheduleId');
+                    $id = $this->input->post('status_scheduleId');
                     $status = $this->input->post('backupStatus');
                     
 					$scheduleInfo = array();
@@ -137,7 +135,8 @@ class Schedule extends BaseController
 					
 					if($result == true)
 					{
-						$this->session->set_flashdata('success', 'Schedule status updated successfully');
+                        $this->session->set_flashdata('success', 'Schedule status updated successfully');
+                      
 					}
 					else
 					{
@@ -148,7 +147,6 @@ class Schedule extends BaseController
 			}
     }
    
-    
     function getServers($clientId)
     {
         $data['servers'] = $this->backup_model->getServers($clientId);
@@ -169,6 +167,7 @@ class Schedule extends BaseController
          
         if ($status != "error")
         {
+           
             $path = realpath(APPPATH . '../assets/files');
             $config['upload_path'] = $path;
             $config['allowed_types'] = 'gif|jpg|png|doc|txt';
@@ -191,8 +190,10 @@ class Schedule extends BaseController
 
                 $commentInfo = array('scheduleId'=>$scheduleId,'userId'=>$this->vendorId,'statusId'=>$statusId,
                 'userComment'=>$comment,'createdDtm'=>date('Y-m-d H:i:s'));
-                if(!$data['file_name']=="")
+
+                if(!empty($_FILES['attachment']['name']))
                 {
+                    
                     $attachmentInfo = array('scheduleId'=>$scheduleId,'filePath'=>$data['file_name'],
                     'createdDtm'=>date('Y-m-d H:i:s'));
                
@@ -209,26 +210,36 @@ class Schedule extends BaseController
                         $msg = "Something went wrong when saving the file, please try again.";
                     }
                 }
-                else
-                {
-                    $file_id = $this->schedule_model->addComment($commentInfo, null);
-                    if($file_id>0)
-                    {
-                        $status = "success";
-                        $msg = "File successfully uploaded";
-                    }
-                    else
-                    {
-                        unlink($data['full_path']);
-                        $status = "error";
-                        $msg = "Something went wrong when saving the file, please try again.";
-                    }
-                }
+               
             }
             @unlink($_FILES[$file_element_name]);
         }
-        //echo json_encode(array('status' => $status, 'msg' => $msg));
+         if(empty($_FILES['attachment']['name']))
+        {
+           // die("hi");
+           $scheduleId = $this->input->post('scheduleId');
+           $statusId = $this->input->post('statusId');
+           $comment = $this->input->post('comment');
+
+           $commentInfo = array('scheduleId'=>$scheduleId,'userId'=>$this->vendorId,'statusId'=>$statusId,
+           'userComment'=>$comment,'createdDtm'=>date('Y-m-d H:i:s'));
+
+            $file_id = $this->schedule_model->addComment($commentInfo);
+            if($file_id>0)
+            {
+                $status = "success";
+                $msg = "File successfully uploaded";
+            }
+            else
+            {
+                unlink($data['full_path']);
+                $status = "error";
+                $msg = "Something went wrong when saving the file, please try again.";
+            }
+        }
+        redirect('schedule-details/'.$scheduleId);
+        //echo json_encode(array('status' => $status, 'msg' => $msg)); 
     }
 }
-
+ 
 ?>

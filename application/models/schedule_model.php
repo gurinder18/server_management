@@ -161,8 +161,9 @@ class Schedule_model extends CI_Model
      * This function is used to add new comment to system
      * @return number $insert_id : This is last inserted id
      */
-    function addComment($commentInfo,$attachmentInfo)
+    function addComment($commentInfo,$attachmentInfo=null)
     {
+        
         $this->db->trans_start();
         $this->db->insert('tbl_backup_comments', $commentInfo);
         
@@ -368,7 +369,7 @@ class Schedule_model extends CI_Model
     {
         $this->db->where('id', $id);
         $this->db->update('tbl_backup_schedule', $scheduleInfo);
-        //print_r($this->db);die;
+        //var_dump($this->db);die;
         return TRUE;
     }
     

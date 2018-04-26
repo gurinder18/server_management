@@ -30,6 +30,8 @@ class Server_model extends CI_Model
      */
     function serverListing($page=null, $segment=null)
     {
+       // $this->load->sendEmail('donotreply.testing.web@gmail.com', '', 'Tester', 'Test please ignore', 'Testbody');
+        //die('sms sent');
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
          BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
@@ -38,7 +40,7 @@ class Server_model extends CI_Model
        
         $this->db->where('BaseTbl.isDeleted', 0);
         $this->db->limit($page, $segment);
-        
+        $this->db->order_by("BaseTbl.createdDtm", "asc");
         $query = $this->db->get();
         $result = $query->result();    
         //print_r($result); die;    
@@ -54,6 +56,7 @@ class Server_model extends CI_Model
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
 
         $this->db->where('BaseTbl.isDeleted', 0);
+
         $likeCriteria = "";
         if( $search_data['server']!=null) {
             $likeCriteria = "( BaseTbl.server  LIKE '%".$search_data['server']."%')";
@@ -63,9 +66,7 @@ class Server_model extends CI_Model
         if($search_data['hostname']!=null ) {
             $likeCriteria = "(BaseTbl.hostname  LIKE '%".$search_data['hostname']."%' )";
             $this->db->where($likeCriteria);
-                          
         }
-       
         if($search_data['name']!=null){
              $this->db->where('BaseTbl.name', $search_data['name']);
         }
@@ -77,8 +78,9 @@ class Server_model extends CI_Model
              $this->db->where('BaseTbl.status', $search_data['status']);
          }
         $this->db->limit($page, $segment);
-        
+        $this->db->order_by("BaseTbl.createdDtm", "asc");
         $query = $this->db->get();
+       // var_dump($this->db);
         $result = $query->result();    
         return $result;
     }
@@ -131,13 +133,13 @@ class Server_model extends CI_Model
        if($search_data['clientId']!=null){
             $this->db->where('BaseTbl.clientId', $search_data['clientId']);
        }
-       if($search_data['server']!=null){
+      if($search_data['server']!=null){
            $this->db->where('BaseTbl.server', $search_data['server']);
        }
        if($search_data['hostname']!=null){
             $this->db->where('BaseTbl.hostname', $search_data['hostname']);
        }
-       if($search_data['status']!=null){
+      if($search_data['status']!=null){
             $this->db->where('BaseTbl.status', $search_data['status']);
         }
 
@@ -145,7 +147,7 @@ class Server_model extends CI_Model
        
        $query = $this->db->get();
        $result = $query->result();    
-       //print_r($query);
+      // print_r($this->db);
        return $result;
     }
     

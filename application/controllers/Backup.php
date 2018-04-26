@@ -182,11 +182,10 @@ class Backup extends BaseController
             $this->loadViews("addNewBackup", $this->global, $data, NULL);
         }
        elseif(isset($_POST['add_backup'])=='Submit'){
-			$this->load->library('form_validation');
+            $this->load->library('form_validation');
             
             $this->form_validation->set_rules('user','User','trim|required|numeric');
             $this->form_validation->set_rules('client','Client','trim|required|numeric');
-            $this->form_validation->set_rules('server','Server','trim|required|numeric');
             $this->form_validation->set_rules('scheduleType','ScheduleType','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('scheduleTimings','ScheduleTimings','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('information','Information','trim|xss_clean');
@@ -205,23 +204,24 @@ class Backup extends BaseController
                 $scheduleType = $this->input->post('scheduleType');
                 $scheduleTimings = $this->input->post('scheduleTimings');
                 $information = $this->input->post('information');
-                
-                $backupInfo = array('userId'=>$userId,'clientId'=>$clientId,'serverId'=>$serverId,
-                'scheduleType'=>$scheduleType,'scheduleTimings'=>$scheduleTimings,'information'=>$information,
-                'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                $this->load->model('backup_model');
-                $result = $this->backup_model->addBackup($backupInfo);
-                
-                if($result > 0)
+                foreach( $serverId as $ser)
                 {
-                    $this->session->set_flashdata('success', 'New schedule created successfully');
-                }
-                else
-                {
-                    $this->session->set_flashdata('error', 'Schedule creation failed');
-                }
-                
+                    $backupInfo = array('userId'=>$userId,'clientId'=>$clientId,'serverId'=>$ser,
+                    'scheduleType'=>$scheduleType,'scheduleTimings'=>$scheduleTimings,'information'=>$information,
+                    'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                    
+                    $this->load->model('backup_model');
+                    $result = $this->backup_model->addBackup($backupInfo);
+                    
+                    if($result > 0)
+                    {
+                        $this->session->set_flashdata('success', 'New schedule created successfully');
+                    }
+                    else
+                    {
+                        $this->session->set_flashdata('error', 'Schedule creation failed');
+                    }
+            }
                 redirect('backups');
             }
 		}else{}
@@ -249,7 +249,7 @@ class Backup extends BaseController
                 redirect('backups');
             }
            
-           
+            
             $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
             $data['clients'] = $this->backup_model->getClients();
             $data['users'] = $this->backup_model->getUsers();
