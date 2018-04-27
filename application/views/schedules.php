@@ -31,23 +31,52 @@
                             <select class="form-control required" id="server" name="server" > 
                                 <option value="">Select server</option>
                                 <?php
-                                    if(!empty($servers))
+                                   foreach($servers as $ser)
                                     {
-                                        foreach ($servers as $br)
-                                        { 
                                 ?>
-                                <option value="<?php echo $br['id'] ?>"><?php echo $br['name'] ?></option>
+                                <option value="<?php echo $ser['id'] ?>" 
                                 <?php
-                                        }
+                                if(isset($_GET['search_backup'])=='Search')
+                                { 
+                                    if(!($_GET['server']) == NULL)
+                                    {
+                                            if($_GET['server']==$ser['id'])
+                                            {
+                                                echo "selected";
+                                            } 
+                                    }
+                                }
+                                ?>><?php echo $ser['name']; ?></option>
+                                <?php
                                     }
                                 ?>
+
+                               
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control required" id="serverIP" name="serverIP" maxlength="128" placeholder="Search Server IP">
+                            <input type="text" class="form-control required" id="serverIP" name="serverIP" maxlength="128" placeholder="Search Server IP"
+                            value="<?php
+                                if(isset($_GET['search_backup'])=='Search'){ 
+                                    if(!($_GET['serverIP']) == NULL)
+                                    {
+                                            echo $_GET['serverIP'];
+                                    }
+                                }
+                                ?>"
+                            >
                         </td>
                         <td>
-                            <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" placeholder="Search Hostname">
+                            <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" placeholder="Search Hostname"
+                            value="<?php
+                                if(isset($_GET['search_backup'])=='Search'){ 
+                                    if(!($_GET['hostname']) == NULL)
+                                    {
+                                            echo $_GET['hostname'];
+                                    }
+                                }
+                                ?>"
+                            >
                         </td>
                         <td>
                             <select class="form-control required" id="client" name="client" > 
@@ -58,7 +87,19 @@
                                         foreach ($clients as $cl)
                                         { 
                                 ?>
-                                <option value="<?php echo $cl['id'] ?>"><?php echo $cl['name'] ?></option>
+                                <option value="<?php echo $cl['id'] ?>"
+                                <?php
+                                    if(isset($_GET['search_backup'])=='Search'){ 
+                                        if(!($_GET['client']) == NULL)
+                                        {
+                                                if($_GET['client']==$cl['id'])
+                                                {
+                                                    echo "selected";
+                                                } 
+                                        }
+                                    }
+                                ?>
+                                 ><?php echo $cl['name'] ?></option>
                                 <?php
                                         }
                                     }
@@ -68,11 +109,47 @@
                         <td>
                             <select class="form-control required" id="status" name="status" > 
                                 <option value="">Select Status</option>
-                                <option value="1">Pending</option>
-                                <option value="2">Inprogress</option>
-                                <option value="3">Completed</option>
-                                <option value="4">Failed</option>
-                            </select>
+                                <option value="1"
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['status'] == 1)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Pending</option>
+                                    <option value="2"
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['status'] == 2)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Inprogress</option>
+                                    <option value="3"
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['status'] == 3)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Completed</option>
+                                    <option value="4"
+                                    <?php
+                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                        if($_GET['status'] == 4)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Failed</option>
+                                </select>
                         </td>
                         <?php if($role_slug=="sys.admin"){ ?>
                         <td>
@@ -93,7 +170,7 @@
                         </td>
                         <?php } ?>
                         <td> 
-                            <input type="submit" class="btn btn-primary" name='search_backup' value="Submit" />
+                            <input type="submit" class="btn btn-primary" name='search_backup' value="Search" />
                         </td>
                         </form>
                     </tr>

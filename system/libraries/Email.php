@@ -2047,47 +2047,54 @@ class CI_Email {
 	 *
 	 * @return	string
 	 */
-	protected function _smtp_connect()
-	{
-		if (is_resource($this->_smtp_connect))
-		{
-			return TRUE;
-		}
+	 protected function _smtp_connect()
+    {
+        if (is_resource($this->_smtp_connect))
+        {
+            return TRUE;
+        }
 
-		$ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
+        $ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
 
-		$this->_smtp_connect = fsockopen($ssl.$this->smtp_host,
-							$this->smtp_port,
-							$errno,
-							$errstr,
-							$this->smtp_timeout);
+        $streamContext = stream_context_create([
+            'ssl' => [
+                'verify_peer'      => false,
+                'verify_peer_name' => false
+            ]
+        ]);
 
-		if ( ! is_resource($this->_smtp_connect))
-		{
-			$this->_set_error_message('lang:email_smtp_error', $errno.' '.$errstr);
-			return FALSE;
-		}
+        $this->_smtp_connect = stream_socket_client($ssl.$this->smtp_host.':'.$this->smtp_port,
+            $errno,
+            $errstr,
+            $this->smtp_timeout,
+            STREAM_CLIENT_CONNECT,
+            $streamContext);
 
-		stream_set_timeout($this->_smtp_connect, $this->smtp_timeout);
-		$this->_set_error_message($this->_get_smtp_data());
+        if ( ! is_resource($this->_smtp_connect))
+        {
+            $this->_set_error_message('lang:email_smtp_error', $errno.' '.$errstr);
+            return FALSE;
+        }
 
-		if ($this->smtp_crypto === 'tls')
-		{
-			$this->_send_command('hello');
-			$this->_send_command('starttls');
+        stream_set_timeout($this->_smtp_connect, $this->smtp_timeout);
+        $this->_set_error_message($this->_get_smtp_data());
 
-			$crypto = stream_socket_enable_crypto($this->_smtp_connect, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+        if ($this->smtp_crypto === 'tls')
+        {
+            $this->_send_command('hello');
+            $this->_send_command('starttls');
 
-			if ($crypto !== TRUE)
-			{
-				$this->_set_error_message('lang:email_smtp_error', $this->_get_smtp_data());
-				return FALSE;
-			}
-		}
+            $crypto = stream_socket_enable_crypto($this->_smtp_connect, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 
-		return $this->_send_command('hello');
-	}
+            if ($crypto !== TRUE)
+            {
+                $this->_set_error_message('lang:email_smtp_error', $this->_get_smtp_data());
+                return FALSE;
+            }
+        }
 
+        return $this->_send_command('hello');
+    } 
 	// --------------------------------------------------------------------
 
 	/**

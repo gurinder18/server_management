@@ -39,7 +39,15 @@ class Server extends BaseController
    
     function serverListing()
     {
-        //$this->sendEmail('donotreply.testing.web@gmail.com', '', 'Tester', 'Test please ignore', 'Testbody');
+        //$mail_status = $this->sendEmail('gurindertiwana18@gmail.com', 'Test Subject', 'Tester', 'Test please ignore', 'Testbody');
+       
+       // if( $mail_status == TRUE)
+       //{
+      //      echo "mail sent";
+      // }else{
+      //  echo "mail not sent";die();
+      // }
+       
         if($this->isMember() == TRUE)
         {
             $this->load->model('server_model');
@@ -50,7 +58,7 @@ class Server extends BaseController
            
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
 
-            if(isset($_GET['search_server'])!='Submit')
+            if(isset($_GET['search_server'])!='Search')
             {
                 $data['clients'] = $this->server_model->getClients();
                 $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
@@ -60,7 +68,7 @@ class Server extends BaseController
                 
                 $this->loadViews("servers", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_server'])=='Submit')
+            elseif(isset($_GET['search_server'])=='Search')
             {
                 $search_data['name'] = $this->input->get('name');
                 $search_data['clientId'] = $this->input->get('client');
@@ -91,7 +99,7 @@ class Server extends BaseController
             $count = $this->server_model->serverListingCount();
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
             
-            if(isset($_GET['search_server'])!='Submit')
+            if(isset($_GET['search_server'])!='Search')
             {
                 $data['clients'] = $this->server_model->getClients();
                 $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
@@ -100,7 +108,7 @@ class Server extends BaseController
                 //print_r($data);
                 $this->loadViews("servers", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_server'])=='Submit')
+            elseif(isset($_GET['search_server'])=='Search')
             {
                 $search_data['name'] = $this->input->get('name');
                 $search_data['clientId'] = $this->input->get('client');

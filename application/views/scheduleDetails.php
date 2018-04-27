@@ -36,28 +36,24 @@
                             <tr>
                                 <th>Details</th> 
                                 <td>
+                                <div style="display:block;" id="server_detail_less"> 
                                     <?php 
                                         $str_length = strlen($scheduleInfo['ServerDetails']);
                                         if($str_length>30)
                                         {
-                                            if(isset($_POST['read_more'])!='Read more')
-                                            { 
-                                                $details = $scheduleInfo['ServerDetails'];
-                                                echo substr($details,0,30),"..." ;
+                                        $details = $scheduleInfo['ServerDetails'];
+                                        echo substr($details,0,30),"..." ; 
                                     ?>
-                                    <form method=post>
-                                        <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
-                                    </form>
+                                    </div>
+                                    <div id="server_detail_more" style="display:none;">
+                                    <?php echo $scheduleInfo['ServerDetails'];   ?>
+                                    </div>
+                                    <button id="toggle_server">Read More</button>
                                     <?php
-                                            }
-                                            else
-                                            { 
-                                                echo $scheduleInfo['ServerDetails']; 
-                                            }
                                         }
                                         else
-                                        { 
-                                            echo $scheduleInfo['ServerDetails']; 
+                                        {
+                                        echo $scheduleInfo['ServerDetails'];
                                         }
                                     ?>
                                 </td>
@@ -138,8 +134,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <!--<input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit" />-->
-                                                <input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit">
+                                               <input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit">
                                                 </form>
                                             </div> 
                                         <?php } ?>
@@ -202,7 +197,7 @@
                                 <tr>
                                     <th>Comment</th>
                                     <td>
-                                        <textarea class="form-control" id="eg-basic" name="comment"></textarea>
+                                        <textarea class="form-control required" id="eg-basic" name="comment" required></textarea>
                                    </td>
                                 </tr>
                             </table>
@@ -312,18 +307,18 @@
                                     {
                                         echo substr("$comments->userComment",0,30),"..." ;
                                 ?>
-                                    <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#comment_detail">
+                                    <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#comment_detail<?php echo $comments->id; ?>">
                                             Read More
                                     </button>
                                     <?php
-                                    }
-                                    else
-                                    { 
-                                        echo $comments->userComment; 
-                                    }
+                                        }
+                                        else
+                                        { 
+                                            echo $comments->userComment; 
+                                        }
                                     ?>
                                             <!-- Modal -->
-                                            <div class="modal fade" id="comment_detail" tabindex="-1" role="dialog" aria-labelledby="comment_detailLabel" aria-hidden="true">
+                                            <div class="modal fade" id="comment_detail<?php echo $comments->id; ?>" tabindex="-1" role="dialog" aria-labelledby="comment_detailLabel" aria-hidden="true">
                                                 <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header"> 
@@ -424,5 +419,20 @@
 </script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
-  
+  $(document).ready(function() {
+    $("#toggle_server").click(function() {
+      var elem = $("#toggle_server").text();
+      if (elem == "Read More") {
+        //Stuff to do when btn is in the read more state
+        $("#toggle_server").text("Read Less");
+        $("#server_detail_less").hide();
+        $("#server_detail_more").slideDown();
+      } else {
+        //Stuff to do when btn is in the read less state
+        $("#toggle_server").text("Read More");
+        $("#server_detail_less").show();
+        $("#server_detail_more").slideUp();
+      }
+    });
+  });
 </script>

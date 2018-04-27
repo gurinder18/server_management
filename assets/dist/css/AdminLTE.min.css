@@ -21,6 +21,15 @@
 	min-height:50px;
 }
 #datepicker{
-	width:100px;
-	padding:5px;
+	width:70px;
+	padding:0px;
+	font-size:13px;
+}
+.date_search{
+	width:70px;
+	padding-left:8px!important;
+	padding-right:0px!important;
+}
+.date_search2{
+	width:180px;
 }

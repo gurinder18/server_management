@@ -49,7 +49,7 @@
                                 ?>
                                 <option value="<?php echo $us->userId ?>"
                                 <?php
-                                if(isset($_GET['search_backup'])=='Submit')
+                                if(isset($_GET['search_backup'])=='Search')
                                 { 
                                     if(!($_GET['user']) == NULL)
                                     {
@@ -79,7 +79,7 @@
                                 ?>
                                 <option value="<?php echo $cl->id ?>"
                                 <?php
-                                if(isset($_GET['search_backup'])=='Submit')
+                                if(isset($_GET['search_backup'])=='Search')
                                 { 
                                     if(!($_GET['client']) == NULL)
                                     {
@@ -108,7 +108,7 @@
                                 ?>
                                 <option value="<?php echo $br->serverId ?>"
                                 <?php
-                                       if(isset($_GET['search_backup'])=='Submit')
+                                       if(isset($_GET['search_backup'])=='Search')
                                        { 
                                            if(!($_GET['server']) == NULL)
                                            {
@@ -131,7 +131,7 @@
                                 <option value="">Select schedule type</option>
                                 <option value="Daily" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                    if(isset($_GET['search_backup'])=='Search'){ 
                                         if($_GET['scheduleType'] =="Daily" )
                                         {
                                             echo "selected";
@@ -141,7 +141,7 @@
                                 >Daily</option>
                                 <option value="Weekly" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                    if(isset($_GET['search_backup'])=='Search'){ 
                                         if($_GET['scheduleType'] =="Weekly" )
                                         {
                                             echo "selected";
@@ -151,7 +151,7 @@
                                 >Weekly</option>
                                 <option value="Monthly" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Submit'){ 
+                                    if(isset($_GET['search_backup'])=='Search'){ 
                                         if($_GET['scheduleType'] =="Monthly" )
                                         {
                                             echo "selected";
@@ -165,15 +165,15 @@
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
                                 <option value=''>Select schedule timings</option>
                                 <?php
-                                        if(isset($_GET['search_backup'])=='Submit')
+                                        if(isset($_GET['search_backup'])=='Search')
                                         { 
                                             if(!empty($_GET['scheduleTimings'] ))
                                             {
                                                 $timing = $_GET['scheduleTimings'];
                                                 foreach($backupRecords as $record)
                                                 {
-                                                    echo "<option value='$record->scheduleTimings'>$timing</option>";
                                                 }
+                                                    echo "<option value='$record->scheduleTimings'>$timing</option>";
                                             }
                                         }
                                         else{ 
@@ -183,7 +183,7 @@
                             </select>
                         </td>
                         <td> 
-                            <input type="submit" class="btn btn-primary" name='search_backup' value="Submit" />
+                            <input type="submit" class="btn btn-primary" name='search_backup' value="Search" />
                         </td>
                         </form>
                     </tr>

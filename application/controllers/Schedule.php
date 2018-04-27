@@ -46,7 +46,7 @@ class Schedule extends BaseController
             $count = $this->schedule_model->schedulesCount(null,null,null, $current_date,$this->vendorId);
             $returns = $this->paginationCompress ( "schedules/", $count, 5 );
 
-            if(isset($_GET['search_backup'])!='Submit')
+            if(isset($_GET['search_backup'])!='Search')
             {
                 $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],null, $current_date,$this->vendorId);
                 $returns = $this->paginationCompress ( "schedules/", $count, 5 );
@@ -57,7 +57,7 @@ class Schedule extends BaseController
                 
                 $this->loadViews("schedules", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_backup'])=='Submit')
+            elseif(isset($_GET['search_backup'])=='Search')
             {
                 $search_data['serverId'] = $this->input->get('server');
                 $search_data['serverIP'] = $this->input->get('serverIP');

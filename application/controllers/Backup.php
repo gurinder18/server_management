@@ -46,7 +46,7 @@ class Backup extends BaseController
             $count = $this->backup_model->memberbackupCount(null,null,$this->vendorId,null);
             $returns = $this->paginationCompress ( "backups/", $count, 5 );
 
-            if(isset($_GET['search_backup'])!='Submit')
+            if(isset($_GET['search_backup'])!='Search')
             {
                 $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId);
                 $returns = $this->paginationCompress ( "backups/", $count, 5 );
@@ -58,7 +58,7 @@ class Backup extends BaseController
                
                 $this->loadViews("backups", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_backup'])=='Submit')
+            elseif(isset($_GET['search_backup'])=='Search')
             {
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['clientId'] = $this->input->get('client');
@@ -87,7 +87,7 @@ class Backup extends BaseController
             
             $count = $this->backup_model->backupListingCount(null,null,null);
             $returns = $this->paginationCompress ( "backups/", $count, 5 );
-            if(isset($_GET['search_backup'])!='Submit')
+            if(isset($_GET['search_backup'])!='Search')
             {
                 $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],null);
                 $data['clients'] = $this->backup_model->getClients();
@@ -97,7 +97,7 @@ class Backup extends BaseController
                // $data["links"] = $this->pagination->create_links();
                 $this->loadViews("backups", $this->global, $data, NULL);
             }
-            elseif(isset($_GET['search_backup'])=='Submit')
+            elseif(isset($_GET['search_backup'])=='Search')
             {
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['clientId'] = $this->input->get('client');

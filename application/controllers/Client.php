@@ -87,7 +87,7 @@ class Client extends BaseController
             $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
             $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');
             $this->form_validation->set_rules('state','State','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|numeric');
+            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|required|numeric');
            
             if($this->form_validation->run() == FALSE)
@@ -180,7 +180,7 @@ class Client extends BaseController
             $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
             $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');
             $this->form_validation->set_rules('state','State','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|numeric');
+            $this->form_validation->set_rules('zip','Zip','trim|required|max_length[50]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|required|numeric');
             
             if($this->form_validation->run() == FALSE)

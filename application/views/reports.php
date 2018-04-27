@@ -17,262 +17,263 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
-                  <table class="table table-hover">
-                    <tr>
-                      <th>Date From</th>
-                      <th>Date To</th>
-                      <th>Client</th>
-                      <th>Server</th>
-                      <th>User</th>
-                      <th>Status</th>
-                      <th>Day</th>
-                      <th class="text-center">Actions</th>
-                    </tr>
-                    <tr>
-                    <?php 
-                        if(current_url() ==  base_url().'backup-report')
-                        { 
-                    ?>
-                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
-                    <?php 
-                        }else
-                        {
-                    ?>
-                    <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups-report" method="get" role="form">
-                    <?php } ?>
-                        <td class="date_search">
-                            <div class="form-group">
-                                <div class="date">
-                                    <input type="text" class="form-control datepicker" id="datepicker" name="fromDate"
-                                    value="<?php
-                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
-                                        { 
-                                            if(!($_GET['fromDate']) == NULL)
-                                            {
-                                                    echo $_GET['fromDate'];
-                                            }
-                                        }
-                                     ?>"
-                                    >
-                                </div>
-                                <!-- /.input group -->
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-group">
-                                <div class="date">
-                                    <input type="text" class="form-control datepicker" id="datepicker" name="toDate"
-                                    value="<?php
-                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
-                                        { 
-                                            if(!($_GET['toDate']) == NULL)
-                                            {
-                                                    echo $_GET['toDate'];
-                                            }
-                                        }
-                                     ?>"
-                                    >
-                                </div>
-                                <!-- /.input group -->
-                            </div>
-                        </td>
-                        <td>
-                            <select class="form-control " id="client" name="client" > 
-                                <option value="">Select Client</option>
-                                <?php
-                                    if(!empty($clients))
-                                    {
-                                        foreach ($clients as $cl)
-                                        { 
-                                ?>
-                                <option value="<?php echo $cl['id'] ?>"
-                                <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
-                                        if(!($_GET['client']) == NULL)
-                                        {
-                                                if($_GET['client']== $cl['id'])
-                                                {
-                                                    echo "selected";
-                                                } 
-                                        }
-                                    }
-                                ?>
-                                ><?php echo $cl['name'] ?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control " id="server" name="server" > 
-                                <option value="">Select server</option>
-                                <?php
-                                    if(!empty($servers))
-                                    {
-                                        foreach ($servers as $br)
-                                        { 
-                                ?>
-                                <option value="<?php echo $br['id'] ?>"
-                                <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit')
-                                    { 
-                                        if(!($_GET['server']) == NULL)
-                                        {
-                                                if($_GET['server']==$br['id'])
-                                                {
-                                                    echo "selected";
-                                                } 
-                                        }
-                                    }
-                                ?>
-                                ><?php echo $br['name'] ?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control " id="user" name="user" > 
-                                <option value="">Select User</option>
-                                <?php
-                                    if(!empty($users))
-                                    {
-                                        foreach ($users as $us)
-                                        { 
-                                ?>
-                                <option value="<?php echo $us->userId ?>"
-                                <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit')
-                                    { 
-                                        if(!($_GET['user']) == NULL)
-                                        {
-                                                if($_GET['user']==$us->userId)
-                                                {
-                                                    echo "selected";
-                                                } 
-                                        }
-                                    }
-                                ?>
-                                ><?php echo $us->name ?></option>
-                                <?php
-                                        }
-                                    }
-                                ?>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="form-control " id="status" name="status" > 
-                                <option value="">Select Status</option>
-                                <option value="1"
-                                <?php
-                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
-                                    if($_GET['status'] == 1)
-                                    {
-                                        echo "selected";
-                                    }
-                                }
-                                ?>
-                                >Pending</option>
-                                <option value="2"
-                                <?php
-                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
-                                    if($_GET['status'] == 2)
-                                    {
-                                        echo "selected";
-                                    }
-                                }
-                                ?>
-                                >Inprogress</option>
-                                <option value="3"
-                                <?php
-                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
-                                    if($_GET['status'] == 3)
-                                    {
-                                        echo "selected";
-                                    }
-                                }
-                                ?>
-                                >Completed</option>
-                                <option value="4"
-                                <?php
-                                if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
-                                    if($_GET['status'] == 4)
-                                    {
-                                        echo "selected";
-                                    }
-                                }
-                                ?>
-                                >Failed</option>
-                            </select>
-                        </td>
-                        <?php if($role_slug=="sys.admin"){ ?>
-                        <td>
-                            
-                        </td>
-                        <?php } ?>
-                        <td> 
-                            <input type="submit" class="btn btn-primary" name='search_BackupSchedule' value="Submit" />
-                        </td>
-                        </form>
-                    </tr>
-                    <?php
-                    if(!empty($scheduleRecords))
-                    {
-                        foreach($scheduleRecords as $record)
-                        { 
-                    ?>
-                    <tr 
-                        <?php
-                            if($record->ScheduleStatus == "Pending")
+                    <table class="table table-hover">
+                        <tr>
+                            <th colspan="2">From Date - To Date</th>
+                            <th>Client</th>
+                            <th>Server</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Day</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        <tr>
+                        <?php 
+                            if(current_url() ==  base_url().'backup-report')
                             { 
-                        ?> class="danger"  
-                        <?php 
-                            }
-                            elseif($record->ScheduleStatus == "Inprogress")
-                            {
-                        ?> class="warning"  
-                        <?php 
-                            }
-                            elseif($record->ScheduleStatus == "Completed")
-                            {
-                        ?> class="success"  
-                        <?php       
-                            }
-                            elseif($record->ScheduleStatus == "Failed")
-                            {
-                        ?> class=""  
-                        <?php       
-                            }
                         ?>
-                    >
-                      <td colspan="2" align="center"><?php echo $record->date ?></td>
-                      <td><?php echo $record->ClientName ?></td>
-                      <td><?php echo $record->ServerName ?></td>
-                      <td><?php echo $record->UserName ?></td>
-                      <td><?php echo $record->ScheduleStatus ?></td>
-                      <td><?php echo $record->Day ?></td>
-                      <td class="text-center">
-                          <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
-                      </td> 
-                    </tr>
-                    <?php
+                        <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
+                        <?php 
+                            }else
+                            {
+                        ?>
+                            <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups-report" method="get" role="form">
+                            <?php } ?>
+                            <td class="date_search">
+                                <div class="form-group">
+                                    <div class="date">
+                                        <input type="text" class="form-control datepicker" id="datepicker" name="fromDate"
+                                        value="<?php
+                                            if(isset($_GET['search_BackupSchedule'])=='Searchsearch')
+                                            { 
+                                                if(!($_GET['fromDate']) == NULL)
+                                                {
+                                                        echo $_GET['fromDate'];
+                                                }
+                                            }
+                                        ?>"
+                                        >
+                                    </div>
+                                    <!-- /.input group -->
+                                </div>
+                            </td>
+                            <td class="date_search">
+                                <div class="form-group">
+                                    <div class="date">
+                                        <input type="text" class="form-control datepicker" id="datepicker" name="toDate"
+                                        value="<?php
+                                            if(isset($_GET['search_BackupSchedule'])=='Search')
+                                            { 
+                                                if(!($_GET['toDate']) == NULL)
+                                                {
+                                                        echo $_GET['toDate'];
+                                                }
+                                            }
+                                        ?>"
+                                        >
+                                    </div>
+                                    <!-- /.input group -->
+                                </div>
+                            </td>
+                            <td>
+                                <select class="form-control " id="client" name="client" > 
+                                    <option value="">Select Client</option>
+                                    <?php
+                                        if(!empty($clients))
+                                        {
+                                            foreach ($clients as $cl)
+                                            { 
+                                    ?>
+                                    <option value="<?php echo $cl['id'] ?>"
+                                    <?php
+                                        if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                            if(!($_GET['client']) == NULL)
+                                            {
+                                                    if($_GET['client']== $cl['id'])
+                                                    {
+                                                        echo "selected";
+                                                    } 
+                                            }
+                                        }
+                                    ?>
+                                    ><?php echo $cl['name'] ?></option>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control " id="server" name="server" > 
+                                    <option value="">Select server</option>
+                                    <?php
+                                        if(!empty($servers))
+                                        {
+                                            foreach ($servers as $br)
+                                            { 
+                                    ?>
+                                    <option value="<?php echo $br['id'] ?>"
+                                    <?php
+                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        { 
+                                            if(!($_GET['server']) == NULL)
+                                            {
+                                                    if($_GET['server']==$br['id'])
+                                                    {
+                                                        echo "selected";
+                                                    } 
+                                            }
+                                        }
+                                    ?>
+                                    ><?php echo $br['name'] ?></option>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control " id="user" name="user" > 
+                                    <option value="">Select User</option>
+                                    <?php
+                                        if(!empty($users))
+                                        {
+                                            foreach ($users as $us)
+                                            { 
+                                    ?>
+                                    <option value="<?php echo $us->userId ?>"
+                                    <?php
+                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        { 
+                                            if(!($_GET['user']) == NULL)
+                                            {
+                                                    if($_GET['user']==$us->userId)
+                                                    {
+                                                        echo "selected";
+                                                    } 
+                                            }
+                                        }
+                                    ?>
+                                    ><?php echo $us->name ?></option>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control " id="status" name="status" > 
+                                    <option value="">Select Status</option>
+                                    <option value="1"
+                                    <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if($_GET['status'] == 1)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Pending</option>
+                                    <option value="2"
+                                    <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if($_GET['status'] == 2)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Inprogress</option>
+                                    <option value="3"
+                                    <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if($_GET['status'] == 3)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Completed</option>
+                                    <option value="4"
+                                    <?php
+                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if($_GET['status'] == 4)
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Failed</option>
+                                </select>
+                            </td>
+                            <?php if($role_slug=="sys.admin"){ ?>
+                            <td class="date_search2">
+                                
+                            </td>
+                            <?php } ?>
+                            <td> 
+                                <input type="submit" class="btn btn-primary" name='search_BackupSchedule' value="Search" />
+                            </td>
+                            </form>
+                        </tr>
+                    </table>
+                </div>
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <?php
+                        if(!empty($scheduleRecords))
+                        {
+                            foreach($scheduleRecords as $record)
+                            { 
+                        ?>
+                        <tr 
+                            <?php
+                                if($record->ScheduleStatus == "Pending")
+                                { 
+                            ?> class="danger"  
+                            <?php 
+                                }
+                                elseif($record->ScheduleStatus == "Inprogress")
+                                {
+                            ?> class="warning"  
+                            <?php 
+                                }
+                                elseif($record->ScheduleStatus == "Completed")
+                                {
+                            ?> class="success"  
+                            <?php       
+                                }
+                                elseif($record->ScheduleStatus == "Failed")
+                                {
+                            ?> class=""  
+                            <?php       
+                                }
+                            ?>
+                        >
+                            <td colspan="2" align="center"><?php echo $record->date ?></td>
+                            <td><?php echo $record->ClientName ?></td>
+                            <td><?php echo $record->ServerName ?></td>
+                            <td><?php echo $record->UserName ?></td>
+                            <td><?php echo $record->ScheduleStatus ?></td>
+                            <td><?php echo $record->Day ?></td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
+                            </td> 
+                        </tr>
+                        <?php
+                            }
+                            if($role_slug=="sys.admin"){ 
+                        ?>
+                        <tr>
+                        </tr>
+                        </form>
+                        <?php
+                        }}
+                        else{
+                            echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
                         }
-                       if($role_slug=="sys.admin"){ 
-                    ?>
-                    <tr>
-                        
-                    </tr>
-                    </form>
-                    <?php
-                    }}
-                    else{
-                        echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
-                    }
-                    
-                    ?>
-                  </table>
+                        ?>
+                    </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php 

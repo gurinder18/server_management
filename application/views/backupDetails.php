@@ -35,39 +35,35 @@
                       </tr>
                     <tr>
                     <?php if($role==1){ ?>
-                      <th>Username</th><td><?php echo $record->username ?></td>
+                      <th>Username</th><td><?php if($record->username ==""){ echo "N/A";}else{echo $record->username; } ?></td>
                       </tr>
                     <tr>
-                      <th>Password</th><td><?php echo $record->password ?></td>
+                      <th>Password</th><td><?php if($record->password ==""){ echo "N/A";}else{ echo $record->password; } ?></td>
                       </tr>
                     <?php } ?>
                     <tr>
                       <th>Details</th> 
                       <td>
-                        <?php 
-                          $str_length = strlen($record->details);
-                          if($str_length>30){
-                          if(isset($_POST['read_more'])!='Read more')
-                          { 
-                           
-                             echo substr("$record->details",0,30),"..." ;
-                        ?>
-
-                        <form method=post>
-                           <input type="submit" class="btn btn-xs" name='read_more' value="Read more" />
-                        <form>
-                        <?php
-                            }
-                            else
-                            { 
-                              echo $record->details; 
-                           }
-                          }
-                          else
-                          { 
-                            echo $record->details; 
-                          }
-                        ?>
+                        <div style="display:block;" id="server_detail_less"> 
+                          <?php 
+                            $str_length = strlen($record->details);
+                            if($str_length>30)
+                            {
+                              $details = $record->details;
+                              echo substr($details,0,30),"..." ; 
+                          ?>
+                        </div>
+                        <div id="server_detail_more" style="display:none;">
+                          <?php echo $record->details;   ?>
+                        </div>
+                          <button id="toggle_server">Read More</button>
+                          <?php
+                             }
+                             else
+                             {
+                               echo$record->details;
+                             }
+                          ?>
                       </td>
                     </tr>
                     <?php
@@ -118,30 +114,26 @@
                     <tr>
                       <th>Details</th> 
                       <td>
-                        <?php 
-                          $str_length = strlen($backupInfo['information']);
-                          if($str_length>30){
-                          if(isset($_POST['read_more_info'])!='Read more')
-                          { 
-                           
-                             echo substr($backupInfo['information'],0,30),"..." ;
-                        ?>
-
-                        <form method=post>
-                           <input type="submit" class="btn btn-xs" name='read_more_info' value="Read more" />
-                        <form>
-                        <?php
-                            }
-                            else
-                            { 
-                              echo $backupInfo['information']; 
-                           }
-                          }
-                          else
-                          { 
-                            echo $backupInfo['information']; 
-                          }
-                        ?>
+                        <div style="display:block;" id="backup_detail_less"> 
+                          <?php 
+                            $str_length = strlen($backupInfo['information']);
+                            if($str_length>30)
+                            {
+                              $details = $backupInfo['information'];
+                              echo substr($details,0,30),"..." ; 
+                          ?>
+                        </div>
+                        <div id="backup_detail_more" style="display:none;">
+                          <?php echo $backupInfo['information'];   ?>
+                        </div>
+                          <button id="toggle_backup">Read More</button>
+                          <?php
+                             }
+                             else
+                             {
+                               echo $backupInfo['information'];
+                             }
+                          ?>
                       </td>
                     </tr>
                     <?php
@@ -244,4 +236,38 @@
             jQuery("#searchList").submit();
         });
     });
+
+  $(document).ready(function() {
+    $("#toggle_server").click(function() {
+      var elem = $("#toggle_server").text();
+      if (elem == "Read More") {
+        //Stuff to do when btn is in the read more state
+        $("#toggle_server").text("Read Less");
+        $("#server_detail_less").hide();
+        $("#server_detail_more").slideDown();
+      } else {
+        //Stuff to do when btn is in the read less state
+        $("#toggle_server").text("Read More");
+        $("#server_detail_less").show();
+        $("#server_detail_more").slideUp();
+      }
+    });
+  });
+  $(document).ready(function() {
+    $("#toggle_backup").click(function() {
+      var elem = $("#toggle_backup").text();
+      if (elem == "Read More") {
+        //Stuff to do when btn is in the read more state
+        $("#toggle_backup").text("Read Less");
+        $("#backup_detail_less").hide();
+        $("#backup_detail_more").slideDown();
+      } else {
+        //Stuff to do when btn is in the read less state
+        $("#toggle_backup").text("Read More");
+        $("#backup_detail_less").show();
+        $("#backup_detail_more").slideUp();
+      }
+    });
+  });
 </script>
+
