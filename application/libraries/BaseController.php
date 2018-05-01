@@ -167,40 +167,4 @@ class BaseController extends CI_Controller {
 				"segment" => $segment
 		);
 	}
-
-	function sendEmail($to, $subject, $from_name, $from, $body){
-		
-		
-		// The mail sending protocol.
-		$config['protocol'] = 'smtp';
-		// SMTP Server Address for Gmail.
-		$config['smtp_host']='ssl://smtp.googlemail.com';
-		// SMTP Port - the port that you is required
-		$config['smtp_port'] = 465;
-		// SMTP Username like. (abc@gmail.com)
-		$config['smtp_user'] = 'gurinderjeetkaur01@gmail.com';
-		// SMTP Password like (abc***##)
-		$config['smtp_pass'] = 'redhat123';
-		
-		$config['smtp_crypto']      = 'ssl';
-
-		$config['mailtype'] = 'html';
-		//$config['charset'] = 'iso-8859-1';
-		$this->load->library('email',$config);
-		// Sender email address
-		$this->email->from('gurinderjeetkaur01@gmail.com', $from_name);
-		// Receiver email address.for single email
-		$this->email->to($to);
-		//send multiple email
-		
-		// Subject of email
-		$this->email->subject($subject);
-		// Message in email
-		$this->email->message($body);
-		
-		$this->email->send(); 
-		show_error($this->email->print_debugger());
-		// It returns boolean TRUE or FALSE based on success or failure
-		
-	}
 }

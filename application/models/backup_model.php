@@ -326,11 +326,12 @@ class Backup_model extends CI_Model
      /**
      * This function is used to get the backup schedule information
      */
-    function getBackups()
+    function getBackups( $timing)
     {
         $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
-        BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
-        Client.name As ClientName,Server.name As ServerName');
+        BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,User.email As UserEmail,
+        Client.name As ClientName,Server.name As ServerName,Server.server As ServerIP,
+        Server.hostname As ServerHostname');
         //$this->db->select('BaseTbl.*');
        $this->db->from('tbl_backups as BaseTbl');
        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -338,8 +339,12 @@ class Backup_model extends CI_Model
        $this->db->join('tbl_servers as Server', 'Server.id = BaseTbl.serverId','left');
 
        $this->db->where('BaseTbl.isDeleted', 0);
+       $this->db->where('BaseTbl.scheduleType', "Daily");
+       $this->db->or_where('BaseTbl.scheduleTimings', $timing['date']);
+       $this->db->or_where('BaseTbl.scheduleTimings',$timing['day']);
       
        $query = $this->db->get();
+      
        $result = $query->result();    
        
        return $result;
@@ -357,6 +362,48 @@ class Backup_model extends CI_Model
         $this->db->trans_complete();
         
         return $insert_id;
+    }
+    /**
+     * This function is used to get the todays backup schedule- users email
+     */
+    function getBackupsUserEmail($date)
+    {
+        $this->db->select('BaseTbl.id,User.email As UserEmail');
+       
+        $this->db->from('tbl_backup_schedule as BaseTbl');
+        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+       
+        $this->db->where('BaseTbl.date', $date);
+        $this->db->group_by('User.email');
+        $query = $this->db->get();
+       
+        $result = $query->result();    
+       
+        return $result;
+    }
+     /**
+     * This function is used to get the todays backup schedule- users email
+     */
+    function getTodaysBackup($data)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, 
+        User.name As UserName,User.email As UserEmail,Client.name As ClientName,
+        Server.name As ServerName,Server.server As ServerIP,
+        Server.hostname As ServerHostname');
+        //$this->db->select('BaseTbl.*');
+        $this->db->from('tbl_backup_schedule as BaseTbl');
+        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+        $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+        $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+ 
+        $this->db->where('BaseTbl.date', $data['date']);
+        $this->db->where('User.email', $data['email']);
+        $query = $this->db->get();
+       
+        $result = $query->result();    
+       
+        return $result;
     }
 
 }

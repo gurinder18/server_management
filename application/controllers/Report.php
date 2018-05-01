@@ -358,193 +358,187 @@ class Report extends BaseController
         //echo json_encode(array('status' => $status, 'msg' => $msg));
     }
     public function excel()
-        {
-                    //retrive backup report table data
+    {
+               //retrive backup report table data
                         
-                    $this->load->model('report_model');
-                    
-                    $this->db->select('BaseTbl.date,User.name As UserName,Client.name As ClientName,
-                    Server.name As ServerName,Server.server As ServerIP, Server.hostname As ServerHostname,
-                    Backup.scheduleTimings As Day,Status.status As ScheduleStatus');
-
-                    $this->db->from('tbl_backup_schedule as BaseTbl');
+                $this->load->model('report_model');
                 
-                    $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
-                    $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
-                    $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
-                    $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
-                    $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
+                $this->db->select('BaseTbl.date,User.name As UserName,Client.name As ClientName,
+                Server.name As ServerName,Server.server As ServerIP, Server.hostname As ServerHostname,
+                Backup.scheduleTimings As Day,Status.status As ScheduleStatus');
 
-                    $query = $this->db->get();
+                $this->db->from('tbl_backup_schedule as BaseTbl');
                 
-                    $exceldata="";
-                    foreach ($query->result_array() as  $value)
-                    {
-                        $exceldata[] = $value;
-                    }
-               
+                $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+                $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+                $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+                $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+                $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
 
-                    $this->excel->setActiveSheetIndex(0);
-                    //name the worksheet
-                    $this->excel->getActiveSheet()->setTitle('Countries');
-                    //set cell A1 content with some text
-                    $this->excel->getActiveSheet()->setCellValue('A1', 'Backup Report List');
-                    $this->excel->getActiveSheet()->setCellValue('A3', 'Date');
+                $query = $this->db->get();
+                
+                $exceldata="";
+                foreach ($query->result_array() as  $value)
+                {
+                    $exceldata[] = $value;
+                }
+                $this->excel->setActiveSheetIndex(0);
+                //name the worksheet
+                $this->excel->getActiveSheet()->setTitle('Countries');
+                //set cell A1 content with some text
+                $this->excel->getActiveSheet()->setCellValue('A1', 'Backup Report List');                    $this->excel->getActiveSheet()->setCellValue('A3', 'Date');
 
-                    $this->excel->getActiveSheet()->setCellValue('B3', 'User');
-                    $this->excel->getActiveSheet()->setCellValue('C3', 'Client');
-                    $this->excel->getActiveSheet()->setCellValue('D3', 'Server');
-                    $this->excel->getActiveSheet()->setCellValue('E3', 'Server IP');
-                    $this->excel->getActiveSheet()->setCellValue('F3', 'Hostname');
-                    $this->excel->getActiveSheet()->setCellValue('G3', 'Day');
-                    $this->excel->getActiveSheet()->setCellValue('H3', 'Status');
-                    
-                    //merge cell A1 until C1
-                    $this->excel->getActiveSheet()->mergeCells('A1:H1');
-                    //set aligment to center for that merged cell (A1 to C1)
-                    $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
-                    $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
-                     
+                $this->excel->getActiveSheet()->setCellValue('B3', 'User');
+                $this->excel->getActiveSheet()->setCellValue('C3', 'Client');
+                $this->excel->getActiveSheet()->setCellValue('D3', 'Server');
+                $this->excel->getActiveSheet()->setCellValue('E3', 'Server IP');
+                $this->excel->getActiveSheet()->setCellValue('F3', 'Hostname');
+                $this->excel->getActiveSheet()->setCellValue('G3', 'Day');
+                $this->excel->getActiveSheet()->setCellValue('H3', 'Status');
+                
+                //merge cell A1 until C1
+                $this->excel->getActiveSheet()->mergeCells('A1:H1');
+                //set aligment to center for that merged cell (A1 to C1)
+                $this->excel->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('A1')->getFont()->setSize(16);
+                $this->excel->getActiveSheet()->getStyle('A1')->getFill()->getStartColor()->setARGB('#333');
                    
-                    $style_pending = array();
-                    $style_inprogress = array();
-                    $style_completed = array();
-                    $style_failed = array();
+                $style_pending = array();
+                $style_inprogress = array();
+                $style_completed = array();
+                $style_failed = array();
                    
-                        $style_pending = array(
-                            'fill' => array(
-                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                'color' => array('rgb'=>'FF6666'),
-                            ),
-                            'font' => array(
-                                'bold' => true,
-                                'size' => 12,
-                            )
-                        );
-                        $style_inprogress = array(
-                            'fill' => array(
-                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                'color' => array('rgb'=>'FFFF99'),
-                            ),
-                            'font' => array(
-                                'bold' => true,
-                                'size' => 12,
-                            )
-                        );
-                        $style_completed = array(
-                            'fill' => array(
-                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                'color' => array('rgb'=>'66FF66'),
-                            ),
-                            'font' => array(
-                                'bold' => true,
-                                'size' => 12,
-                            )
-                        );
-                        $style_failed = array(
-                            'fill' => array(
-                                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                                'color' => array('rgb'=>'FF0000'),
-                            ),
-                            'font' => array(
-                                'bold' => true,
-                                'size' => 12,
-                            )
-                        );
+                $style_pending = array(
+                    'fill' => array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array('rgb'=>'FF6666'),
+                    ),
+                    'font' => array(
+                        'bold' => true,
+                        'size' => 12,
+                    )
+                );
+                $style_inprogress = array(
+                    'fill' => array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array('rgb'=>'FFFF99'),
+                    ),
+                    'font' => array(
+                        'bold' => true,
+                        'size' => 12,
+                     )
+                );
+                $style_completed = array(
+                    'fill' => array(
+                       'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                       'color' => array('rgb'=>'66FF66'),
+                    ),
+                    'font' => array(
+                       'bold' => true,
+                            'size' => 12,
+                    )
+                );
+                $style_failed = array(
+                    'fill' => array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array('rgb'=>'FF0000'),
+                    ),
+                    'font' => array(
+                        'bold' => true,
+                        'size' => 12,
+                    )
+                );
                     
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('A3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('A3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('A3')->getFill()->getStartColor()->setARGB('#333');
                     
-                      //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('B3')->getFill()->getStartColor()->setARGB('#333');
+               //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('B3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('B3')->getFill()->getStartColor()->setARGB('#333');
                     
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('C3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('C3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('C3')->getFill()->getStartColor()->setARGB('#333');
                      
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('D3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('D3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('D3')->getFill()->getStartColor()->setARGB('#333');
                     
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('E3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('E3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('E3')->getFill()->getStartColor()->setARGB('#333');
                     
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('F3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('F3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('F3')->getFill()->getStartColor()->setARGB('#333');
                      
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('G3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('G3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('G3')->getFill()->getStartColor()->setARGB('#333');
                     
-                    //make the font become bold,change the font size
-                    $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setBold(true);                    
-                    $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setSize(14);
-                    $this->excel->getActiveSheet()->getStyle('H3')->getFill()->getStartColor()->setARGB('#333');
+                //make the font become bold,change the font size
+                $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setBold(true);                    
+                $this->excel->getActiveSheet()->getStyle('H3')->getFont()->setSize(14);
+                $this->excel->getActiveSheet()->getStyle('H3')->getFill()->getStartColor()->setARGB('#333');
                   
-                    for($col = ord('A'); $col <= ord('H'); $col++){ //set column dimension $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(true);
-                        //change the font size
-                        $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
-                        $this->excel->getActiveSheet()->getStyle(chr($col))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    }
+                for($col = ord('A'); $col <= ord('H'); $col++){ //set column dimension $this->excel->getActiveSheet()->getColumnDimension(chr($col))->setAutoSize(true);
+                    //change the font size
+                    $this->excel->getActiveSheet()->getStyle(chr($col))->getFont()->setSize(12);
+                    $this->excel->getActiveSheet()->getStyle(chr($col))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                }
                   
-                    //Fill data
-                    $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A4');
-                    $this->excel->getActiveSheet()->getStyle('A4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    $this->excel->getActiveSheet()->getStyle('B4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    $this->excel->getActiveSheet()->getStyle('C4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    $this->excel->getActiveSheet()->getStyle('D4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                    $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                //Fill data
+                $this->excel->getActiveSheet()->fromArray($exceldata, null, 'A4');
+                $this->excel->getActiveSheet()->getStyle('A4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $this->excel->getActiveSheet()->getStyle('B4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $this->excel->getActiveSheet()->getStyle('C4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $this->excel->getActiveSheet()->getStyle('D4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $this->excel->getActiveSheet()->getStyle('E4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $this->excel->getActiveSheet()->getStyle('F4')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
              
-                        $column = 'H';
-                        $coll = 'A';
-                        $last_row =count($exceldata)+4;
+                $column = 'H';
+                $coll = 'A';
+                $last_row =count($exceldata)+4;
                         
-                        for ($row = 1; $row <= $last_row; $row++) 
-                        {
-                            if($this->excel->getActiveSheet()->getCell($column.$row)=='Pending')
-                            {
-                                $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_pending );
-                            }
-                            elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Inprogress')
-                            {
-                                $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_inprogress );
-                            }
-                            elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Completed')
-                            {
-                                $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_completed );
-                            }
-                            elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Failed')
-                            {
-                                $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_failed );
-                            }
-                           
-                        }
+                for ($row = 1; $row <= $last_row; $row++) 
+                {
+                    if($this->excel->getActiveSheet()->getCell($column.$row)=='Pending')
+                    {
+                        $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_pending );
+                    }
+                    elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Inprogress')
+                    {
+                        $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_inprogress );
+                    }
+                    elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Completed')
+                    {
+                        $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_completed );
+                    }
+                    elseif($this->excel->getActiveSheet()->getCell($column.$row)=='Failed')
+                    {
+                        $this->excel->getActiveSheet()->getStyle($coll.$row.":".$column.$row)->applyFromArray( $style_failed );
+                    }           
+                }
                     
-                    $filename='Backup_Report.xls'; //save our workbook as this file name
-                    header('Content-Type: application/vnd.ms-excel'); //mime type
-                    header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
-                    header('Cache-Control: max-age=0'); //no cache
-                    //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
-                    //if you want to save it as .XLSX Excel 2007 format
-                    $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5'); 
-                   //print_r( $objWriter);die;
-                    //force user to download the Excel file without writing it to server's HD
-                    $objWriter->save('php://output');
+                $filename='Backup_Report.xls'; //save our workbook as this file name
+                header('Content-Type: application/vnd.ms-excel'); //mime type
+                header('Content-Disposition: attachment;filename="'.$filename.'"'); //tell browser what's the file name
+                header('Cache-Control: max-age=0'); //no cache
+                //save it to Excel5 format (excel 2003 .XLS file), change this to 'Excel2007' (and adjust the filename extension, also the header mime type)
+                //if you want to save it as .XLSX Excel 2007 format
+                $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5'); 
+                //force user to download the Excel file without writing it to server's HD
+                $objWriter->save('php://output');
         }
         
     

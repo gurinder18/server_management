@@ -39,15 +39,6 @@ class Server extends BaseController
    
     function serverListing()
     {
-        //$mail_status = $this->sendEmail('gurindertiwana18@gmail.com', 'Test Subject', 'Tester', 'Test please ignore', 'Testbody');
-       
-       // if( $mail_status == TRUE)
-       //{
-      //      echo "mail sent";
-      // }else{
-      //  echo "mail not sent";die();
-      // }
-       
         if($this->isMember() == TRUE)
         {
             $this->load->model('server_model');
@@ -340,6 +331,37 @@ class Server extends BaseController
         
         $this->loadViews("404", $this->global, NULL, NULL);
     }
+    function sendEmail()
+    {
+        $this->load->library('email');
+
+        $subject = 'This is a test';
+        $message = 'This message has been sent for testing purposes.';
+
+        // Get full html:
+        $body = '
+        <h3 style="background:#000000;">Hello this is test email</h3>
+        <h1>' . $message . '</h1>
+        ';
+        // Also, for getting full html you may use the following internal method:
+        //$body = $this->email->full_html($subject, $message);
+        $config['mailtype'] = 'html';
+        $this->email->initialize($config);
+        $result = $this->email
+            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
+           // ->reply_to('')    // Optional, an account where a human being reads.
+            ->to('testingmail@yopmail.com')
+            ->subject($subject)
+            ->message($body)
+            ->send();
+
+        var_dump($result);
+        echo '<br />';
+        echo $this->email->print_debugger();
+
+        exit;
+    }
 }
+  
 
 ?>

@@ -360,17 +360,5 @@ $config['rewrite_short_tags'] = FALSE;
 |
 */
 
-$config['proxy_ips'] = '';
-// The mail sending protocol.
-$config['protocol'] = 'smtp';
-// SMTP Server Address for Gmail.
-$config['smtp_host'] = 'ssl://smtp.googlemail.com';
-// SMTP Port - the port that you is required
-$config['smtp_port'] = 587;
-// SMTP Username like. (abc@gmail.com)
-$config['smtp_user'] = 'gurinderjeetkaur01@gmail.com';
-// SMTP Password like (abc***##)
-$config['smtp_pass'] = 'redhat123';
-
 /* End of file config.php */
 /* Location: ./application/config/config.php */

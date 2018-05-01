@@ -2043,11 +2043,11 @@ class CI_Email {
 	// --------------------------------------------------------------------
 
 	/**
-	 * SMTP Connect
-	 *
-	 * @return	string
-	 */
-	 protected function _smtp_connect()
+     * SMTP Connect
+     *
+     * @return    string
+     */
+    protected function _smtp_connect()
     {
         if (is_resource($this->_smtp_connect))
         {
@@ -2056,19 +2056,11 @@ class CI_Email {
 
         $ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
 
-        $streamContext = stream_context_create([
-            'ssl' => [
-                'verify_peer'      => false,
-                'verify_peer_name' => false
-            ]
-        ]);
-
-        $this->_smtp_connect = stream_socket_client($ssl.$this->smtp_host.':'.$this->smtp_port,
-            $errno,
-            $errstr,
-            $this->smtp_timeout,
-            STREAM_CLIENT_CONNECT,
-            $streamContext);
+        $this->_smtp_connect = fsockopen($ssl.$this->smtp_host,
+                            $this->smtp_port,
+                            $errno,
+                            $errstr,
+                            $this->smtp_timeout);
 
         if ( ! is_resource($this->_smtp_connect))
         {
@@ -2084,19 +2076,17 @@ class CI_Email {
             $this->_send_command('hello');
             $this->_send_command('starttls');
 
-            $crypto = stream_socket_enable_crypto($this->_smtp_connect, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            //$crypto = stream_socket_enable_crypto($this->_smtp_connect, TRUE, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 
-            if ($crypto !== TRUE)
-            {
-                $this->_set_error_message('lang:email_smtp_error', $this->_get_smtp_data());
-                return FALSE;
-            }
+            // if ($crypto !== TRUE)
+            // {
+            //     $this->_set_error_message('lang:email_smtp_error', $this->_get_smtp_data());
+            //     return FALSE;
+            // }
         }
 
         return $this->_send_command('hello');
     } 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Send SMTP command
 	 *

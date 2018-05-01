@@ -72,6 +72,7 @@ $route['servers/(:num)'] = "server/serverListing/$1";
 $route['add-server'] = "server/addServer";
 $route['edit-server/(:num)'] = "server/editServer/$1";
 $route['deleteServer'] = "server/deleteServer";
+$route['email/(:any)'] = 'backup/sendEmail/$1';
 
 /*********** CLIENT DEFINED ROUTES *******************/
 $route['clients'] = 'client/clients';

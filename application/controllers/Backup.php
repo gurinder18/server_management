@@ -54,7 +54,7 @@ class Backup extends BaseController
                 $data['clients'] = $this->backup_model->getClients();
                 $data['users'] = $this->backup_model->getUsers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
+              
                
                 $this->loadViews("backups", $this->global, $data, NULL);
             }
@@ -72,7 +72,7 @@ class Backup extends BaseController
                 $data['clients'] = $this->backup_model->getClients();
                 $data['users'] = $this->backup_model->getUsers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
+               
                 $this->loadViews("backups", $this->global, $data, NULL);
                
             }else{}
@@ -147,20 +147,6 @@ class Backup extends BaseController
           
             $this->loadViews("backupDetails", $this->global, $data, NULL);
         }
-    }
-    function checkUserExists()
-    {
-        $id = $this->input->post("id");
-        $username = $this->input->post("username");
-
-        if(empty($id)){
-            $result = $this->backup_model->checkUserExists($username);
-        } else {
-            $result = $this->backup_model->checkUserExists($username, $id);
-        }
-
-        if(empty($result)){ echo("true"); }
-        else { echo("false"); }
     }
     
     /**
@@ -361,13 +347,14 @@ class Backup extends BaseController
     {
         $this->load->model('backup_model');
 
-        $result = $this->backup_model->getBackups();
-
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
         $this->current_date = date("d");
         $this->current_fulldate = date('d-m-Y');
-       
+        $timing = array('day'=> $this->current_day,'date'=>$this->current_date);
+
+        $result = $this->backup_model->getBackups( $timing);
+
         foreach($result as $res):
             $clientId =  $res->clientId;
             $backupId =  $res->id;
@@ -375,47 +362,96 @@ class Backup extends BaseController
             $status =  1;
             $scheduleType = $res->scheduleType;
             $scheduleTimings = $res->scheduleTimings;
+            $serverName = $res->ServerName;
+            $serverIP = $res->ServerIP;
+            $serverHostname = $res->ServerHostname;
+            $clientName = $res->ClientName;
+            $userName = $res->UserName;
+            $userEmail = $res->UserEmail;
 
-            if($scheduleType=='Daily')
-            {
-                $scheduleInfo = array('date'=>$this->current_fulldate,'clientId'=>$clientId,
-                'backupId'=>$backupId,'userId'=>$userId,'status'=>$status,);
-                $result = $this->backup_model->addBackupSchedule($scheduleInfo);
-                if($result==1)
-                {
-                    echo "Schedule successfully added";
-                    redirect("backups");
-                }
-            }
-            if($scheduleType=='Weekly')
-            {
-                if($scheduleTimings == $this->current_day)
-                {
-                    $scheduleInfo = array('date'=>$this->current_fulldate,'clientId'=>$clientId,
-                    'backupId'=>$backupId,'userId'=>$userId,'status'=>$status,);
-                    $result = $this->backup_model->addBackupSchedule($scheduleInfo);
-                    if($result==1)
-                    {
-                        echo "Schedule successfully added";
-                        redirect("backups");
-                    } 
-                }
-            }
-            if($scheduleType=='Monthly')
-            {
-                if($scheduleTimings == $this->current_date)
-                {
-                    $scheduleInfo = array('date'=>$this->current_fulldate,'clientId'=>$clientId,
-                    'backupId'=>$backupId,'userId'=>$userId,'status'=>$status,);
-                    $result = $this->backup_model->addBackupSchedule($scheduleInfo);
-                    if($result==1)
-                    {
-                        echo "Schedule successfully added";
-                        redirect("backups");
-                    }
-                }
-            }
+            $scheduleEmailData = array('serverName'=>$serverName,'serverIP'=>$serverIP,
+            'serverHostname'=>$serverHostname,'clientName'=>$clientName,
+            'userName'=>$userName,'userEmail'=>$userEmail);
+
+            $scheduleInfo = array('date'=>$this->current_fulldate,'clientId'=>$clientId,
+            'backupId'=>$backupId,'userId'=>$userId,'status'=>$status,);
+        //  $result = $this->backup_model->addBackupSchedule($scheduleInfo);
+        //  if($result > 0)
+        //  {
+        //      echo   "Schedule successfully added";
+        //  }
         endforeach;
+        $curr_date = $this->current_fulldate = date('d-m-Y');
+        $emails = $this->backup_model->getBackupsUserEmail( $curr_date);
+        
+        foreach($emails as $email):
+            echo $userEmail = $email->UserEmail;
+            $scheduleInfo = array('email'=>$userEmail,'date'=>$curr_date);
+            $data = $this->backup_model->getTodaysBackup($scheduleInfo);
+
+            $this->sendEmail($data);
+        endforeach;
+        redirect("backups");
+        
+    }
+
+    function sendEmail($data)
+    {
+        $this->load->library('email');
+       // var_dump( $scheduleEmailData);die;
+      // var_dump($scheduleEmailData['serverHostname']); die;
+      $row = '';
+     
+        foreach($data as $record):
+          $rec = (array)$record;
+         
+          $row .= '<td>'.$rec['ServerName'].'</td>';
+          $row .= '<td>'.$rec['ServerIP'].'</td>';
+          $row .= '<td>'.$rec['ServerHostname'].'</td>';
+          $row .= '<td>'.$rec['ClientName'].'</td>';
+          $row .= '<td><a href="http://localhost:8080/server-m/schedules">
+                            <button type="button">View</button>
+                        </a>
+                   </td>';
+          
+        $subject = 'This is a test';
+        $message = '<table>
+                        <tr>
+                            <th>Server</th>
+                            <th>Server IP</th>
+                            <th>Hostname</th>
+                            <th>Client</th>
+                            <th>Options</th>
+                        </tr>
+                        <tr>
+                            '.$row.'
+                        </tr>
+                    </table>';
+                endforeach;
+        // Get full html:
+        $body = '
+        <h1>' . $message . '</h1>
+        <p>Hi '.$rec["UserName"].'</p>
+        <p>Your Today'."'".'s backups</p> 
+        '.$message.'
+        ';
+       
+        // Also, for getting full html you may use the following internal method:
+        //$body = $this->email->full_html($subject, $message);
+        $config['mailtype'] = 'html';
+       $this->email->initialize($config);
+        $result = $this->email
+            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
+           // ->reply_to('')    // Optional, an account where a human being reads.
+            ->to('testingmail@yopmail.com')
+            ->subject($subject)
+            ->message($body)
+            ->send();
+
+        var_dump($result);
+        echo '<br />';
+        echo $this->email->print_debugger();
+    exit;
        
     }
 }
