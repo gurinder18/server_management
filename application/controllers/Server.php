@@ -1,5 +1,7 @@
 <?php if(!defined('BASEPATH')) exit('No direct script access allowed');
 
+require_once APPPATH.'/third_party/PHPExcel/Classes/PHPExcel.php';
+require_once APPPATH.'/third_party/PHPExcel/Classes/PHPExcel/IOFactory.php';
 require APPPATH . '/libraries/BaseController.php';
 
 /**
@@ -331,37 +333,57 @@ class Server extends BaseController
         
         $this->loadViews("404", $this->global, NULL, NULL);
     }
-    function sendEmail()
-    {
-        $this->load->library('email');
+    public	function ExcelDataAdd()
+    {  
+        //Path of files were you want to upload on localhost (C:/xampp/htdocs/ProjectName/uploads/excel/)	 
+        $configUpload['upload_path'] = APPPATH.'assets/excel/';
+        $configUpload['allowed_types'] = 'xls|xlsx|csv';
+        $configUpload['max_size'] = '5000';
+        $this->load->library('upload', $configUpload);
+        $this->upload->do_upload('userfile');	
+        $upload_data = $this->upload->data(); //Returns array of containing all of the data related to the file you uploaded.
+        $file_name = $upload_data['file_name']; //uploded file name
+        $extension=$upload_data['file_ext'];    // uploded file extension
+                
+        //$objReader =PHPExcel_IOFactory::createReader('Excel5');     //For excel 2003 
+        $objReader= PHPExcel_IOFactory::createReader('Excel5');	// For excel 2013 	  
+        //Set to read only
+        $objReader->setReadDataOnly(true); 		  
+        //Load excel file
+        $objPHPExcel=$objReader->load(APPPATH.'assets/excel/'.$file_name);		 
+        $totalrows=$objPHPExcel->setActiveSheetIndex(0)->getHighestRow();   //Count Numbe of rows avalable in excel      	 
+        $objWorksheet=$objPHPExcel->setActiveSheetIndex(0);                
+        //loop from first data untill last data
+        for($i = 2 ; $i <= $totalrows ; $i++)
+        {
+            $name = $objWorksheet->getCellByColumnAndRow(0,$i)->getValue();			
+            $client = $objWorksheet->getCellByColumnAndRow(1,$i)->getValue(); //Excel Column 1
+            $serverIP = $objWorksheet->getCellByColumnAndRow(2,$i)->getValue(); //Excel Column 2
+            $hostname = $objWorksheet->getCellByColumnAndRow(3,$i)->getValue(); //Excel Column 3
+            $username = $objWorksheet->getCellByColumnAndRow(4,$i)->getValue(); //Excel Column 4
+            $password = $objWorksheet->getCellByColumnAndRow(5,$i)->getValue(); //Excel Column 5
+            $status = $objWorksheet->getCellByColumnAndRow(6,$i)->getValue(); //Excel Column 6
+            $details = $objWorksheet->getCellByColumnAndRow(7,$i)->getValue(); //Excel Column 7
 
-        $subject = 'This is a test';
-        $message = 'This message has been sent for testing purposes.';
-
-        // Get full html:
-        $body = '
-        <h3 style="background:#000000;">Hello this is test email</h3>
-        <h1>' . $message . '</h1>
-        ';
-        // Also, for getting full html you may use the following internal method:
-        //$body = $this->email->full_html($subject, $message);
-        $config['mailtype'] = 'html';
-        $this->email->initialize($config);
-        $result = $this->email
-            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
-           // ->reply_to('')    // Optional, an account where a human being reads.
-            ->to('testingmail@yopmail.com')
-            ->subject($subject)
-            ->message($body)
-            ->send();
-
-        var_dump($result);
-        echo '<br />';
-        echo $this->email->print_debugger();
-
-        exit;
+            $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
+            'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                       
+            $this->load->model('server_model');
+            $result = $this->server_model->addNewServer($serverInfo);
+            if($result > 0)
+            {
+                $this->session->set_flashdata('success', 'New server created successfully');
+            }
+            else
+            {
+                $this->session->set_flashdata('error', 'Server creation failed');
+            }
+            redirect('servers');
+        }
+        unlink('././uploads/excel/'.$file_name); //File Deleted After uploading in database .			 
+        redirect(base_url() . "put link were you want to redirect");
     }
+       
 }
-  
-
 ?>

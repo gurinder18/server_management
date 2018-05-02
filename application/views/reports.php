@@ -29,15 +29,15 @@
                         </tr>
                         <tr>
                         <?php 
-                            if(current_url() ==  base_url().'backup-report')
+                            if(current_url() ==  base_url().'backups-report' )
                             { 
                         ?>
-                        <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
+                        <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups-report" method="get" role="form">
                         <?php 
                             }else
                             {
                         ?>
-                            <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups-report" method="get" role="form">
+                            <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
                             <?php } ?>
                             <td class="date_search">
                                 <div class="form-group">
@@ -216,10 +216,7 @@
                             </td>
                             </form>
                         </tr>
-                    </table>
-                </div>
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
+                   
                         <?php
                         if(!empty($scheduleRecords))
                         {

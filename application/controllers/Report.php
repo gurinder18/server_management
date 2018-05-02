@@ -67,8 +67,11 @@ class Report extends BaseController
                
                 $from =  $this->input->get('fromDate');
                 $to =  $this->input->get('toDate');
+              
                 if($from!=null && $to!=null)
                 {
+
+                  
                     $from2[] = explode("/",$from);
                     foreach($from2 AS $fromDate)
                     {
@@ -97,16 +100,15 @@ class Report extends BaseController
                 }else{
                     $search_data['fromDate'] =  null;
                     $search_data['toDate'] =  null;
-                   
                 }
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['serverId'] = $this->input->get('server');
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['status'] = $this->input->get('status');
-               
-                $count = $this->report_model->reportCount($returns["page"], $returns["segment"],$search_data, null,null);
 
-                $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
+                $count = $this->report_model->reportCount($returns["page"], $returns["segment"],$search_data, null,null);
+           
+                $returns = $this->paginationCompress ( "backup-report/", $count,5);
                 $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],$search_data, null,null);
                 $data['clients'] = $this->report_model->getClients();
                 $data['servers'] = $this->report_model->getServers();
@@ -114,7 +116,6 @@ class Report extends BaseController
                
                 $this->global['pageTitle'] = 'Orion eSolutions : Schedule Report';
                 $this->loadViews("reports", $this->global, $data, NULL);
-               
             }
         }
     }

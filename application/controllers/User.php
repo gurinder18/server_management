@@ -169,7 +169,7 @@ class User extends BaseController
                 //print_r($input); die;
                 //unset($input['name']);
                 //unset($_POST['name']);
-                //$this->editUser($userId);
+                //$this->editUser($userId); 
             }
             else
             {

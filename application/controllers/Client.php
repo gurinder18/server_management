@@ -82,7 +82,7 @@ class Client extends BaseController
             $this->load->library('form_validation');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('phone','Phone','required|max_length[10]|numeric');
+            $this->form_validation->set_rules('phone','Phone','required|min_length[10]|numeric');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[100]');
             $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
             $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');
@@ -175,7 +175,7 @@ class Client extends BaseController
             $id = $this->input->post('id');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[50]|xss_clean');
-            $this->form_validation->set_rules('phone','Phone','required|max_length[10]|numeric');
+            $this->form_validation->set_rules('phone','Phone','required|min_length[10]|numeric');
             $this->form_validation->set_rules('email','Email','trim|required|valid_email|xss_clean|max_length[100]');
             $this->form_validation->set_rules('address','Address','trim|required|xss_clean');
             $this->form_validation->set_rules('city','City','trim|required|max_length[50]|xss_clean');

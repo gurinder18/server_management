@@ -350,7 +350,7 @@ class Backup_model extends CI_Model
        return $result;
     }
      /**
-     * This function is used to get the add backup schedule information
+     * This function is used to  add backup schedule information
      */
     function addBackupSchedule($scheduleInfo)
     {
@@ -405,7 +405,20 @@ class Backup_model extends CI_Model
        
         return $result;
     }
-
+   /**
+     * This function is used to add mail log 
+     */
+    function addMailLog($mailLogInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_mail_log', $mailLogInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
 }
 
   

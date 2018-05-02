@@ -1,4 +1,6 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowed');
+<?php 
+ob_start();
+if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 require APPPATH . '/libraries/BaseController.php';
 
@@ -375,22 +377,22 @@ class Backup extends BaseController
 
             $scheduleInfo = array('date'=>$this->current_fulldate,'clientId'=>$clientId,
             'backupId'=>$backupId,'userId'=>$userId,'status'=>$status,);
-        //  $result = $this->backup_model->addBackupSchedule($scheduleInfo);
-        //  if($result > 0)
-        //  {
-        //      echo   "Schedule successfully added";
-        //  }
+            $result = $this->backup_model->addBackupSchedule($scheduleInfo);
+            if($result > 0)
+            {
+               echo   "Schedule successfully added";
+            }
         endforeach;
         $curr_date = $this->current_fulldate = date('d-m-Y');
         $emails = $this->backup_model->getBackupsUserEmail( $curr_date);
         
         foreach($emails as $email):
-            echo $userEmail = $email->UserEmail;
+            $userEmail = $email->UserEmail;
             $scheduleInfo = array('email'=>$userEmail,'date'=>$curr_date);
             $data = $this->backup_model->getTodaysBackup($scheduleInfo);
 
             $this->sendEmail($data);
-        endforeach;
+        endforeach; 
         redirect("backups");
         
     }
@@ -398,62 +400,94 @@ class Backup extends BaseController
     function sendEmail($data)
     {
         $this->load->library('email');
-       // var_dump( $scheduleEmailData);die;
-      // var_dump($scheduleEmailData['serverHostname']); die;
-      $row = '';
-     
+        $row = '';
+      
         foreach($data as $record):
-          $rec = (array)$record;
-         
-          $row .= '<td>'.$rec['ServerName'].'</td>';
-          $row .= '<td>'.$rec['ServerIP'].'</td>';
-          $row .= '<td>'.$rec['ServerHostname'].'</td>';
-          $row .= '<td>'.$rec['ClientName'].'</td>';
-          $row .= '<td><a href="http://localhost:8080/server-m/schedules">
-                            <button type="button">View</button>
-                        </a>
-                   </td>';
-          
-        $subject = 'This is a test';
-        $message = '<table>
-                        <tr>
-                            <th>Server</th>
-                            <th>Server IP</th>
-                            <th>Hostname</th>
-                            <th>Client</th>
-                            <th>Options</th>
-                        </tr>
-                        <tr>
-                            '.$row.'
-                        </tr>
-                    </table>';
-                endforeach;
+           $rec = (array)$record;
+           $row_count= count($data);
+           if($row_count > 10)
+           {
+               $row_view_more= '<tr>
+                           <td  colspan="5" style="padding: 10px 12px;">
+                           <a href="http://localhost:8080/server-m/schedules">
+                                   View More
+                               </a>
+                           </td>
+                       </tr>';
+           }else{
+            $row_view_more = '';
+           }
+           
+            $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;">
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$rec['ServerName'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$rec['ServerIP'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$rec['ServerHostname'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$rec['ClientName'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'.$rec['id'].'">
+                                 View
+                            </a>
+                        </td>
+                   </tr>';
+           $rows=  $row . $row_view_more;
+            $subject = 'Today'."'".'s backups list('. date("d-m-Y").')';
+            $message = '<table style="border:1px solid #e8e8e8;border-spacing:0;">
+                            <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
+                                <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    Server
+                                </th>
+                                <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    Server IP
+                                </th>
+                                <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    Hostname
+                                </th>
+                                <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    Client
+                                </th>
+                                <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    Options
+                                </th>
+                            </tr>
+                                '.$rows.'
+                        </table>';
+        endforeach;
         // Get full html:
-        $body = '
-        <h1>' . $message . '</h1>
-        <p>Hi '.$rec["UserName"].'</p>
-        <p>Your Today'."'".'s backups</p> 
-        '.$message.'
-        ';
-       
-        // Also, for getting full html you may use the following internal method:
-        //$body = $this->email->full_html($subject, $message);
+        echo $body = '
+                <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                <p>Hi '.$rec["UserName"].'</p>
+                <p>Your Today'."'".'s backups</p> 
+                '.$message.'
+                ';
+         
         $config['mailtype'] = 'html';
-       $this->email->initialize($config);
+        $this->email->initialize($config);
+        
         $result = $this->email
             ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
-           // ->reply_to('')    // Optional, an account where a human being reads.
-            ->to('testingmail@yopmail.com')
+            // ->reply_to('')    // Optional, an account where a human being reads.
+            ->to($rec["UserEmail"])
             ->subject($subject)
             ->message($body)
             ->send();
-
+        if($result== TRUE)
+        {
+            $mailLogInfo = array('email_to'=>$rec["UserEmail"],'email_from'=>"gurinderjeetkaur01@gmail.com",
+            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"daily_backup_notification");
+            $res = $this->backup_model->addMailLog($mailLogInfo);
+        }
         var_dump($result);
         echo '<br />';
         echo $this->email->print_debugger();
-    exit;
-       
+   
     }
 }
-
+ob_flush();
 ?>
