@@ -93,7 +93,7 @@
                         </table>
                         <!-- Button trigger modal -->
                         <?php
-                            if($role_slug=="member")
+                            if($role_slug=="member"  && $scheduleInfo['date']==date('d-m-Y') )
                             { 
                         ?>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleStatusModal">
@@ -135,9 +135,9 @@
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                <input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit">
-                                                </form>
+                                                </form> <?php } ?>
                                             </div> 
-                                        <?php } ?>
+                                       
                                     </div>
                                 </div>
                             </div>   
@@ -145,11 +145,12 @@
                 </div><!-- /.box -->
             </div>
         </div>
+       
         <div class="row">
             <div class="col-xs-12 text-right">
                 <div class="form-group">
                 <?php
-                    if($role_slug=="member")
+                    if($role_slug=="member" && $scheduleInfo['date']==date('d-m-Y'))
                     { 
                 ?>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
@@ -159,7 +160,7 @@
                 </div>
             </div>
         </div>
-          <!-- Modal -->
+          <!-- Add Comment Modal -->
             <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -227,11 +228,8 @@
                             <?php
                                 if(!empty($commentInfo))
                                 {  
-                                   // var_dump($commentInfo);
                                     foreach($commentInfo AS $comments)
                                     {
-                                      
-
                             ?>
                             <tr>
                                 <td><?php echo date('d-m-Y H:i:s') ?></td>

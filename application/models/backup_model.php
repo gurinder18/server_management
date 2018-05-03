@@ -305,26 +305,7 @@ class Backup_model extends CI_Model
         return $this->db->affected_rows();
     }
      /**
-     * This function is used to check whether email id is already exist or not
-     * @param {string} $email : This is email id
-     * @param {number} $userId : This is user id
-     * @return {mixed} $result : This is searched result
-     */
-    function checkUserExists($username, $id = 0)
-    {
-        $this->db->select("username");
-        $this->db->from("tbl_servers");
-        $this->db->where("username", $username);   
-        $this->db->where("isDeleted", 0);
-        if($id != 0){
-            $this->db->where("id !=", $id);
-        }
-        $query = $this->db->get();
-
-        return $query->result();
-    }
-     /**
-     * This function is used to get the backup schedule information
+     * This function is used to get todays backup schedule information
      */
     function getBackups( $timing)
     {
@@ -382,7 +363,7 @@ class Backup_model extends CI_Model
         return $result;
     }
      /**
-     * This function is used to get the todays backup schedule- users email
+     * This function is used to get the todays backup schedule of particular user
      */
     function getTodaysBackup($data)
     {
@@ -418,6 +399,39 @@ class Backup_model extends CI_Model
         $this->db->trans_complete();
         
         return $insert_id;
+    }
+    /**
+     * This function is used to get todays backup schedule information
+     */
+    function getPendingBackups($timing)
+    {
+        $this->db->select('BaseTbl.id,Backup.id, Backup.userId, Backup.clientId, Backup.serverId,
+        Backup.scheduleType,Backup.scheduleTimings, Backup.information,User.name As UserName,
+        User.email As UserEmail,Client.name As ClientName,Server.name As ServerName,
+        Server.server As ServerIP, Server.hostname As ServerHostname,BaseTbl.userId');
+        //$this->db->select('BaseTbl.*');
+       $this->db->from('tbl_backup_schedule as BaseTbl');
+       $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+       $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+       $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+       $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+
+       //$this->db->where('BaseTbl.isDeleted', 0);
+       $this->db->where('Backup.scheduleType', "Daily");
+       $this->db->where('BaseTbl.status', 1);
+       $this->db->where('BaseTbl.date', $timing['date']);
+       if($timing['backupId']!='')
+       {
+            $this->db->where('BaseTbl.backupId', $timing['backupId']);
+       }
+       //$this->db->or_where('BaseTbl.scheduleTimings', $timing['date']);
+      // $this->db->or_where('BaseTbl.scheduleTimings',$timing['day']);
+      
+       $query = $this->db->get();
+      // print_r($this->db);
+       $result = $query->result();    
+       
+       return $result;
     }
 }
 

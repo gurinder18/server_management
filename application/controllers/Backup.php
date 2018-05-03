@@ -142,7 +142,7 @@ class Backup extends BaseController
                 $serverId=$backup['serverId'];
             }
             $data['clients'] = $this->backup_model->getClientById($clientId);
-			//print_r($data);
+			
             $data['servers'] = $this->backup_model->getServerById($serverId);
             
             $this->global['pageTitle'] = 'Orion eSolutions : Backup Details';
@@ -343,7 +343,7 @@ class Backup extends BaseController
     }
 
      /**
-     * This function is used to add the backup schedule information
+     * This function is used to add todays backup schedule
      */
     function scheduleBackups()
     {
@@ -391,13 +391,15 @@ class Backup extends BaseController
             $scheduleInfo = array('email'=>$userEmail,'date'=>$curr_date);
             $data = $this->backup_model->getTodaysBackup($scheduleInfo);
 
-            $this->sendEmail($data);
+            $this->sendEmailTodayBackup($data);
         endforeach; 
         redirect("backups");
         
     }
-
-    function sendEmail($data)
+    /**
+     * This function is used to send mail to users for todays backup schedule
+     */
+    function sendEmailTodayBackup($data)
     {
         $this->load->library('email');
         $row = '';
@@ -408,12 +410,12 @@ class Backup extends BaseController
            if($row_count > 10)
            {
                $row_view_more= '<tr>
-                           <td  colspan="5" style="padding: 10px 12px;">
-                           <a href="http://localhost:8080/server-m/schedules">
-                                   View More
-                               </a>
-                           </td>
-                       </tr>';
+                                    <td  colspan="5" style="padding: 10px 12px;">
+                                    <a href="http://localhost:8080/server-m/schedules">
+                                            View More
+                                        </a>
+                                    </td>
+                                </tr>';
            }else{
             $row_view_more = '';
            }
@@ -466,7 +468,6 @@ class Backup extends BaseController
                 <p>Your Today'."'".'s backups</p> 
                 '.$message.'
                 ';
-         
         $config['mailtype'] = 'html';
         $this->email->initialize($config);
         
@@ -486,7 +487,49 @@ class Backup extends BaseController
         var_dump($result);
         echo '<br />';
         echo $this->email->print_debugger();
-   
+    }
+    
+     /**
+     * This function is used to send mail for pending backup schedule 
+     */
+    function pendingScheduleBackups()
+    {
+        $this->load->model('backup_model');
+
+        $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
+        $this->current_day = (jddayofweek($date,1));
+        $this->current_date = date("d");
+        $this->current_fulldate = date('d-m-Y');
+       
+        $this->d1 = (date('d')).'-'. date('m').'-'. date('Y');
+        $timing = array('day'=> $this->current_day,'date'=>$this->d1,'backupId'=>'');
+        $result = $this->backup_model->getPendingBackups($timing);
+        $count = 0;
+        foreach($result as $backups)
+        {
+            $backupId = $backups->id;
+            for($d = 0; $d <= 2; $d++ )
+            {
+                echo $this->d1 = '0'.(date('d')-$d).'-'. date('m').'-'. date('Y');
+                $timing = array('day'=> $this->current_day,'date'=>$this->d1,'backupId'=>$backupId );
+                $res = $this->backup_model->getPendingBackups($timing);
+                var_dump($res);
+               
+                if(!empty($res))
+                {
+                    $count++;
+                }
+                else{
+                    break;
+                }
+            } 
+        }
+        if($count >= 2)
+        {
+            echo $res['userId']."your backup is not updated from last ".$count." times";
+        }
+       die;
+        redirect("backups");
     }
 }
 ob_flush();

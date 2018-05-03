@@ -42,13 +42,11 @@
             <!-- left column -->
             <div class="col-md-12">
               <!-- general form elements -->
-                
                 <div class="box box-primary">
                     <div class="box-header">
                         <h3 class="box-title">Enter Client Details</h3>
                     </div><!-- /.box-header -->
                     <!-- form start -->
-                    
                     <form role="form" id="addClient" action="<?php echo base_url() ?>add-client" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
@@ -61,50 +59,50 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="phone">Phone Number *</label>
-                                        <input type="text" class="form-control required digits" id="phone"  name="phone" maxlength="10">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="text" class="form-control digits" id="phone"  name="phone" maxlength="10">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email">Email address *</label>
-                                        <input type="text" class="form-control required email" id="email"  name="email" maxlength="100">
+                                        <label for="email">Email address </label>
+                                        <input type="text" class="form-control email" id="email"  name="email" maxlength="100">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="address">Address *</label>
-                                        <input type="text" class="form-control required" id="address"  name="address" >
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="city">City *</label>
-                                        <input type="text" class="form-control required" id="city" name="city" maxlength="50">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="state">State *</label>
-                                        <input type="text" class="form-control required" id="state" name="state" maxlength="50">
+                                        <label for="address">Address</label>
+                                        <input type="text" class="form-control " id="address"  name="address" >
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="zip">Zip *</label>
-                                        <input type="text" class="form-control required" id="zip" name="zip" maxlength="100">
+                                        <label for="city">City </label>
+                                        <input type="text" class="form-control " id="city" name="city" maxlength="50">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="status">Status *</label>
-                                        <select class="form-control required" id="status" name="status">
+                                        <label for="state">State </label>
+                                        <input type="text" class="form-control " id="state" name="state" maxlength="50">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="zip">Zip </label>
+                                        <input type="text" class="form-control " id="zip" name="zip" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="status">Status </label>
+                                        <select class="form-control " id="status" name="status">
                                             <option value="">Select Status</option>
                                             <option value="1">Active</option>
                                             <option value="0">Deactive</option>

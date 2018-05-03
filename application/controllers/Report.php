@@ -71,7 +71,6 @@ class Report extends BaseController
                 if($from!=null && $to!=null)
                 {
 
-                  
                     $from2[] = explode("/",$from);
                     foreach($from2 AS $fromDate)
                     {
@@ -221,11 +220,9 @@ class Report extends BaseController
             $data['scheduleInfo'] = $this->schedule_model->getScheduleInfo($id);
             $scheduleId = $data['scheduleInfo'];
             $data['users'] = $this->schedule_model->getUsers();
-          
             $data['commentInfo'] = $this->schedule_model->getCommentInfo( $scheduleId['id']);
-           // print_r($data);
+          
             $this->global['pageTitle'] = 'Orion eSolutions : Schedule Details';
-         
             $this->loadViews("scheduleDetails", $this->global, $data, NULL);
         }
     }

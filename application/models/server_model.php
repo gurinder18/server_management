@@ -19,8 +19,6 @@ class Server_model extends CI_Model
         
         return count($query->result());
     }
-    
-
     /**
      * This function is used to get the user listing count for admin
      * @param string $searchText : This is optional search text
@@ -30,8 +28,6 @@ class Server_model extends CI_Model
      */
     function serverListing($page=null, $segment=null)
     {
-       // $this->load->sendEmail('donotreply.testing.web@gmail.com', '', 'Tester', 'Test please ignore', 'Testbody');
-        //die('sms sent');
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
          BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
@@ -43,7 +39,7 @@ class Server_model extends CI_Model
         $this->db->order_by("BaseTbl.createdDtm", "asc");
         $query = $this->db->get();
         $result = $query->result();    
-        //print_r($result); die;    
+        
         return $result;
     }
  
@@ -268,18 +264,16 @@ class Server_model extends CI_Model
      * @param {number} $userId : This is user id
      * @return {mixed} $result : This is searched result
      */
-    function checkUserExists($username, $id = 0)
+    function checkClientExists($clientName)
     {
-        $this->db->select("username");
-        $this->db->from("tbl_servers");
-        $this->db->where("username", $username);   
+        $this->db->select("id,name");
+        $this->db->from("tbl_clients");
+        $this->db->where("name", $clientName);   
         $this->db->where("isDeleted", 0);
-        if($id != 0){
-            $this->db->where("id !=", $id);
-        }
+      
         $query = $this->db->get();
-
-        return $query->result();
+        
+        return $query->row_array();
     }
     
 }

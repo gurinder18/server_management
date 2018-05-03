@@ -49,9 +49,13 @@
                 <div class="box box-primary">
                     <div class="box-header">
                         <h3 class="box-title">Enter Server Details</h3>
+                        <div class="pull-right">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
+                                <i class="fa fa-plus"></i> Add Excel
+                            </button>
+                        </div>
                     </div><!-- /.box-header -->
                     <!-- form start -->
-                     
                     <form role="form" id="addServer" action="<?php echo base_url() ?>add-server" method="post" role="form">
                         <div class="box-body">
                             <div class="row">
@@ -140,20 +144,35 @@
             </div>
         </div> 
         <div class="row">	
-            <div class="col-md-12">
-              <!-- general form elements -->
-            
-                <div class="box box-primary">								
-                    <?php echo form_open_multipart('server/ExcelDataAdd');?>                      
-                        <label>Excel File:</label>                        
-                        <input type="file" name="userfile" />				                   
-                        <input type="submit" value="upload" name="upload" />
-                    </form>	
+             <!-- Modal -->
+             <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header"> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                                <h2 class="modal-title" id="addCommentModalLabel">Add Excel</h2>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover" id="add_comment"> 
+                                <tr>
+                                <?php echo form_open_multipart('server/addServers');?>  
+                                    <td> <input type="file" name="serverfile" /></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="upload" name="upload" >Submit</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>       
     </section>
-    
+     
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>

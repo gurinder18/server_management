@@ -118,21 +118,6 @@ class Server extends BaseController
             }else{}
         }
     }  
-    function checkUserExists()
-    {
-        $id = $this->input->post("id");
-        $username = $this->input->post("username");
-
-        if(empty($id)){
-            $result = $this->server_model->checkUserExists($username);
-        } else {
-            $result = $this->server_model->checkUserExists($username, $id);
-        }
-
-        if(empty($result)){ echo("true"); }
-        else { echo("false"); }
-    }
-    
     /**
      * This function is used to load the add new server
      */
@@ -333,24 +318,31 @@ class Server extends BaseController
         
         $this->loadViews("404", $this->global, NULL, NULL);
     }
-    public	function ExcelDataAdd()
+    public	function addServers()
     {  
         //Path of files were you want to upload on localhost (C:/xampp/htdocs/ProjectName/uploads/excel/)	 
-        $configUpload['upload_path'] = APPPATH.'assets/excel/';
+        $configUpload['upload_path'] = APPPATH.'../assets/excel/';
         $configUpload['allowed_types'] = 'xls|xlsx|csv';
-        $configUpload['max_size'] = '5000';
+        $configUpload['max_size'] = '10000';
+        
+        // $ff = $_FILES['serverfile'];
+        // var_dump($ff);
+        // echo  $file_name = $_FILES['serverfile']['name'];
+
         $this->load->library('upload', $configUpload);
-        $this->upload->do_upload('userfile');	
+        $this->upload->do_upload('serverfile');	
         $upload_data = $this->upload->data(); //Returns array of containing all of the data related to the file you uploaded.
         $file_name = $upload_data['file_name']; //uploded file name
         $extension=$upload_data['file_ext'];    // uploded file extension
                 
         //$objReader =PHPExcel_IOFactory::createReader('Excel5');     //For excel 2003 
-        $objReader= PHPExcel_IOFactory::createReader('Excel5');	// For excel 2013 	  
+        
+        $objReader= PHPExcel_IOFactory::createReader('Excel2007');	// For excel 2007 	  
         //Set to read only
         $objReader->setReadDataOnly(true); 		  
         //Load excel file
-        $objPHPExcel=$objReader->load(APPPATH.'assets/excel/'.$file_name);		 
+        $path =  'C:/wamp64/www/server-m/assets/excel/';
+        $objPHPExcel=$objReader->load( APPPATH.'../assets/excel/'.$file_name);		 
         $totalrows=$objPHPExcel->setActiveSheetIndex(0)->getHighestRow();   //Count Numbe of rows avalable in excel      	 
         $objWorksheet=$objPHPExcel->setActiveSheetIndex(0);                
         //loop from first data untill last data
@@ -365,25 +357,61 @@ class Server extends BaseController
             $status = $objWorksheet->getCellByColumnAndRow(6,$i)->getValue(); //Excel Column 6
             $details = $objWorksheet->getCellByColumnAndRow(7,$i)->getValue(); //Excel Column 7
 
-            $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
-            'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
-            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                       
-            $this->load->model('server_model');
-            $result = $this->server_model->addNewServer($serverInfo);
-            if($result > 0)
+            $clientId = $this->checkClientExists($client);
+            if(!empty($clientId))
             {
-                $this->session->set_flashdata('success', 'New server created successfully');
+                $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
+                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                        
+                $this->load->model('server_model');
+                $result = $this->server_model->addNewServer($serverInfo);
+                if($result > 0)
+                {
+                    $this->session->set_flashdata('success', 'New server created successfully');
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'Server creation failed');
+                }
             }
             else
             {
-                $this->session->set_flashdata('error', 'Server creation failed');
+                $clientInfo = array('name'=>$client,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                
+                $this->load->model('client_model');
+                $result = $this->client_model->add($clientInfo);
+                
+                $clientId = $this->checkClientExists($client);
+                if(!empty($clientId))
+                {
+                    $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
+                    'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                    'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                            
+                    $this->load->model('server_model');
+                    $result = $this->server_model->addNewServer($serverInfo);
+                    if($result > 0)
+                    {
+                        $this->session->set_flashdata('success', 'New server created successfully');
+                    }
+                    else
+                    {
+                        $this->session->set_flashdata('error', 'Server creation failed');
+                    }
+                }
             }
-            redirect('servers');
-        }
-        unlink('././uploads/excel/'.$file_name); //File Deleted After uploading in database .			 
-        redirect(base_url() . "put link were you want to redirect");
+        } 
+        unlink( APPPATH.'../assets/excel/'.$file_name); //File Deleted After uploading in database .			 
+        redirect('servers');
     }
-       
+    function checkClientExists($clientName)
+    {
+        $result = $this->server_model->checkClientExists($clientName);
+        if(!empty($result))
+        { 
+            return $result['id'];
+        }
+    }
 }
 ?>

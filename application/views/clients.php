@@ -45,13 +45,13 @@
                     ?>
                     <tr>
                       <td><input type="checkbox" class="delete_client" value="<?php echo$record->id; ?>" name="delete_clients[]"/></td>
-                      <td><?php echo $record->name ?></td>
-                      <td><?php echo $record->phone ?></td>
-                      <td><?php echo $record->email ?></td>
-                      <td><?php echo $record->address ?></td>
-                      <td><?php echo $record->city ?></td>
-                      <td><?php echo $record->state ?></td>
-                      <td><?php echo $record->zip ?></td>
+                      <td><?php if(empty($record->name)){ echo "N/A";}else{echo $record->name;} ?></td>
+                      <td><?php if(empty($record->phone)){ echo "N/A";}else{echo $record->phone;} ?></td>
+                      <td><?php if(empty($record->email)){ echo "N/A";}else{echo $record->email;} ?></td>
+                      <td><?php if(empty($record->address)){ echo "N/A";}else{echo $record->address;} ?></td>
+                      <td><?php if(empty($record->city)){ echo "N/A";}else{echo $record->city;} ?></td>
+                      <td><?php if(empty($record->state)){ echo "N/A";}else{echo $record->state;} ?></td>
+                      <td><?php if(empty($record->zip)){ echo "N/A";}else{echo $record->zip;} ?></td>
                       <td><?php if(($record->status)==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-client/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>

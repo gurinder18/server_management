@@ -22,7 +22,7 @@
                             <th colspan="2">From Date - To Date</th>
                             <th>Client</th>
                             <th>Server</th>
-                            <th>User</th>
+                            <th>User</th> 
                             <th>Status</th>
                             <th>Day</th>
                             <th class="text-center">Actions</th>
