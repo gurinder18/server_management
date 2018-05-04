@@ -265,12 +265,8 @@ class Client extends BaseController
                     redirect("clients");
                 }
             }
-            else{}
-    
+           
     }
-    
-    
-
     function pageNotFound()
     {
         $this->global['pageTitle'] = 'Orion eSolutions : 404 - Page Not Found';

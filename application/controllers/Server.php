@@ -308,8 +308,7 @@ class Server extends BaseController
                 redirect("servers");
             }
         }
-        else{}
-
+       
     }
     
     function pageNotFound()
@@ -381,7 +380,7 @@ class Server extends BaseController
                 
                 $this->load->model('client_model');
                 $result = $this->client_model->add($clientInfo);
-                
+
                 $clientId = $this->checkClientExists($client);
                 if(!empty($clientId))
                 {

@@ -332,7 +332,7 @@ class Backup extends BaseController
                 redirect("backups");
             }
         }
-        else{}
+       
     }
     
     function pageNotFound()
@@ -351,7 +351,7 @@ class Backup extends BaseController
 
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
-        $this->current_date = date("d");
+        $this->current_date = date("j");
         $this->current_fulldate = date('d-m-Y');
         $timing = array('day'=> $this->current_day,'date'=>$this->current_date);
 
@@ -409,7 +409,7 @@ class Backup extends BaseController
            $row_count= count($data);
            if($row_count > 10)
            {
-               $row_view_more= '<tr>
+               $row_view_more = '<tr>
                                     <td  colspan="5" style="padding: 10px 12px;">
                                     <a href="http://localhost:8080/server-m/schedules">
                                             View More
@@ -417,7 +417,7 @@ class Backup extends BaseController
                                     </td>
                                 </tr>';
            }else{
-            $row_view_more = '';
+                $row_view_more = '';
            }
            
             $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;">
@@ -438,7 +438,7 @@ class Backup extends BaseController
                             </a>
                         </td>
                    </tr>';
-           $rows=  $row . $row_view_more;
+            $rows=  $row . $row_view_more;
             $subject = 'Today'."'".'s backups list('. date("d-m-Y").')';
             $message = '<table style="border:1px solid #e8e8e8;border-spacing:0;">
                             <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
@@ -498,38 +498,261 @@ class Backup extends BaseController
 
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
-        $this->current_date = date("d");
+        $this->current_date = date("j");
+        
         $this->current_fulldate = date('d-m-Y');
-       
-        $this->d1 = (date('d')).'-'. date('m').'-'. date('Y');
-        $timing = array('day'=> $this->current_day,'date'=>$this->d1,'backupId'=>'');
-        $result = $this->backup_model->getPendingBackups($timing);
+        
         $count = 0;
-        foreach($result as $backups)
-        {
-            $backupId = $backups->id;
-            for($d = 0; $d <= 2; $d++ )
+        $this->checkBackupId ='';
+        // get all users of todays pending backup 
+        $users = $this->backup_model->getBackupsUserEmail( $this->current_fulldate);
+       
+        foreach($users as $user):
+            $UserId = $user->UserId;
+            $UserEmail = $user->UserEmail;
+            $scheduleInfo = array(
+                'fullDate'=>$this->current_fulldate,
+                'user'=>$UserId,
+                'backupId'=>'' ,
+                'daily' => '',
+                'day'=> '',
+                'date' => ''
+            );
+            // get all todays pending backups of user 
+            $result = $this->backup_model->getPendingBackups($scheduleInfo);
+             
+            foreach($result as $backups)
             {
-                echo $this->d1 = '0'.(date('d')-$d).'-'. date('m').'-'. date('Y');
-                $timing = array('day'=> $this->current_day,'date'=>$this->d1,'backupId'=>$backupId );
-                $res = $this->backup_model->getPendingBackups($timing);
-                var_dump($res);
-               
-                if(!empty($res))
-                {
-                    $count++;
+                $scheduleId = $backups->scheduleId;
+                $backupId = $backups->id;
+                if( $backups->scheduleType == "Daily")
+                { 
+                    for($d = 1; $d <= 10; $d++ )
+                    {
+                        $this->d1 =  date('d-m-Y',strtotime("-$d days"));
+                        $timing = array(
+                            'fullDate'=>$this->d1,
+                            'user'=>$UserId,
+                            'backupId'=>$backupId,
+                            'daily' => "daily",
+                            'day'=>'',
+                            'date' => ''
+                        );
+                        // check each backup was pending last time or not
+                        $res = $this->backup_model->getPendingBackups($timing);
+                        if(!empty($res))
+                        {
+                            $count++;
+                            foreach($res as $r)
+                            {
+                                if($this->checkBackupId != $r->backupId )
+                                {
+                                    // create array of each pending tasks of user
+                                    $backupData[] = array(
+                                        'scheduleId' => $r->scheduleId,
+                                        'backupId'=>$r->backupId,
+                                        'user'=>$r->UserName,
+                                        'server'=>$r->ServerName,
+                                        'type'=> $r->scheduleType,
+                                        'timings'=>$r->scheduleTimings,
+                                        'count' => $count
+                                    );
+                                }
+                                $this->checkBackupId = $r->backupId;
+                            } 
+                        }
+                        else{
+                            break;
+                        }
+                    }
                 }
-                else{
-                    break;
+                if( $backups->scheduleType == "Weekly")
+                {
+                    for($d = 1; $d <= 10; $d++ )
+                    {
+                        $this->day =  date('d-m-Y',strtotime("-$d week"));echo "<br>";
+                        $timing = array(
+                            'fullDate'=> $this->day,
+                            'user'=>$UserId,
+                            'backupId'=>$backupId,
+                            'daily' => ''
+                            
+                        );
+                        // check each backup was pending last time or not
+                        $res = $this->backup_model->getPendingBackups($timing);
+                      
+                        if(!empty($res))
+                        {
+                            $count++;
+                            foreach($res as $r)
+                            {
+                                if($this->checkBackupId != $r->backupId )
+                                {
+                                    // create array of each pending tasks of user
+                                    $backupData[] = array(
+                                        'scheduleId' => $r->scheduleId,
+                                        'backupId'=>$r->backupId,
+                                        'user'=>$r->UserName,
+                                        'server'=>$r->ServerName,
+                                        'type'=> $r->scheduleType,
+                                        'timings'=>$r->scheduleTimings,
+                                        'count' => $count
+                                    );
+                                }
+                                $this->checkBackupId = $r->backupId;
+                            } 
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                } 
+                if( $backups->scheduleType == "Monthly")
+                {
+                    for($d = 1; $d <= 10; $d++ )
+                    {
+                        $this->monthDate =  date('d-m-Y',strtotime("-$d month"));
+                      
+                        $timing = array(
+                            'fullDate'=>$this->monthDate,
+                            'user'=>$UserId,
+                            'backupId'=>$backupId,
+                            'daily' => ''
+                        );
+                        // check each backup was pending last time or not
+                        $res = $this->backup_model->getPendingBackups($timing);
+                        if(!empty($res))
+                        {
+                            $count++;
+                            foreach($res as $r)
+                            {
+                                if($this->checkBackupId != $r->backupId )
+                                {
+                                    // create array of each pending tasks of user
+                                    $backupData[] = array(
+                                        'scheduleId' => $r->scheduleId,
+                                        'backupId'=>$r->backupId,
+                                        'user'=>$r->UserName,
+                                        'server'=>$r->ServerName,
+                                        'type'=> $r->scheduleType,
+                                        'timings'=>$r->scheduleTimings,
+                                        'count' => $count
+                                    );
+                                }
+                                $this->checkBackupId = $r->backupId;
+                            } 
+                        }
+                        else{
+                            break;
+                        }
+                    }
                 }
             } 
-        }
-        if($count >= 2)
+            $data['backupInfo'] =  $backupData;
+            // empty the array of pending backups of users to store another users backups
+            unset($backupData);
+            $count=0;
+            
+            $data['userInfo'] =  array('userId'=>$UserId, 'userEmail'=>$UserEmail);
+            // call to function to send mail to user for their pending task
+            $this->sendEmailPendingBackup($data);
+            
+        endforeach;
+       // redirect("backups");
+    }
+      /**
+     * This function is used to send mail to users for todays backup schedule
+     */
+    function sendEmailPendingBackup($data)
+    {
+        $this->load->library('email');
+        $row = '';
+        $message = '';
+        foreach($data['backupInfo'] as $pendingBackup)
         {
-            echo $res['userId']."your backup is not updated from last ".$count." times";
+            
+            if($pendingBackup['count'] >= 1)
+            {
+            $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;">
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$pendingBackup['server'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$pendingBackup['count'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                        '.$pendingBackup['type'].'/'.$pendingBackup['timings'].'
+                        </td>
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'. $pendingBackup['scheduleId'].'">
+                            View
+                                </a>
+                        </td>
+                    </tr>';    
+            $subject = 'Pending backups list('. date("d-m-Y").')';
+            $row_count= count($row);
+            if($row_count > 5)
+            {
+                $row_view_more = '<tr>
+                                        <td  colspan="5" style="padding: 10px 12px;">
+                                        <a href="http://localhost:8080/server-m/schedules">
+                                                View More
+                                            </a>
+                                        </td>
+                                    </tr>';
+            }else{
+                    $row_view_more = '';
+            }
+            $rows=  $row . $row_view_more;
+            $message = '<table style="border:1px solid #e8e8e8;border-spacing:0;width=100%;">
+                        <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;width=100%;">
+                            <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Server
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Time
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Type
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Options
+                            </th>
+                        </tr>
+                            '.$rows.'
+                    </table>';
+            }
         }
-       die;
-        redirect("backups");
+        // Get full html:
+       
+        foreach($data['userInfo'] as $user)
+        {
+            $toEmail = $user;
+        } 
+        echo $body = '
+                <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                <p>Hi '.$pendingBackup["user"].'</p>
+                <p>You are not checking your Backups</p> 
+                '.$message.'
+                ';
+        $config['mailtype'] = 'html';
+        $this->email->initialize($config);
+        
+        $result = $this->email
+            ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
+            // ->reply_to('')    // Optional, an account where a human being reads.
+            ->to('testingmail@yopmail.com')
+            ->subject($subject)
+            ->message($body)
+            ->send();
+        if($result== TRUE)
+        {
+            $mailLogInfo = array('email_to'=>$toEmail,'email_from'=>"gurinderjeetkaur01@gmail.com",
+            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"Pending_backup_user_mail");
+            $res = $this->backup_model->addMailLog($mailLogInfo);
+        }
+        var_dump($result);
+        echo '<br />';
+        echo $this->email->print_debugger();
     }
 }
 ob_flush();

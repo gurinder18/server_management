@@ -349,7 +349,7 @@ class Backup_model extends CI_Model
      */
     function getBackupsUserEmail($date)
     {
-        $this->db->select('BaseTbl.id,User.email As UserEmail');
+        $this->db->select('BaseTbl.id,User.email As UserEmail, BaseTbl.userId As UserId');
        
         $this->db->from('tbl_backup_schedule as BaseTbl');
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -357,7 +357,7 @@ class Backup_model extends CI_Model
         $this->db->where('BaseTbl.date', $date);
         $this->db->group_by('User.email');
         $query = $this->db->get();
-       
+      
         $result = $query->result();    
        
         return $result;
@@ -403,9 +403,9 @@ class Backup_model extends CI_Model
     /**
      * This function is used to get todays backup schedule information
      */
-    function getPendingBackups($timing)
+    function getPendingBackups($scheduleInfo)
     {
-        $this->db->select('BaseTbl.id,Backup.id, Backup.userId, Backup.clientId, Backup.serverId,
+        $this->db->select('BaseTbl.id as scheduleId ,BaseTbl.backupId,Backup.id ,  Backup.clientId, Backup.serverId,
         Backup.scheduleType,Backup.scheduleTimings, Backup.information,User.name As UserName,
         User.email As UserEmail,Client.name As ClientName,Server.name As ServerName,
         Server.server As ServerIP, Server.hostname As ServerHostname,BaseTbl.userId');
@@ -415,22 +415,36 @@ class Backup_model extends CI_Model
        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
        $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
        $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
-
+        
        //$this->db->where('BaseTbl.isDeleted', 0);
-       $this->db->where('Backup.scheduleType', "Daily");
-       $this->db->where('BaseTbl.status', 1);
-       $this->db->where('BaseTbl.date', $timing['date']);
-       if($timing['backupId']!='')
+       if($scheduleInfo['daily'] != '')
        {
-            $this->db->where('BaseTbl.backupId', $timing['backupId']);
+            $this->db->where('Backup.scheduleType', "Daily");
        }
-       //$this->db->or_where('BaseTbl.scheduleTimings', $timing['date']);
-      // $this->db->or_where('BaseTbl.scheduleTimings',$timing['day']);
+       $this->db->where('BaseTbl.status', 1);
+       if($scheduleInfo['fullDate']!='')
+       {
+            $this->db->where('BaseTbl.date', $scheduleInfo['fullDate']);
+       }
+       $this->db->where('BaseTbl.userId', $scheduleInfo['user']);
+       if($scheduleInfo['backupId']!='')
+       {
+            $this->db->where('BaseTbl.backupId', $scheduleInfo['backupId']);
+       }
+    //    if($scheduleInfo['date'] != '')
+    //    {
+    //         $this->db->or_where('Backup.scheduleTimings', $scheduleInfo['date']);
+    //    }
+    //    if($scheduleInfo['day'] != '')
+    //    {
+    //         $this->db->or_where('Backup.scheduleTimings',$scheduleInfo['day']);
+    //         $this->db->where('BaseTbl.date', $scheduleInfo['fullDate']);
+
+    //    }
       
        $query = $this->db->get();
-      // print_r($this->db);
        $result = $query->result();    
-       
+      //print_r( $this->db);
        return $result;
     }
 }
