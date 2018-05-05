@@ -349,7 +349,8 @@ class Backup_model extends CI_Model
      */
     function getBackupsUserEmail($date)
     {
-        $this->db->select('BaseTbl.id,User.email As UserEmail, BaseTbl.userId As UserId');
+        $this->db->select('BaseTbl.id,User.email As UserEmail, BaseTbl.userId As UserId, 
+        User.name As UserName');
        
         $this->db->from('tbl_backup_schedule as BaseTbl');
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -446,6 +447,20 @@ class Backup_model extends CI_Model
        $result = $query->result();    
       //print_r( $this->db);
        return $result;
+    }
+    /**
+     * This function is used to get todays backup schedule information
+     */
+    function addCronRecord($cronInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_cron_record', $cronInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
     }
 }
 
