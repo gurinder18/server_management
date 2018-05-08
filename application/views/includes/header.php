@@ -164,6 +164,12 @@
             <?php
              }
             ?>
+             <li class="treeview">
+              <a href="<?php echo base_url(); ?>check-ip-blacklist">
+                <i class="fa fa-list-alt"></i>
+                <span>Check IP Blacklist</span>
+              </a>
+            </li>
           </ul>
         </section>
         <!-- /.sidebar -->

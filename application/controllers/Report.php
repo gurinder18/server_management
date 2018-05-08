@@ -70,7 +70,6 @@ class Report extends BaseController
               
                 if($from!=null && $to!=null)
                 {
-
                     $from2[] = explode("/",$from);
                     foreach($from2 AS $fromDate)
                     {

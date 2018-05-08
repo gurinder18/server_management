@@ -72,9 +72,6 @@ $route['servers/(:num)'] = "server/serverListing/$1";
 $route['add-server'] = "server/addServer";
 $route['edit-server/(:num)'] = "server/editServer/$1";
 $route['deleteServer'] = "server/deleteServer";
-$route['email/(:any)'] = 'backup/sendEmailTodayBackup/$1';
-$route['pendingMail'] = 'backup/pendingScheduleBackups';
-
 
 /*********** CLIENT DEFINED ROUTES *******************/
 $route['clients'] = 'client/clients';
@@ -99,10 +96,18 @@ $route['schedules/(:num)'] = "schedule/schedules/$1";
 $route['schedule-details/(:num)'] = "schedule/scheduleDetails/$1";
 $route['schedule-update-status/(:num)'] = "schedule/updateScheduleStatus/$1";
 $route['add-comment/(:num)'] = "schedule/addComment/$1";
+$route['add-comment'] = 'schedule/addComment';
 
+/*********** CRON  DEFINED ROUTES *******************/
+// add today's schedule backup
 $route['schedule-backups'] = 'backup/scheduleBackups';
 
-$route['file-upload'] = 'schedule/addComment';
+//to send mail to users for todays backup schedule
+//$route['email/(:any)'] = 'backup/sendEmailTodayBackup/$1';
+
+//to send mail for pending backup schedule
+$route['pendingMail'] = 'backup/pendingScheduleBackups';
+
 
 /*********** BACKUP REPORT DEFINED ROUTES *******************/
 $route['backup-report'] = 'report/backupReport';
@@ -112,6 +117,9 @@ $route['backups-report'] = "report/allBackupReport";
 $route['backups-report/(:num)'] = "report/allBackupReport/$1";
 $route['export-excel'] = "report/excel";
 
+/*********** IP Blacklist DEFINED ROUTES *******************/
+$route['check-ip-blacklist'] = 'server/checkBlacklist';
+$route['blacklist'] = 'server/blacklist';
 
 //$route['paging-users'] = 'paging/custom';
 

@@ -6,7 +6,7 @@ require APPPATH . '/libraries/BaseController.php';
 
 /**
  * Class : Backup (BackupController)
- * User Class to control all user related operations.
+ * Backup Class to control all user related operations.
  * @author : Kishor Mali
  * @version : 1.1
  * @since : 15 November 2016
@@ -116,10 +116,8 @@ class Backup extends BaseController
                 //print_r($data);
                 $this->loadViews("backups", $this->global, $data, NULL);
                
-            }else{}
-        }else{} 
-
-        
+            }
+        }
     }
     function backupDetails($id)
     {
@@ -182,7 +180,6 @@ class Backup extends BaseController
             {
                 unset($_POST['add_backup']);
                 $this->addBackup();
-                
             }
             else
             {
@@ -209,7 +206,7 @@ class Backup extends BaseController
                     {
                         $this->session->set_flashdata('error', 'Schedule creation failed');
                     }
-            }
+                }
                 redirect('backups');
             }
 		}else{}
@@ -237,7 +234,6 @@ class Backup extends BaseController
                 redirect('backups');
             }
            
-            
             $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
             $data['clients'] = $this->backup_model->getClients();
             $data['users'] = $this->backup_model->getUsers();
@@ -349,6 +345,9 @@ class Backup extends BaseController
     {
         $this->load->model('backup_model');
 
+        $cronInfo = array('type'=>'Create_Schedule','startTime'=>date('Y-m-d H:i:s'));
+        $cronId = $this->backup_model->cronStartTime($cronInfo);
+
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
         $this->current_date = date("j");
@@ -391,8 +390,14 @@ class Backup extends BaseController
             $scheduleInfo = array('email'=>$userEmail,'date'=>$curr_date);
             $data = $this->backup_model->getTodaysBackup($scheduleInfo);
 
-            $this->sendEmailTodayBackup($data);
+            $MailResult =  $this->sendEmailTodayBackup($data);
         endforeach; 
+        if( $MailResult == True)
+        {
+            $cronInfo2 = array('endTime'=>date('Y-m-d H:i:s'));
+            $result = $this->backup_model->cronEndTime($cronInfo2 , $cronId);
+        }
+
         redirect("backups");
         
     }
@@ -478,7 +483,7 @@ class Backup extends BaseController
             ->subject($subject)
             ->message($body)
             ->send();
-        if($result== TRUE)
+        if($result == TRUE)
         {
             $mailLogInfo = array('email_to'=>$rec["UserEmail"],'email_from'=>"gurinderjeetkaur01@gmail.com",
             'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"daily_backup_notification");
@@ -487,6 +492,7 @@ class Backup extends BaseController
         var_dump($result);
         echo '<br />';
         echo $this->email->print_debugger();
+        return $result;
     }
     
      /**
@@ -496,6 +502,10 @@ class Backup extends BaseController
     {
         $this->load->model('backup_model');
 
+        $cronInfo = array('type'=>'Send_Pending_Mail','startTime'=>date('Y-m-d H:i:s'));
+            
+        $cronId = $this->backup_model->cronStartTime($cronInfo);
+       
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
         $this->current_date = date("j");
@@ -521,7 +531,7 @@ class Backup extends BaseController
             );
             // get all todays pending backups of user 
             $result = $this->backup_model->getPendingBackups($scheduleInfo);
-             
+            
             foreach($result as $backups)
             {
                 $scheduleId = $backups->scheduleId;
@@ -592,6 +602,7 @@ class Backup extends BaseController
                         if(!empty($res))
                         {
                             $count++;
+                            var_dump($res);
                             foreach($res as $r)
                             { 
                                 if($this->checkBackupId != $r->backupId )
@@ -680,19 +691,26 @@ class Backup extends BaseController
             unset($backupData);
             
             $data['userInfo'] =  array('userId'=>$UserId, 'userEmail'=>$UserEmail, 'userName'=>$UserName);
-           
-          
-            // call to function to send mail to user for their pending task
+
+            // call to function to send mail to user for their pending backup
            $userMailResult = $this->sendEmailPendingBackupUser($data);
          
         endforeach;
         if($userMailResult == TRUE )
         {
-            //$this->sendEmailPendingBackupAdmin($adminData);
+            // call to function to send mail to admin for pending backup list
+            echo $adminMailResult = $this->sendEmailPendingBackupAdmin($adminData);
         }
-       // redirect("backups");
+        if( $adminMailResult == True)
+        {
+            $cronInfo2 = array('endTime'=>date('Y-m-d H:i:s'));
+            $result = $this->backup_model->cronEndTime($cronInfo2 , $cronId);
+        }
+       
+     redirect("backups");
     }
-      /**
+
+    /**
      * This function is used to send mail to user for pending backup schedule
      */
     function sendEmailPendingBackupUser($data)
@@ -761,11 +779,9 @@ class Backup extends BaseController
             // Get full html:
             if(!empty($data['userInfo']))
             {
-                foreach($data['userInfo'] as $user)
-                {
-                $toEmail = $user;
-                $this->userName = $user;
-                } 
+                $toEmail = $data['userInfo']['userEmail'];
+                $this->userName = $data['userInfo']['userName'];;
+               
                 $subject = 'Pending backups list('. date("d-m-Y").')';
                  $body = '
                     <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
@@ -780,7 +796,7 @@ class Backup extends BaseController
             $result = $this->email
                 ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
                 // ->reply_to('')    // Optional, an account where a human being reads.
-                ->to('john@mailinator.com')
+                ->to($toEmail)
                 ->subject($subject)
                 ->message($body)
                 ->send();
@@ -796,30 +812,44 @@ class Backup extends BaseController
         }
       return $result;
     }
-        /**
+    /**
      * This function is used to send mail to admin for pending backup schedule
      */
     function sendEmailPendingBackupAdmin($data)
     {
         $this->load->library('email');
         $row = '';
+        $rowelse ='';
         $message = '';
         $this->userName = '';
         $this->messageAdmin  = '';
         $msg = '';
-        var_dump($data);
         if(!empty($data))
         {
-            $username = '';
+            $username = null;
             foreach($data as $pendingBackup)
             {  
-                $username = $pendingBackup['user'];
                 if($pendingBackup['count'] >= 2) 
                 {
                     if($username != $pendingBackup['user'])
-                    {
+                    { 
                         $row = '';
-                        $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;">
+                        $row .= '<table style="width:100%;"><tr><td><p>'.$pendingBackup["user"].'</p><table style="border:1px solid #e8e8e8;border-spacing:0;width:100%;">
+                        <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
+                            <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Server
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Time
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Type
+                            </th>
+                            <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                Options
+                            </th>
+                        </tr>
+                        <tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;">
                                 <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                 '.$pendingBackup['server'].'
                                 </td>
@@ -834,42 +864,12 @@ class Backup extends BaseController
                                         </a>
                                 </td>
                             </tr>';    
-                        $row_count= count($row);
-                        if($row_count > 5)
-                        {
-                            $row_view_more = '<tr>
-                                                    <td  colspan="4" style="padding: 10px 12px;">
-                                                    <a href="http://localhost:8080/server-m/schedules">
-                                                            View More
-                                                        </a>
-                                                    </td>
-                                                </tr>';
-                        }else{
-                                $row_view_more = '';
-                        }
-                        $rows=  $row . $row_view_more;
-                        $message1 = '<p>'.$pendingBackup["user"].'</p><table style="border:1px solid #e8e8e8;border-spacing:0;width:100%;">
-                                <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
-                                    <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Server
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Time
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Type
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Options
-                                    </th>
-                                </tr>
-                                    '.$rows.'
-                            </table>';
-                            $msg  .= $message1;
+                        $username = $pendingBackup['user'];
+                        $rowelse .= $row; 
                     }
                     else
                     {
-                        $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;">
+                         $rowelse .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;">
                             <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                             '.$pendingBackup['server'].'
                             </td>
@@ -883,45 +883,32 @@ class Backup extends BaseController
                                 View
                                     </a>
                             </td>
-                        </tr>';    
-                        $row_count= count($row);
-                        if($row_count > 5)
-                        {
-                            $row_view_more = '<tr>
-                                                    <td  colspan="4" style="padding: 10px 12px;">
-                                            <a href="http://localhost:8080/server-m/schedules">
-                                                    View More
-                                                </a>
-                                            </td>
-                                        </tr>';
-                        }else{
-                                $row_view_more = '';
-                        }
-                        $rows=  $row . $row_view_more;
-                        $message = '<p>'.$pendingBackup["user"].'</p><table style="border:1px solid #e8e8e8;border-spacing:0;width:100%;">
-                                <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
-                                    <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Server
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Time
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Type
-                                    </th>
-                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Options
-                                    </th>
-                                </tr>
-                                    '.$rows.'
-                            </table>';
+                        </tr>';  
                     }
-                    $username = $pendingBackup['user'];
                 }
             }
+            if($rowelse != '')
+            {
+                $row = $rowelse;
+            }
+            $row_count= count($row);
+            if($row_count > 5)
+            {
+                $row_view_more = '<tr>
+                                    <td  colspan="4" style="padding: 10px 12px;">
+                                        <a href="http://localhost:8080/server-m/schedules">
+                                            View More
+                                        </a>
+                                    </td>
+                                 </tr>';
+            }else{
+                $row_view_more = '';
+            }
+            $rows=  $row . $row_view_more;
+            $msg .= $rowelse;
+                
         }
-        echo $full_message = $msg.$message;
-die;
+        $full_message = $msg;
 
         if(!empty($data['user']))
         {
@@ -931,19 +918,20 @@ die;
             $this->userName = $user;
             } 
         }
-         // merge table of user's pending backup for admin-mail data
-      echo  $full_message;die;
-       
-           // admin mail for user's pending backups
-          // echo "userData".$this->messageAdmin1 .=  '<p>'.$this->userName.'</p>'.$message;
-          echo "admins data";
-           echo $this->messageAdmin;
+        // get mail of admin
+         $adminMail = $this->backup_model->getAdminEmail();
+         foreach($adminMail As $email)
+         {
+           $adminEmail = $email->email;
+         }
+     
+           // admin mail for user's pending backup
            $subject = 'Pending Backups list of users';
            echo $adminMailBody = '
                <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
                <p>Hi Admin</p>
                <p>Pending Backups list </p> 
-               '.$this->messageAdmin.'
+               '.$full_message.'
                ';
        
            $config['mailtype'] = 'html';
@@ -952,14 +940,14 @@ die;
            $result = $this->email
                ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
                // ->reply_to('')    // Optional, an account where a human being reads.
-               ->to('george@mailinator.com')
+               ->to($adminEmail)
                ->subject($subject)
                ->message($adminMailBody)
                ->send();
-           if($result== '')
+           if($result== TRUE)
            {
-               $mailLogInfo = array('email_to'=>$toEmail,'email_from'=>"gurinderjeetkaur01@gmail.com",
-               'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"Pending_backup_user_mail");
+               $mailLogInfo = array('email_to'=>$adminEmail,'email_from'=>"gurinderjeetkaur01@gmail.com",
+               'email_subject'=>$subject ,'email_body'=>$adminMailBody,'type_email'=>"Pending_backup_admin_mail");
                $res = $this->backup_model->addMailLog($mailLogInfo);
            }
            var_dump($result);

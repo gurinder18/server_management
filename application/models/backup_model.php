@@ -163,7 +163,7 @@ class Backup_model extends CI_Model
    
 
      /**
-     * This function is used to get the servers information by id
+     * This function is used to get the users 
      * @return array $result : This is result of the query
      */
     function getUsers()
@@ -363,6 +363,21 @@ class Backup_model extends CI_Model
        
         return $result;
     }
+      /**
+     * This function is used to get admin email
+     */
+    function getAdminEmail()
+    {
+        $this->db->select('BaseTbl.email');
+        $this->db->from('tbl_users as BaseTbl');
+      
+        $this->db->where('BaseTbl.roleId', 1);
+       
+        $query = $this->db->get();
+        $result = $query->result();    
+       
+        return $result;
+    }
      /**
      * This function is used to get the todays backup schedule of particular user
      */
@@ -379,6 +394,7 @@ class Backup_model extends CI_Model
         $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
         $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
  
+        $this->db->where('Backup.isDeleted', 0);
         $this->db->where('BaseTbl.date', $data['date']);
         $this->db->where('User.email', $data['email']);
         $query = $this->db->get();
@@ -417,7 +433,7 @@ class Backup_model extends CI_Model
        $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
        $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
         
-       //$this->db->where('BaseTbl.isDeleted', 0);
+       $this->db->where('Backup.isDeleted', 0);
        if($scheduleInfo['daily'] != '')
        {
             $this->db->where('Backup.scheduleType', "Daily");
@@ -432,26 +448,16 @@ class Backup_model extends CI_Model
        {
             $this->db->where('BaseTbl.backupId', $scheduleInfo['backupId']);
        }
-    //    if($scheduleInfo['date'] != '')
-    //    {
-    //         $this->db->or_where('Backup.scheduleTimings', $scheduleInfo['date']);
-    //    }
-    //    if($scheduleInfo['day'] != '')
-    //    {
-    //         $this->db->or_where('Backup.scheduleTimings',$scheduleInfo['day']);
-    //         $this->db->where('BaseTbl.date', $scheduleInfo['fullDate']);
-
-    //    }
-      
+   
        $query = $this->db->get();
        $result = $query->result();    
       //print_r( $this->db);
        return $result;
     }
     /**
-     * This function is used to get todays backup schedule information
+     * This function is used to CRON start time 
      */
-    function addCronRecord($cronInfo)
+    function cronStartTime($cronInfo)
     {
         $this->db->trans_start();
         $this->db->insert('tbl_cron_record', $cronInfo);
@@ -461,6 +467,16 @@ class Backup_model extends CI_Model
         $this->db->trans_complete();
         
         return $insert_id;
+    }
+     /**
+     * This function is used to CRON end time 
+     */
+    function cronEndTime($cronInfo, $id)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('tbl_cron_record', $cronInfo);
+        
+        return TRUE;
     }
 }
 

@@ -108,10 +108,29 @@
                                             <option value="0">Deactive</option>
                                         </select>
                                     </div>
+                                </div>   
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <div> <label for="user">Users </label></div>
+                                        <select class="multipleSelect form-control" multiple name="user[]" id="user">
+                                            <?php
+                                            if(!empty($users))
+                                            {
+                                                foreach ($users as $us)
+                                                { 
+                                                    ?>
+                                                    <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                        </div> 
                                 </div>    
                             </div>
                         </div><!-- /.box-body -->
-    
                         <div class="box-footer">
                             <input type="submit" class="btn btn-primary" name="add_client" value="Submit" />
                             <input type="reset" class="btn btn-default" value="Reset" />
@@ -124,3 +143,13 @@
     
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700,900&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://rawgit.com/dbrekalo/attire/master/dist/css/build.min.css">
+<script src="https://rawgit.com/dbrekalo/attire/master/dist/js/build.min.js"></script>
+
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/fastselect.min.css">
+<script src="<?php echo base_url(); ?>assets/dist/js/fastselect.standalone.js"></script>
+<script>
+    $('.multipleSelect').fastselect();
+</script>

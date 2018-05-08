@@ -6,7 +6,7 @@ require APPPATH . '/libraries/BaseController.php';
 
 /**
  * Class : Server (ServerController)
- * User Class to control all user related operations.
+ * Server Class to control all user related operations.
  * @author : Kishor Mali
  * @version : 1.1
  * @since : 15 November 2016
@@ -34,7 +34,6 @@ class Server extends BaseController
         
     }
     
-
     /**
      * This function is used to load the server list
      */
@@ -410,6 +409,69 @@ class Server extends BaseController
         if(!empty($result))
         { 
             return $result['id'];
+        }
+    }
+    
+    /**
+     * This function is used to load the add new server
+     */
+    function checkBlacklist()
+    {
+        if($this->isAdmin() == FALSE)
+        {
+            $this->loadThis();
+        }
+        $this->load->model('server_model');
+        $data['clients'] = $this->server_model->getClients();
+           
+        $this->global['pageTitle'] = 'Orion eSolutions : Add New Server';
+           
+         $this->loadViews("checkBlacklist", $this->global, $data, NULL);
+        
+    }
+    function dnsbllookup($ip)
+    {
+        // Add your preferred list of DNSBL's
+        $dnsbl_lookup = [
+            "dnsbl-1.uceprotect.net",
+            "dnsbl-2.uceprotect.net",
+            "dnsbl-3.uceprotect.net",
+            "dnsbl.dronebl.org",
+            "dnsbl.sorbs.net",
+            "zen.spamhaus.org",
+            "bl.spamcop.net",
+            "list.dsbl.org",
+            "sbl.spamhaus.org",
+            "xbl.spamhaus.org"
+        ];
+        $listed = "";
+        if ($ip) {
+            $reverse_ip = implode(".", array_reverse(explode(".", $ip)));
+            foreach ($dnsbl_lookup as $host) {
+                if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) {
+                    $listed .= $reverse_ip . '.' . $host . ' <font color="red">Listed</font><br />';
+                }
+            }
+        }
+        if (empty($listed)) {
+            echo '"A" record was not found';
+        } else {
+            echo $listed;
+        }
+    }
+    function blacklist()
+    {
+        if (isset($_GET['ip']) && $_GET['ip'] != null)
+        {
+            $ip = $_GET['ip'];
+            if (filter_var($ip, FILTER_VALIDATE_IP)) 
+            {
+                echo $this->dnsbllookup($ip);
+            }
+            else 
+            {
+                echo "Please enter a valid IP";
+            }
         }
     }
 }

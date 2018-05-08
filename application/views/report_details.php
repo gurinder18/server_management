@@ -165,7 +165,7 @@
                         <div class="modal-body">
                             <table class="table table-hover" id="add_comment"> 
                                 <tr>
-                                    <form role="form" id="addComment" action="<?php echo base_url() ?>file-upload" method="post" enctype="multipart/form-data" role="form">
+                                    <form role="form" id="addComment" action="<?php echo base_url() ?>add-comment" method="post" enctype="multipart/form-data" role="form">
                                     <th>Backup Status</th>
                                     <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
                                     <input type="hidden" id="userId" name="userId" value="<?php echo $scheduleInfo['userId'] ?>" />
@@ -368,7 +368,7 @@
     $(function() {
         $('#addComment').submit(function(e) {
             e.preventDefault();
-            var hitUrl = "<?php echo base_url(); ?>file-upload";
+            var hitUrl = "<?php echo base_url(); ?>add-comment";
         alert($('#comment_statusId').val());
             $.ajax({
                 type            : "POST",

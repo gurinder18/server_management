@@ -142,6 +142,35 @@ if(!empty($clientInfo))
                                     </div>
                                 </div>    
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">                                
+                                    <div class="form-group">
+                                        <div> <label for="user">Users </label></div>
+                                        <select class="multipleSelect form-control" multiple name="user[]" id="user">
+                                            <option value="">Select User</option>
+                                            <?php
+                                            if(!empty($users))
+                                            {
+                                                foreach ($users as $us)
+                                                { 
+                                                    $sele = '';
+                                                    foreach($clientUsers as $cluser)
+                                                    {
+                                                        if($us->userId == $cluser->userId)
+                                                        {
+                                                            $sele = 'selected';
+                                                        }    
+                                                    }
+                                                    ?>
+                                                    <option value="<?php echo $us->userId ?>" <?php echo $sele;?> ><?php echo $us->name; ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div><!-- /.box-body -->
      
                         <div class="box-footer">
@@ -156,3 +185,13 @@ if(!empty($clientInfo))
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/editUser.js" type="text/javascript"></script>
+
+<link href='https://fonts.googleapis.com/css?family=Lato:400,300,700,900&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="https://rawgit.com/dbrekalo/attire/master/dist/css/build.min.css">
+<script src="https://rawgit.com/dbrekalo/attire/master/dist/js/build.min.js"></script>
+
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/fastselect.min.css">
+<script src="<?php echo base_url(); ?>assets/dist/js/fastselect.standalone.js"></script>
+<script>
+    $('.multipleSelect').fastselect();
+</script>

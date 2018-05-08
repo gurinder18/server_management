@@ -59,7 +59,7 @@ class Client extends BaseController
             $this->loadViews("clients", $this->global, $data, NULL);
         }
     }
-
+ 
     /**
      * This function is used to load the add new form
      */
@@ -72,11 +72,11 @@ class Client extends BaseController
         elseif(isset($_POST['add_client'])!='Submit')
         {
             $this->load->model('client_model');
-            //$data['roles'] = $this->user_model->getUserRoles();
+            $data['users'] = $this->client_model->getUsers();
             
             $this->global['pageTitle'] = 'Orion eSolutions : Add New Client';
 
-            $this->loadViews("addNewClient", $this->global, NULL, NULL);
+            $this->loadViews("addNewClient", $this->global, $data, NULL);
         }
         elseif(isset($_POST['add_client'])=='Submit'){
             $this->load->library('form_validation');
@@ -89,6 +89,7 @@ class Client extends BaseController
             $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|numeric');
+            
            
             if($this->form_validation->run() == FALSE)
             {
@@ -105,25 +106,46 @@ class Client extends BaseController
                 $state = $this->input->post('state');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
-                
-                $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,  'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                $this->load->model('client_model');
-                $result = $this->client_model->add($clientInfo);
-                
-                if($result > 0)
+                $userId = $this->input->post('user');
+               
+                if($status == "")
                 {
-                    $this->session->set_flashdata('success', 'New Client created successfully');
+                    $status = 1;
+                        $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
+                        'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,
+                        'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                        
+                        $this->load->model('client_model');
+                        $clientId = $this->client_model->add($clientInfo);
+                        
+                        if($clientId > 0)
+                        {
+                            $this->session->set_flashdata('success', 'New Client created successfully');
+                        }
+                        else
+                        {
+                            $this->session->set_flashdata('error', 'Client creation failed');
+                        }
+
+                        foreach( $userId as $user)
+                        {
+                            $clientUserInfo = array('clientId'=>$clientId, 'userId'=>$user, 
+                            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+
+                            $result = $this->client_model->addClientsUser($clientUserInfo);
+                            if($result > 0)
+                            {
+                                $this->session->set_flashdata('success', 'New Client'."'".'s User created successfully');
+                            }
+                            else
+                            {
+                                $this->session->set_flashdata('error', 'Client'."'".'s User creation failed');
+                            }
+                        }
                 }
-                else
-                {
-                    $this->session->set_flashdata('error', 'Client creation failed');
-                }
-                
                 redirect('clients');
             }
-        }else{}
+        }
     }
 
     /**
@@ -164,7 +186,10 @@ class Client extends BaseController
             
             //$data['roles'] = $this->user_model->getUserRoles();
             $data['clientInfo'] = $this->client_model->getClientInfo($id);
+            $data['clientUsers'] = $this->client_model->getClientsUserInfo($id);
             
+            $data['users'] = $this->client_model->getUsers();
+
             $this->global['pageTitle'] = 'Orion eSolutions : Edit Client';
             
             $this->loadViews("editClient", $this->global, $data, NULL);
@@ -198,12 +223,13 @@ class Client extends BaseController
                 $state = $this->input->post('state');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
+                $userId = $this->input->post('user');
                 
                 $clientInfo = array();
                 
                  $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                    'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status, 'updatedBy'=>$this->vendorId, 
-                        'updatedDtm'=>date('Y-m-d H:i:s'));
+                    'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'updatedBy'=>$this->vendorId, 
+                    'updatedDtm'=>date('Y-m-d H:i:s'));
                 
                 $result = $this->client_model->edit($clientInfo, $id);
                 
@@ -216,6 +242,107 @@ class Client extends BaseController
                     $this->session->set_flashdata('error', 'Client updation failed');
                 }
                 
+                if($userId != null)
+                {
+                $data['clientUsers'] = $this->client_model->getClientsUserInfo($id);
+                $userCount = count( $data['clientUsers']);
+                $editUserCount = count($userId);
+                foreach($data['clientUsers'] as $usId)
+                {
+                   $users[] =  $usId->userId;
+                }
+
+                if($userCount == $editUserCount)
+                {
+                    $User = array_diff( $users,$userId);
+                  
+                    if(!empty($User))
+                    {
+                        foreach($User as $UserId)
+                        {
+                            $getInfo = $this->client_model->getClientsUser($id, $UserId);
+                            if( $getInfo != "")
+                            {
+                                $us = array_diff($userId,$users);
+                               
+                                foreach($us as $uId)
+                                { 
+                                    foreach($getInfo as $info)
+                                    {
+                                        $userInfo = $this->client_model->getClientsUser($info->clientId, $uId);
+                                        
+                                        if( $userInfo != "")
+                                        {
+                                            foreach($userInfo as $uInfo)
+                                            {
+                                                $clientInfo = array('isDeleted'=>0,'updatedBy'=>$this->vendorId,
+                                                'updatedDtm'=>date('Y-m-d H:i:s'));
+                                            
+                                                $res = $this->client_model->deleteClientsUser( $uInfo->userId,$id, $clientInfo);
+
+                                                $clientInfo1 = array('isDeleted'=>1,'updatedBy'=>$this->vendorId,
+                                                'updatedDtm'=>date('Y-m-d H:i:s'));
+                                            
+                                                $res = $this->client_model->deleteClientsUser( $UserId,$id, $clientInfo1);
+                                               
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $clientUserInfo = array('userId'=>$uId, 'updatedBy'=>$this->vendorId,
+                                            'updatedDtm'=>date('Y-m-d H:i:s'));
+
+                                            $res = $this->client_model->editClientsUser($clientUserInfo, $info->id);
+                                           
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                elseif($userCount < $editUserCount)
+                {
+                    $newUser = array_diff($userId, $users);
+                  
+                    foreach($newUser as $usId)
+                    {
+                        $getUserInfo = $this->client_model->getClientsUser($id, $usId);
+                        
+                        if(empty($getUserInfo))
+                        {
+                            $clientUserInfo = array('clientId'=>$id, 'userId'=>$usId, 
+                            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+    
+                            $result = $this->client_model->addClientsUser($clientUserInfo);
+                        }
+                        else
+                        {
+                            foreach($getUserInfo as $infos)
+                            {
+                                $clientInfos = array('isDeleted'=>0,'updatedBy'=>$this->vendorId,
+                                'updatedDtm'=>date('Y-m-d H:i:s'));
+                            
+                                $result = $this->client_model->deleteClientsUser( $infos->userId,$id, $clientInfos);
+                               
+                            }
+                        }
+                    }
+                }
+                elseif($userCount > $editUserCount)
+                {
+                    $delUser = array_diff($users , $userId);
+
+                    foreach($delUser as $del)
+                    {
+                        $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId,
+                         'updatedDtm'=>date('Y-m-d H:i:s'));
+                    
+                        $result = $this->client_model->deleteClientsUser( $del,$id, $clientInfo);
+                    }     
+                   
+                }
+                }
                 redirect('edit-client/'.$id);
             }
         }else{}
@@ -249,7 +376,7 @@ class Client extends BaseController
         }elseif(isset($_POST['delete_client'])=='Delete')
             {
                 $del = $this->input->post('delete_clients');
-                if($del!=null)
+                if($del != null)
                 {
                     foreach($del as $id):
                         $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
@@ -265,7 +392,7 @@ class Client extends BaseController
                     redirect("clients");
                 }
             }
-           
+            redirect("clients"); 
     }
     function pageNotFound()
     {
