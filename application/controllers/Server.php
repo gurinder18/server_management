@@ -72,7 +72,7 @@ class Server extends BaseController
                 $data['clients'] = $this->server_model->getClients();
                 $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId,$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-                //print_r($data);
+                
                 $this->loadViews("servers", $this->global, $data, NULL);
                
             }else{}
@@ -97,7 +97,7 @@ class Server extends BaseController
                 $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
                 $data['serverRecords'] = $this->server_model->serverListing( $returns["page"], $returns["segment"]);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-                //print_r($data);
+                
                 $this->loadViews("servers", $this->global, $data, NULL);
             }
             elseif(isset($_GET['search_server'])=='Search')
@@ -112,7 +112,7 @@ class Server extends BaseController
                 $data['clients'] = $this->server_model->getClients();
                 $data['serverRecords'] = $this->server_model->searchServer($returns["page"], $returns["segment"],$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-                //print_r($data);
+                
                 $this->loadViews("servers", $this->global, $data, NULL);
             }else{}
         }
@@ -201,11 +201,10 @@ class Server extends BaseController
                 redirect('servers');
             }
             
-           // $data['roles'] = $this->user_model->getUserRoles();
             $data['serverInfo'] = $this->server_model->getServerInfo($id);
             $data['clients'] = $this->server_model->getClients();
             $this->global['pageTitle'] = 'Orion eSolutions : Edit Server';
-           //print_r($data);
+           
             $this->loadViews("editOldServer", $this->global, $data, NULL);
         }
         elseif(isset($_POST['edit_server'])=='Submit'){
@@ -323,16 +322,19 @@ class Server extends BaseController
         $configUpload['allowed_types'] = 'xls|xlsx|csv';
         $configUpload['max_size'] = '10000';
         
-        // $ff = $_FILES['serverfile'];
-        // var_dump($ff);
-        // echo  $file_name = $_FILES['serverfile']['name'];
-
         $this->load->library('upload', $configUpload);
         $this->upload->do_upload('serverfile');	
         $upload_data = $this->upload->data(); //Returns array of containing all of the data related to the file you uploaded.
         $file_name = $upload_data['file_name']; //uploded file name
         $extension=$upload_data['file_ext'];    // uploded file extension
-                
+        $file = explode(".",$file_name); 
+        if($file[1] != 'xls|xlsx|csv')
+        {
+           echo "<script>alert('Only file type xls, xlsx, csv can be uploaded');</script>";
+           redirect('add-server');
+        }
+        else
+        {
         //$objReader =PHPExcel_IOFactory::createReader('Excel5');     //For excel 2003 
         
         $objReader= PHPExcel_IOFactory::createReader('Excel2007');	// For excel 2007 	  
@@ -402,6 +404,7 @@ class Server extends BaseController
         } 
         unlink( APPPATH.'../assets/excel/'.$file_name); //File Deleted After uploading in database .			 
         redirect('servers');
+        }
     }
     function checkClientExists($clientName)
     {

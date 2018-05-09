@@ -116,6 +116,8 @@
                       <td>
                         <div style="display:block;" id="backup_detail_less"> 
                           <?php 
+                          if($backupInfo['information'] != null)
+                          {
                             $str_length = strlen($backupInfo['information']);
                             if($str_length>30)
                             {
@@ -133,11 +135,14 @@
                              {
                                echo $backupInfo['information'];
                              }
+                            }else
+                            {
+                              echo "No Details";
+                            }
                           ?>
                       </td>
                     </tr>
                     <?php
-                        
                     }
                     ?>
                   </table>

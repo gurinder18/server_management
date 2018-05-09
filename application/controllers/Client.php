@@ -247,11 +247,21 @@ class Client extends BaseController
                 $data['clientUsers'] = $this->client_model->getClientsUserInfo($id);
                 $userCount = count( $data['clientUsers']);
                 $editUserCount = count($userId);
+               
                 foreach($data['clientUsers'] as $usId)
                 {
                    $users[] =  $usId->userId;
                 }
-
+                if($userCount == '')
+                {
+                    foreach($userId as $UserId)
+                    { 
+                        $clientUserInfo = array('clientId'=>$id, 'userId'=>$UserId, 
+                        'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+        
+                        $result = $this->client_model->addClientsUser($clientUserInfo);
+                    }
+                }
                 if($userCount == $editUserCount)
                 {
                     $User = array_diff( $users,$userId);
@@ -261,7 +271,7 @@ class Client extends BaseController
                         foreach($User as $UserId)
                         {
                             $getInfo = $this->client_model->getClientsUser($id, $UserId);
-                            if( $getInfo != "")
+                            if(!empty($getInfo))
                             {
                                 $us = array_diff($userId,$users);
                                
@@ -270,8 +280,8 @@ class Client extends BaseController
                                     foreach($getInfo as $info)
                                     {
                                         $userInfo = $this->client_model->getClientsUser($info->clientId, $uId);
-                                        
-                                        if( $userInfo != "")
+                                         
+                                        if(!empty($userInfo))
                                         {
                                             foreach($userInfo as $uInfo)
                                             {
@@ -294,6 +304,11 @@ class Client extends BaseController
 
                                             $res = $this->client_model->editClientsUser($clientUserInfo, $info->id);
                                            
+                                            $clientUserInfo1 = array('clientId'=>$id, 'userId'=>$uId, 
+                                            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                    
+                                            $result = $this->client_model->addClientsUser($clientUserInfo1);
+                                          
                                         }
                                     }
                                 }

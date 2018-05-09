@@ -17,14 +17,14 @@
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
+                    <table class="table table-hover td-align">
                         <tr>
-                            <th colspan="2">From Date - To Date</th>
-                            <th>Client</th>
-                            <th>Server</th>
-                            <th>User</th> 
-                            <th>Status</th>
-                            <th>Day</th>
+                            <th class="td-align" colspan="2">From Date - To Date</th>
+                            <th class="td-align">Client</th>
+                            <th class="td-align">Server</th>
+                            <th class="td-align">User</th> 
+                            <th class="td-align">Status</th>
+                            <th class="td-align">Day</th>
                             <th class="text-center">Actions</th>
                         </tr>
                         <tr>

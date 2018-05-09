@@ -1,5 +1,5 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/froala-editor/2.5.1/css/froala_style.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/dist/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>assets/dist/css/froala_style.min.css" rel="stylesheet" type="text/css" />
 
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -37,6 +37,9 @@
                 <div class="row">
                     <div class="col-md-12">
                         <?php echo validation_errors('<div class="alert alert-danger alert-dismissable">', ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>'); ?>
+                        <!-- <?php if(isset($_GET['msg'])){ ?>
+                        <div class="alert alert-danger alert-dismissable"><?php echo $_GET['msg']; ?></div>
+                        <?php } ?> -->
                     </div>
                 </div>
             </div>

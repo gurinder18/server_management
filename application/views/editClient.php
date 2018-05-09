@@ -147,7 +147,7 @@ if(!empty($clientInfo))
                                     <div class="form-group">
                                         <div> <label for="user">Users </label></div>
                                         <select class="multipleSelect form-control" multiple name="user[]" id="user">
-                                            <option value="">Select User</option>
+                                           
                                             <?php
                                             if(!empty($users))
                                             {

@@ -32,7 +32,6 @@
                       <th>State</th>
                       <th>Zip</th>
                       <th>Status</th>
-                      <th>User</th>
                       <th class="text-center">Actions</th>
                     </tr>
                     <form role="form" id="deleteServer" action="<?php echo base_url() ?>deleteClient" method="post" role="form">
@@ -54,7 +53,6 @@
                       <td><?php if(empty($record->state)){ echo "N/A";}else{echo $record->state;} ?></td>
                       <td><?php if(empty($record->zip)){ echo "N/A";}else{echo $record->zip;} ?></td>
                       <td><?php if(($record->status)==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
-                      <td><?php if(empty($record->UserName)){ echo "N/A";}else{echo $record->UserName;} ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-client/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                           <a class="btn btn-sm btn-danger deleteClient" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>

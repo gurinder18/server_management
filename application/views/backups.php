@@ -24,15 +24,15 @@
                     
                 </div><!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
-                  <table class="table table-hover">
+                  <table class="table table-hover td-align">
                     <tr>
                       <th><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
-                      <th>User</th>
-                      <th>Client</th>
-                      <th>Server</th>
-                      <th>Schedule Type</th>
-                      <th>Schedule Timings</th>
-                      <th class="text-center">Actions</th>
+                      <th class="td-align">User</th>
+                      <th class="td-align">Client</th>
+                      <th class="td-align">Server</th>
+                      <th class="td-align">Schedule Type</th>
+                      <th class="td-align">Schedule Timings</th>
+                      <th class="td-align" class="text-center">Actions</th>
                     </tr>
                     <tr>
                     <td></td> 
@@ -49,16 +49,16 @@
                                 ?>
                                 <option value="<?php echo $us->userId ?>"
                                 <?php
-                                if(isset($_GET['search_backup'])=='Search')
-                                { 
-                                    if(!($_GET['user']) == NULL)
-                                    {
+                                    if(isset($_GET['search_backup'])=='Search')
+                                    { 
+                                        if(!($_GET['user']) == NULL)
+                                        {
                                             if($_GET['user']==$us->userId)
                                             {
                                                 echo "selected";
                                             } 
-                                    }
-                                } 
+                                        }
+                                    } 
                                 ?>
                                 ><?php echo $us->name ?></option>
                                 <?php
@@ -128,7 +128,7 @@
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleType" name="scheduleType" > 
-                                <option value="">Select schedule type</option>
+                                <option value="">Select type</option>
                                 <option value="Daily" 
                                     <?php
                                     if(isset($_GET['search_backup'])=='Search'){ 
@@ -163,7 +163,6 @@
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                                <option value=''>Select schedule timings</option>
                                 <?php
                                         if(isset($_GET['search_backup'])=='Search')
                                         { 
@@ -215,7 +214,7 @@
                        if($role_slug=="sys.admin"){ 
                     ?>
                     <tr>
-                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></td>
+                        <th colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></th>
                     </tr>
                     </form>
                     <?php
@@ -229,7 +228,7 @@
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php echo $this->pagination->create_links(); 
-                   //if (isset($links)) {  echo $links;}
+                   
                     ?>
                 </div>
               </div><!-- /.box -->
@@ -252,10 +251,10 @@
     $(document).on("change","#scheduleType",function() {
         var val = $(this).val();
         if (val == "Daily") {
-            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+            $("#scheduleTimings").html("<option value=''>Select timings</option>"+
             "<option value='Day'>Day</option><option value='Night'>Night</option>");
         } else if (val == "Weekly") {
-            $("#scheduleTimings").html("<option value=''>Select schedule timings</option>"+
+            $("#scheduleTimings").html("<option value=''>Select timings</option>"+
                 "<option value='Sunday'>Sunday</option>"+
                 "<option value='Monday'>Monday</option>"+
                 "<option value='Tuesday'>Tuesday</option>"+
@@ -264,13 +263,13 @@
                 "<option value='Friday'>Friday</option>"+
                 "<option value='Saturday'>Saturday</option>");
         } else if (val == "Monthly") {
-           var date =  "<option value=''>Select schedule timings</option>"; 
+           var date =  "<option value=''>Select timings</option>"; 
             for (var i = 1; i <= 31; i++){
                 date += "<option value='"+i+"'>"+i+"</option>";
             }
             $("#scheduleTimings").html(date);
         } else if (val == "") {
-            $("#scheduleTimings").html("<option value=''>select schedule timings</option>");
+            $("#scheduleTimings").html("<option value=''>select timings</option>");
         }
     });
 
