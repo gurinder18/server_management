@@ -407,7 +407,7 @@ class Client extends BaseController
                     redirect("clients");
                 }
             }
-            redirect("clients"); 
+            
     }
     function pageNotFound()
     {

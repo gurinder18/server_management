@@ -37,9 +37,22 @@
                 <div class="row">
                     <div class="col-md-12">
                         <?php echo validation_errors('<div class="alert alert-danger alert-dismissable">', ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>'); ?>
-                        <!-- <?php if(isset($_GET['msg'])){ ?>
-                        <div class="alert alert-danger alert-dismissable"><?php echo $_GET['msg']; ?></div>
-                        <?php } ?> -->
+                        <?php 
+                            if($this->input->get("invalid") != "")
+                            {
+                                echo '<div class="alert alert-danger alert-dismissable">
+                                        '.$this->input->get("invalid").'
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    </div>'; 
+                            }
+                            if($this->input->get("message") != "")
+                            {
+                                echo '<div class="alert alert-danger alert-dismissable">
+                                        '.$this->input->get("message").'
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    </div>'; 
+                            }
+                        ?>
                     </div>
                 </div>
             </div>

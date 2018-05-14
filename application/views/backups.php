@@ -105,24 +105,26 @@
                                     {
                                         foreach ($backupRecords as $br)
                                         { 
+
+                                        }
+                                            if(isset($_GET['search_backup'])=='Search')
+                                            { 
+                                                if(!($_GET['server']) == NULL)
+                                                {
                                 ?>
                                 <option value="<?php echo $br->serverId ?>"
                                 <?php
-                                       if(isset($_GET['search_backup'])=='Search')
-                                       { 
-                                           if(!($_GET['server']) == NULL)
-                                           {
-                                                   if($_GET['server']==$br->serverId)
-                                                   {
+                                                    if($_GET['server']==$br->serverId)
+                                                    {
                                                        echo "selected";
-                                                   } 
-                                           }
-                                       }
+                                                    } 
                                    ?>
                                    ><?php echo $br->ServerName ?></option>
                                    <?php
-                                           }
-                                       }
+                                                }   
+                                            }  
+                                        
+                                    }
                                    ?>
                             </select>
                         </td>
@@ -163,6 +165,7 @@
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
+                            <option value="">Select timings</option>
                                 <?php
                                         if(isset($_GET['search_backup'])=='Search')
                                         { 

@@ -309,18 +309,12 @@ class Server extends BaseController
        
     }
     
-    function pageNotFound()
-    {
-        $this->global['pageTitle'] = 'Orion eSolutions : 404 - Page Not Found';
-        
-        $this->loadViews("404", $this->global, NULL, NULL);
-    }
-    public	function addServers()
+    function addServers()
     {  
         //Path of files were you want to upload on localhost (C:/xampp/htdocs/ProjectName/uploads/excel/)	 
         $configUpload['upload_path'] = APPPATH.'../assets/excel/';
         $configUpload['allowed_types'] = 'xls|xlsx|csv';
-        $configUpload['max_size'] = '10000';
+        $configUpload['max_size'] = '1000';
         
         $this->load->library('upload', $configUpload);
         $this->upload->do_upload('serverfile');	
@@ -328,10 +322,11 @@ class Server extends BaseController
         $file_name = $upload_data['file_name']; //uploded file name
         $extension=$upload_data['file_ext'];    // uploded file extension
         $file = explode(".",$file_name); 
-        if($file[1] != 'xls|xlsx|csv')
+       
+        if($file[1] != 'xlsx' && $file[1] != 'xls' && $file[1] != 'csv')
         {
            echo "<script>alert('Only file type xls, xlsx, csv can be uploaded');</script>";
-           redirect('add-server');
+           redirect('add-server?invalid=Only file type xls, xlsx, csv can be uploaded');
         }
         else
         {
@@ -341,10 +336,25 @@ class Server extends BaseController
         //Set to read only
         $objReader->setReadDataOnly(true); 		  
         //Load excel file
-        $path =  'C:/wamp64/www/server-m/assets/excel/';
-        $objPHPExcel=$objReader->load( APPPATH.'../assets/excel/'.$file_name);		 
-        $totalrows=$objPHPExcel->setActiveSheetIndex(0)->getHighestRow();   //Count Numbe of rows avalable in excel      	 
-        $objWorksheet=$objPHPExcel->setActiveSheetIndex(0);                
+        $path = 'C:/wamp64/www/server-m/assets/excel/';
+        $objPHPExcel = $objReader->load( APPPATH.'../assets/excel/'.$file_name);		 
+        $totalrows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();   //Count Numbe of rows avalable in excel      	 
+        $objWorksheet = $objPHPExcel->setActiveSheetIndex(0); 
+
+        $name = $objWorksheet->getCellByColumnAndRow(0,1)->getValue();
+        $client = $objWorksheet->getCellByColumnAndRow(1,1)->getValue(); //Excel Column 1
+        $serverIP = $objWorksheet->getCellByColumnAndRow(2,1)->getValue(); //Excel Column 2
+        $hostname = $objWorksheet->getCellByColumnAndRow(3,1)->getValue(); //Excel Column 3
+        $username = $objWorksheet->getCellByColumnAndRow(4,1)->getValue(); //Excel Column 4
+        $password = $objWorksheet->getCellByColumnAndRow(5,1)->getValue(); //Excel Column 5
+        $status = $objWorksheet->getCellByColumnAndRow(6,1)->getValue(); //Excel Column 6
+        $details = $objWorksheet->getCellByColumnAndRow(7,1)->getValue(); //Excel Column 7 
+        if(!isset($name,$client,$serverIP,$hostname,$username,$password,$status,$details))
+        {
+            redirect("add-server?message=Please upload file with valid data");
+        }
+        else
+        {
         //loop from first data untill last data
         for($i = 2 ; $i <= $totalrows ; $i++)
         {
@@ -357,38 +367,15 @@ class Server extends BaseController
             $status = $objWorksheet->getCellByColumnAndRow(6,$i)->getValue(); //Excel Column 6
             $details = $objWorksheet->getCellByColumnAndRow(7,$i)->getValue(); //Excel Column 7
 
-            $clientId = $this->checkClientExists($client);
-            if(!empty($clientId))
+            if(isset($name,$client,$serverIP,$hostname,$status,$details) && (is_string($client) == TRUE) && (is_numeric($status) == TRUE))
             {
-                $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
-                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
-                'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                        
-                $this->load->model('server_model');
-                $result = $this->server_model->addNewServer($serverInfo);
-                if($result > 0)
-                {
-                    $this->session->set_flashdata('success', 'New server created successfully');
-                }
-                else
-                {
-                    $this->session->set_flashdata('error', 'Server creation failed');
-                }
-            }
-            else
-            {
-                $clientInfo = array('name'=>$client,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                $this->load->model('client_model');
-                $result = $this->client_model->add($clientInfo);
-
                 $clientId = $this->checkClientExists($client);
                 if(!empty($clientId))
                 {
                     $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
                     'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
                     'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                            
+                                    
                     $this->load->model('server_model');
                     $result = $this->server_model->addNewServer($serverInfo);
                     if($result > 0)
@@ -400,12 +387,45 @@ class Server extends BaseController
                         $this->session->set_flashdata('error', 'Server creation failed');
                     }
                 }
+                else
+                {
+                    $clientInfo = array('name'=>$client,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                            
+                    $this->load->model('client_model');
+                    $result = $this->client_model->add($clientInfo);
+
+                    $clientId = $this->checkClientExists($client);
+                    if(!empty($clientId))
+                    {
+                        $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
+                        'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                        'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                                    
+                        $this->load->model('server_model');
+                        $result = $this->server_model->addNewServer($serverInfo);
+                        if($result > 0)
+                        {
+                            $this->session->set_flashdata('success', 'New server created successfully');
+                        }
+                        else
+                        {
+                            $this->session->set_flashdata('error', 'Server creation failed');
+                        }
+                    }
+                }
+            }
+            else
+            {
+                redirect("add-server?message=Please upload file with valid data");
+                break;
             }
         } 
         unlink( APPPATH.'../assets/excel/'.$file_name); //File Deleted After uploading in database .			 
         redirect('servers');
         }
     }
+}
+   
     function checkClientExists($clientName)
     {
         $result = $this->server_model->checkClientExists($clientName);
@@ -420,7 +440,7 @@ class Server extends BaseController
      */
     function checkBlacklist()
     {
-        if($this->isAdmin() == FALSE)
+        if($this->isAdmin() == FALSE && $this->isMember() == FALSE)
         {
             $this->loadThis();
         }
@@ -452,14 +472,15 @@ class Server extends BaseController
             $reverse_ip = implode(".", array_reverse(explode(".", $ip)));
             foreach ($dnsbl_lookup as $host) {
                 if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) {
-                    $listed .= $reverse_ip . '.' . $host . ' <font color="red">Listed</font><br />';
+                    $listed .= '</br>'.$reverse_ip . '.' . $host ;
                 }
             }
         }
         if (empty($listed)) {
-            echo '"A" record was not found';
+            $message = 'Record was not found';
+            redirect("check-ip-blacklist?status=".$message);
         } else {
-            echo $listed;
+            redirect("check-ip-blacklist?listed=".$listed);
         }
     }
     function blacklist()
@@ -473,9 +494,16 @@ class Server extends BaseController
             }
             else 
             {
-                echo "Please enter a valid IP";
+                $notValid = "Please enter a valid IP";
+                redirect("check-ip-blacklist?invalid=".$notValid);
             }
         }
+    }
+    function pageNotFound()
+    {
+        $this->global['pageTitle'] = 'Orion eSolutions : 404 - Page Not Found';
+        
+        $this->loadViews("404", $this->global, NULL, NULL);
     }
 }
 ?>

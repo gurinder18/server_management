@@ -113,14 +113,12 @@
                                         </div>     
                                            <div class="modal-body">
                                            <form role="form" id="scheduleDetails" action="<?php echo base_url() ?>schedule-update-status/<?php echo $scheduleInfo['id']?>" method="post" role="form">
-                                         
                                                 <table class="table table-hover">
                                                     <tr>
-                                                    
                                                         <th>Backup Status</th>
                                                             <input type="hidden" id="status_scheduleId" name="status_scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
                                                         <td> 
-                                                            <select class="form-control required" id="backupStatus" name="backupStatus" >
+                                                            <select class="form-control required" id="backupStatus" name="backupStatus" required>
                                                             <?php $selected = "selected";  ?>
                                                             <option value="">Select Status</option>
                                                             <option value="1" <?php if($scheduleInfo['status']==1){ echo $selected;  } ?>>Pending</option>
@@ -137,7 +135,6 @@
                                                <input type="submit" class="btn btn-primary" id="backup_status" name="backup_status" value="Submit">
                                                 </form> <?php } ?>
                                             </div> 
-                                       
                                     </div>
                                 </div>
                             </div>   

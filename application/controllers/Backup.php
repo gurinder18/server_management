@@ -95,8 +95,7 @@ class Backup extends BaseController
                 $data['clients'] = $this->backup_model->getClients();
                 $data['users'] = $this->backup_model->getUsers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
-               // $data["links"] = $this->pagination->create_links();
+                
                 $this->loadViews("backups", $this->global, $data, NULL);
             }
             elseif(isset($_GET['search_backup'])=='Search')

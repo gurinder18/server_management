@@ -43,7 +43,7 @@ $route['404_override'] = 'error';
 
 
 /*********** USER DEFINED ROUTES *******************/
-
+$route['testing'] = 'testing/testingpage';
 $route['loginMe'] = 'login/loginMe';
 //$route['dashboard'] = 'user';
 $route['logout'] = 'user/logout';
@@ -70,6 +70,7 @@ $route['createPasswordUser'] = "login/createPasswordUser";
 $route['servers'] = 'server/serverListing';
 $route['servers/(:num)'] = "server/serverListing/$1";
 $route['add-server'] = "server/addServer";
+$route['add-server(:any)'] = "server/addServer/$1";
 $route['edit-server/(:num)'] = "server/editServer/$1";
 $route['deleteServer'] = "server/deleteServer";
 
@@ -119,6 +120,7 @@ $route['export-excel'] = "report/excel";
 
 /*********** IP Blacklist DEFINED ROUTES *******************/
 $route['check-ip-blacklist'] = 'server/checkBlacklist';
+$route['check-ip-blacklist/(:any)'] = 'server/checkBlacklist/$1';
 $route['blacklist'] = 'server/blacklist';
 
 //$route['paging-users'] = 'paging/custom';
