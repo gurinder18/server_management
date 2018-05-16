@@ -101,13 +101,13 @@ $route['add-comment'] = 'schedule/addComment';
 
 /*********** CRON  DEFINED ROUTES *******************/
 // add today's schedule backup
-$route['schedule-backups'] = 'backup/scheduleBackups';
+$route['schedule-backups'] = 'cron/scheduleBackups';
 
 //to send mail to users for todays backup schedule
 //$route['email/(:any)'] = 'backup/sendEmailTodayBackup/$1';
 
 //to send mail for pending backup schedule
-$route['pendingMail'] = 'backup/pendingScheduleBackups';
+$route['pendingMail'] = 'cron/pendingScheduleBackups';
 
 
 /*********** BACKUP REPORT DEFINED ROUTES *******************/

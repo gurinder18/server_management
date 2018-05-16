@@ -273,7 +273,6 @@ class User extends BaseController
                 redirect("users");
             }
         }
-        else{}
     }
     
     /**

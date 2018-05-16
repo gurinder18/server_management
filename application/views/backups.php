@@ -11,7 +11,6 @@
                 <div class="form-group">
                 <?php if($role==1){ ?>
                     <a class="btn btn-primary" href="<?php echo base_url(); ?>add-backup"><i class="fa fa-plus"></i> Add New</a>
-                    <a class="btn btn-primary" href="<?php echo base_url(); ?>schedule-backups"><i class="fa fa-plus"></i> Add Schedule</a>
                 <?php } ?>
                 </div>
             </div>

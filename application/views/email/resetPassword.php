@@ -22,7 +22,7 @@
 															<span style="font-size:1px;min-height:0;color:#fff;width:0;display:block">Just one more step.</span>
 															<dl style="list-style-type:none;padding:0;overflow:hidden;margin:0">
 																<dt style="font-size:15px;display:inline-block;width:100%;margin:0;padding:0 0 12px 0;vertical-align:top;padding-bottom:0!important">
-																	<a href="<?php echo base_url(); ?>" title="CodeInsect" style="display:inline-block" target="_blank">CodeInsect</a>
+																	<div style="text-align:center;"><img src="<?php echo base_url() ?>assets/dist/img/logo.png" alt="" /></div>
 																</dt>
 																<div style="font-size:15px;display:inline-block;width:100%;margin:0;vertical-align:top"></div>
 															</dl>
@@ -55,8 +55,10 @@
 																	<tr>
 																		<td align="center">
 																			<div style="width:100%">
+																				<div>
 																				<b>Hi, <?php echo $data["name"]; ?></b>! <span class="il"><?php echo $data["message"]; ?></span>
 																				<div style="min-height:20px"></div>
+																				</div></br>
 																				<div style="width:100%">
 																					<a style="display:inline-block;font-size:15px;padding:10px 18px;vertical-align:middle;color:#ffffff;background:#34a8c4;border-top:solid 1px #2c8ea6;border-right:solid 1px #2c8ea6;border-bottom:solid 1px #2c8ea6;border-left:solid 1px #2c8ea6;border-radius:3px;text-decoration:none;white-space:normal;font-weight:bold;line-height:18px" href="<?php echo $data['reset_link']; ?>" target="_blank"> <span class="il"> Reset Password Link </span></a>
 																				</div>

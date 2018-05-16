@@ -2,7 +2,10 @@
 
 class Login_model extends CI_Model
 {
-    
+    public function __construct()
+    {
+        parent::__construct();
+    }
     /**
      * This function used to check the login credentials of the user
      * @param string $email : This is email of the user

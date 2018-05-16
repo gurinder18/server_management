@@ -130,12 +130,23 @@ if(!function_exists('resetPasswordEmail'))
         
         $CI = setProtocol();        
         
-        $CI->email->from(EMAIL_FROM, FROM_NAME);
-        $CI->email->subject("Reset Password");
-        $CI->email->message($CI->load->view('email/resetPassword', $data, TRUE));
-        $CI->email->to($detail["email"]);
-        $status = $CI->email->send();
+        // $CI->email->from(EMAIL_FROM, FROM_NAME);
+        // $CI->email->subject("Reset Password");
+        // $CI->email->message($CI->load->view('email/resetPassword', $data, TRUE));
+        // $CI->email->to($detail["email"]);
+        // $status = $CI->email->send();
         
+        // Always set content-type when sending HTML email
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+        // More headers
+        $headers .= 'From: <webmaster@example.com>' . "\r\n";
+        $headers .= 'Cc: myboss@example.com' . "\r\n";
+        $subject = "Reset Password";
+        $body = $CI->load->view('email/resetPassword', $data, TRUE);
+        $status = mail($detail["email"],$subject,$body,$headers);
+
         return $status;
     }
 }

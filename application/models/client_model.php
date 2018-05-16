@@ -139,6 +139,24 @@ class Client_model extends CI_Model
         
         return $query->result();
     }
+     /**
+     * This function used to get client information by id
+     * @param number $id : This is client id
+     * @return array $result : This is client information
+     */
+    function getClientUserInfo($id)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.clientId, BaseTbl.userId, User.name As UserName');
+        
+        $this->db->from('tbl_client_users as BaseTbl');
+       
+        $this->db->where('BaseTbl.isDeleted', 0);
+		//$this->db->where('roleId !=', 1);
+        $this->db->where('clientId', $id);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
     /**
      * This function used to get client information by clientId and userId
      * @param number $id : This is client id
@@ -207,6 +225,7 @@ class Client_model extends CI_Model
     {
         $this->db->where('id', $id);
         $this->db->update('tbl_clients', $clientInfo);
+        $result = $this->db->affected_rows();
         if($this->db->affected_rows()>0)
         {
             $this->db->where('clientId', $id);
@@ -219,7 +238,7 @@ class Client_model extends CI_Model
                 $this->db->update('tbl_backups', $clientInfo);  
             }
         }
-        return $this->db->affected_rows();
+        return $result;
     }
 
 

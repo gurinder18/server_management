@@ -241,7 +241,7 @@ class Client extends BaseController
                 {
                     $this->session->set_flashdata('error', 'Client updation failed');
                 }
-                
+               
                 if($userId != null)
                 {
                 $data['clientUsers'] = $this->client_model->getClientsUserInfo($id);
@@ -252,8 +252,9 @@ class Client extends BaseController
                 {
                    $users[] =  $usId->userId;
                 }
+                
                 if($userCount == '')
-                {
+                { 
                     foreach($userId as $UserId)
                     { 
                         $clientUserInfo = array('clientId'=>$id, 'userId'=>$UserId, 
@@ -357,11 +358,31 @@ class Client extends BaseController
                     }     
                    
                 }
-                }
+                // elseif($editUserCount == "")
+                // {
+                //     $getUserInfo = $this->client_model->getClientUserInfo($id);
+                //     //var_dump($getUserInfo);die;
+                //     if(!empty($getUserInfo))
+                //     {
+                //         foreach($getUserInfo as $infos)
+                //         {
+                //             $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId,
+                //             'updatedDtm'=>date('Y-m-d H:i:s'));
+                            
+                //             $result = $this->client_model->deleteClientsUser(  $infos->userId,$id, $clientInfo);
+                //         }
+                //     }
+                //     else
+                //     {
+                //         redirect('edit-client/'.$id);
+                //     }
+                // }
                 redirect('edit-client/'.$id);
             }
-        }else{}
+        }
     }
+    }
+        
     
     /**
      * This function is used to delete the client using id
@@ -388,26 +409,28 @@ class Client extends BaseController
             { 
                 echo(json_encode(array('status'=>FALSE))); 
             }
-        }elseif(isset($_POST['delete_client'])=='Delete')
+        }
+        elseif(isset($_POST['delete_client'])=='Delete')
+        {
+            $del = $this->input->post('delete_clients');
+            if($del != null)
             {
-                $del = $this->input->post('delete_clients');
-                if($del != null)
-                {
-                    foreach($del as $id):
-                        $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                foreach($del as $id):
+                    $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
                         
-                        $result = $this->client_model->deleteClient($id, $clientInfo);
-                    endforeach;
-                    if ($result > 0)
-                    {  
-                        redirect("clients");
-                    }
-                }else
-                {
+                    $result = $this->client_model->deleteClient($id, $clientInfo);
+                endforeach;
+                if ($result > 0)
+                {  
                     redirect("clients");
+                    unset($_POST['delete_client']);
                 }
             }
-            
+            else
+            {
+                redirect("clients");
+            }
+        }
     }
     function pageNotFound()
     {

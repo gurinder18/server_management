@@ -289,24 +289,24 @@ class Server extends BaseController
         elseif(isset($_POST['delete_server'])=='Delete')
         {
             $del = $this->input->post('delete_servers');
-            if($del!=null)
+            if($del != null)
             {
                 foreach($del as $id):
-                    //$id = $this->input->post('id');
                     $serverInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
                     
                     $result = $this->server_model->deleteServer($id, $serverInfo);
                 endforeach;
                 if ($result > 0)
                 {  
-                    redirect("servers");
+                    redirect('servers');
+                    unset($_POST['delete_server']);
                 }
-            }else
+            }
+            else
             {
-                redirect("servers");
+                redirect('servers');
             }
         }
-       
     }
     
     function addServers()

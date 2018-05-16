@@ -250,13 +250,14 @@ class Server_model extends CI_Model
         $this->db->where('id', $id);
       
         $this->db->update('tbl_servers', $serverInfo);
+        $result = $this->db->affected_rows();
         if($this->db->affected_rows()>0)
         {
             $this->db->where('serverId', $id);
       
             $this->db->update('tbl_backups', $serverInfo);  
         }
-        return $this->db->affected_rows();
+        return $result;
     }
      /**
      * This function is used to check whether email id is already exist or not
