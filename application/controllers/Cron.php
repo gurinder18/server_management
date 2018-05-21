@@ -452,7 +452,7 @@ class Cron extends BaseController
                                         Server
                                     </th>
                                     <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                        Time
+                                    No. of times
                                     </th>
                                     <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                         Type
@@ -535,7 +535,7 @@ class Cron extends BaseController
                                 Server
                             </th>
                             <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                Time
+                                No. of times
                             </th>
                             <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                 Type
@@ -619,7 +619,6 @@ class Cron extends BaseController
          {
            $adminEmail = $email->email;
          }
-     
            // admin mail for user's pending backup
            $subject = 'Pending Backups list of users';
            echo $adminMailBody = '

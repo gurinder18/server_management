@@ -9,7 +9,7 @@ class Server_model extends CI_Model
      */
     function serverListingCount()
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details');
         $this->db->from('tbl_servers as BaseTbl');
         
@@ -28,15 +28,16 @@ class Server_model extends CI_Model
      */
     function serverListing($page=null, $segment=null)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
          BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
         $this->db->from('tbl_servers as BaseTbl');
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
        
         $this->db->where('BaseTbl.isDeleted', 0);
+        $this->db->order_by('BaseTbl.isDeleted', 0);
         $this->db->limit($page, $segment);
-        $this->db->order_by("BaseTbl.createdDtm", "asc");
+        $this->db->order_by("Client.name", "asc");
         $query = $this->db->get();
         $result = $query->result();    
         
@@ -45,7 +46,7 @@ class Server_model extends CI_Model
  
     function searchServer($page, $segment,$search_data)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
          //$this->db->select('BaseTbl.*');
          $this->db->from('tbl_servers as BaseTbl');
@@ -66,6 +67,9 @@ class Server_model extends CI_Model
         if($search_data['name']!=null){
              $this->db->where('BaseTbl.name', $search_data['name']);
         }
+        if($search_data['os']!=null){
+            $this->db->where('BaseTbl.operatingSystem', $search_data['os']);
+        }
         if($search_data['clientId']!=null){
              $this->db->where('BaseTbl.clientId', $search_data['clientId']);
         }
@@ -74,9 +78,10 @@ class Server_model extends CI_Model
              $this->db->where('BaseTbl.status', $search_data['status']);
          }
         $this->db->limit($page, $segment);
+        $this->db->order_by("Client.name", "asc");
         $this->db->order_by("BaseTbl.createdDtm", "asc");
         $query = $this->db->get();
-       // var_dump($this->db);
+       
         $result = $query->result();    
         return $result;
     }
@@ -88,7 +93,7 @@ class Server_model extends CI_Model
      */
     function membersServersCount($userId)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
         $this->db->from('tbl_servers as BaseTbl');
@@ -97,7 +102,7 @@ class Server_model extends CI_Model
         
         $this->db->where('BaseTbl.isDeleted', 0);
         $this->db->where('Backups.userId', $userId);
-        
+        $this->db->group_by('Backups.serverId');
        $query = $this->db->get();
        
        //print_r($query);
@@ -113,7 +118,7 @@ class Server_model extends CI_Model
      */
     function membersServers($page, $segment,$userId,$search_data=NULL)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
         $this->db->from('tbl_servers as BaseTbl');
@@ -125,20 +130,24 @@ class Server_model extends CI_Model
         
         if($search_data['name']!=null){
             $this->db->where('BaseTbl.name', $search_data['name']);
-       }
-       if($search_data['clientId']!=null){
-            $this->db->where('BaseTbl.clientId', $search_data['clientId']);
-       }
-      if($search_data['server']!=null){
-           $this->db->where('BaseTbl.server', $search_data['server']);
-       }
-       if($search_data['hostname']!=null){
-            $this->db->where('BaseTbl.hostname', $search_data['hostname']);
-       }
-      if($search_data['status']!=null){
-            $this->db->where('BaseTbl.status', $search_data['status']);
         }
-
+        if($search_data['os']!=null){
+            $this->db->where('BaseTbl.operatingSystem', $search_data['os']);
+        }
+        if($search_data['clientId']!=null){
+                $this->db->where('BaseTbl.clientId', $search_data['clientId']);
+        }
+        if($search_data['server']!=null){
+            $this->db->where('BaseTbl.server', $search_data['server']);
+        }
+        if($search_data['hostname']!=null){
+                $this->db->where('BaseTbl.hostname', $search_data['hostname']);
+        }
+        if($search_data['status']!=null){
+                $this->db->where('BaseTbl.status', $search_data['status']);
+        }
+        $this->db->group_by('Backups.serverId');
+        $this->db->order_by("Client.name", "asc");
        $this->db->limit($page, $segment);
        
        $query = $this->db->get();
@@ -147,7 +156,6 @@ class Server_model extends CI_Model
        return $result;
     }
     
-
     /**
      * This function is used to get the backups information
      * @return array $result : This is result of the query
@@ -214,7 +222,7 @@ class Server_model extends CI_Model
      */
     function getServerInfo($id)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
         $this->db->from('tbl_servers as BaseTbl');
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
@@ -225,7 +233,22 @@ class Server_model extends CI_Model
         
         return $query->result();
     }
-    
+     /**
+     * This function is used to get the operating systems 
+     * @return array $result : This is result of the query
+     */
+    function getOs()
+    {
+        $this->db->select('id,operatingSystem');
+        $this->db->from('tbl_servers');
+        $this->db->where('isDeleted !=', 1);
+        $this->db->where('operatingSystem !=', "Linux");
+        $this->db->where('operatingSystem !=', "Windows");
+        $this->db->group_by('operatingSystem','asc');
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
     
     /**
      * This function is used to update the server information

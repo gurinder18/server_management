@@ -21,6 +21,7 @@ class User extends BaseController
         $this->isLoggedIn(); 
         // load Pagination library
         $this->load->library('pagination'); 
+        $this->load->library('email');
     }
     
     /**
@@ -109,6 +110,46 @@ class User extends BaseController
                 if($result > 0)
                 {
                     $this->session->set_flashdata('success', 'New User created successfully');
+                    echo $body = '
+                        <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                        <p>Hi '.$name.'</p>
+                        <h2>Welcome</h2>
+                        <p>An Account has been created for you.You can login with the following credentials:</p> 
+                        <p><b>Login Page:</b> <a href="http://backuptool.customerdemourl.com/login" >http://backuptool.customerdemourl.com/login</a> </p>
+                        <p><b>Username:</b> "'.$email.'" (Without quotes)</p>
+                        <p><b>Password:</b> "'.$password.'" (Without quotes)</p>
+                        ';
+                        $subject = "An Account has been created for you";
+
+                        // $config['mailtype'] = 'html';
+                        // $this->email->initialize($config);
+                        
+                        // $result = $this->email
+                        //     ->from('webmaster@example.com','Orion eSolutions')
+                        //     // ->reply_to('')    // Optional, an account where a human being reads.
+                        //     ->to($email)
+                        //     ->subject($subject)
+                        //     ->message($body)
+                        //     ->send();
+                        
+                        // Always set content-type when sending HTML email
+                        $headers = "MIME-Version: 1.0" . "\r\n";
+                        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                
+                        // More headers
+                        $headers .= 'From: <webmaster@example.com>' . "\r\n";
+                        $headers .= 'Cc: myboss@example.com' . "\r\n";
+                        $result = mail($email,$subject,$body,$headers);
+                        if($result == TRUE)
+                        {
+                            $mailLogInfo = array('email_to'=>$email,'email_from'=>"webmaster@example.com",
+                            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"new_user_account_created");
+                            $res = $this->user_model->addMailLog($mailLogInfo);
+                        }
+                        var_dump($result);
+                        echo '<br />';
+                        echo $this->email->print_debugger();
+
                 }
                 else
                 {
@@ -144,6 +185,7 @@ class User extends BaseController
      */
     function editUser($userId = NULL)
     {
+       
         if($this->isAdmin() == FALSE )
         {
             $this->loadThis();
@@ -193,6 +235,12 @@ class User extends BaseController
                     $userInfo = array('name'=>ucwords($name),'email'=>$email, 'password'=>getHashedPassword($password), 
                     'mobile'=>$mobile, 'roleId'=>$roleId, 'status'=>$status, 'updatedBy'=>$this->vendorId, 
                         'updatedDtm'=>date('Y-m-d H:i:s'));
+                echo $body = '
+                        <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                        <p>Hi '.$name.'</p>
+                        <p>Your Password has changed by Administrator.</p> 
+                        <p>Your new password is "'.$password.'" (Without quotes)</p>
+                        ';
                 }
                 
                 $result = $this->user_model->editUser($userInfo, $userId);
@@ -200,6 +248,29 @@ class User extends BaseController
                 if($result == true)
                 {
                     $this->session->set_flashdata('success', 'User updated successfully');
+                   if($body != "")
+                   {
+                        $config['mailtype'] = 'html';
+                        $this->email->initialize($config);
+                        $subject = "Your password changed by Administrator";
+                        $result = $this->email
+                            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
+                            // ->reply_to('')    // Optional, an account where a human being reads.
+                            ->to($email)
+                            ->subject($subject)
+                            ->message($body)
+                            ->send();
+                       
+                        if($result == TRUE)
+                        {
+                            $mailLogInfo = array('email_to'=>$email,'email_from'=>"gurinderjeetkaur01@gmail.com",
+                            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"user_password_changed");
+                            $res = $this->user_model->addMailLog($mailLogInfo);
+                        }
+                        var_dump($result);
+                        echo '<br />';
+                        echo $this->email->print_debugger();
+                    }
                 }
                 else
                 {
@@ -320,7 +391,10 @@ class User extends BaseController
                 
                 $result = $this->user_model->changePassword($this->vendorId, $usersData);
                 
-                if($result > 0) { $this->session->set_flashdata('success', 'Password updation successful'); }
+                if($result > 0) { 
+                   $this->session->userdata['updatedBy'] = $this->vendorId;
+                    
+                    $this->session->set_flashdata('success', 'Password updation successful'); }
                 else { $this->session->set_flashdata('error', 'Password updation failed'); }
                 
                 redirect('loadChangePass');

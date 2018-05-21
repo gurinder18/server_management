@@ -74,13 +74,48 @@ class Login extends CI_Controller
                                             'roleText'=>$res->role,
                                             'name'=>$res->name,
                                             'slug'=>$res->slug,
+                                            'updatedBy'=>$res->updatedBy,
                                             'isLoggedIn' => TRUE
                                     );
                                     
                     $this->session->set_userdata($sessionArray);
                     
-                    redirect('/dashboard');
+                    foreach($result as $res)
+                    {
+                        $loginCount = $res->lastLogin;
+                        $userId = $res->userId;
+                        $updatedBy = $res->updatedBy;
+                    }
+                    if( $loginCount == 0 )
+                    {
+                        $loginCount = $loginCount + 1;
+                        $userInfo = array( 'lastLogin'=>$loginCount);
+                        $res  = $this->login_model->lastLogin($userId, $userInfo);
+                        redirect('/loadChangePass');
+                    }
+                    elseif($updatedBy == "" || $updatedBy != $this->vendorId)
+                    {
+                         $loginCount = $loginCount + 1;
+                         $userInfo = array( 'lastLogin'=>$loginCount);
+                         $res  = $this->login_model->lastLogin($userId, $userInfo);
+                         redirect('/loadChangePass');
+                    }
+                    // elseif($updatedBy != $this->vendorId )
+                    // {
+                    //      $loginCount = $loginCount + 1;
+                    //      $userInfo = array( 'lastLogin'=>$loginCount);
+                    //      $res  = $this->login_model->lastLogin($userId, $userInfo);
+                    //      redirect('/loadChangePass');
+                    // }
+                    else
+                    {
+                        $loginCount = $loginCount + 1;
+                        $userInfo = array( 'lastLogin'=>$loginCount);
+                        $res  = $this->login_model->lastLogin($userId, $userInfo);
+                        redirect('/dashboard');
+                    }
                 }
+                redirect('/dashboard');
             }
             else
             {

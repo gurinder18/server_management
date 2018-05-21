@@ -5,7 +5,7 @@
 
 $id = '';
 $name = '';
-
+$operatingSystem = '';
 $clientId= '';
 $ClientName = '';
 $server = '';
@@ -21,6 +21,7 @@ if(!empty($serverInfo))
     {
         $id = $sf->id;
         $name = $sf->name;
+        $operatingSystem = $sf->operatingSystem;
         $clientId = $sf->clientId;
         $ClientName = $sf->ClientName;
         $server = $sf->server;
@@ -105,24 +106,28 @@ if(!empty($clients))
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="client">Client *</label>
-                                            <select class="form-control required" id="client" name="client" > 
-                                            <option value="">Select Client</option>
+                                        <label for="status">Operating System *</label>
+                                        <select class="form-control required" id="os" name="os" onchange="showfield(this.options[this.selectedIndex].value)" > 
+                                            <option value="">Select Operating System</option>
+                                            <option value="Linux" <?php $OS = $operatingSystem; if($OS == "Linux") {echo "selected";} ?>>Linux</option>
+                                            <option value="Windows" <?php if($OS == "Windows") {echo "selected";} ?>>Windows</option>
                                             <?php
-                                            if(!empty($clients))
+                                            
+                                            if(!empty($os))
                                             {
-                                                echo"kjhjk";
-                                               foreach ($clients as $cl)
+                                               foreach ($os as $operatingSys)
                                                 { 
                                                     ?>
-                                                    <option value="<?php echo $cl->id ?>" <?php if($ClientName == $cl->name) {echo "selected=selected";} ?>><?php  echo $cl->name ?></option>
+                                                    <option value="<?php echo $operatingSys->operatingSystem ?>" <?php if($OS == $operatingSys->operatingSystem) {echo "selected=selected";} ?>><?php  echo $operatingSys->operatingSystem ?></option>
                                                     <?php
                                                 }
-                                           }
+                                            }
                                             ?>
+                                            <option value="Other">Others</option>
                                         </select>
+                                        <div id="div1" ></div>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -148,11 +153,30 @@ if(!empty($clients))
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control " id="password" name="password" value="<?php echo $password; ?>" maxlength="50" minlength="4">
+                                        <input type="password" class="form-control " id="password" name="password" value="<?php echo $password; ?>" data-toggle="password">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="client">Client *</label>
+                                            <select class="form-control required" id="client" name="client" > 
+                                            <option value="">Select Client</option>
+                                            <?php
+                                            if(!empty($clients))
+                                            {
+                                               foreach ($clients as $cl)
+                                                { 
+                                                    ?>
+                                                    <option value="<?php echo $cl->id ?>" <?php if($ClientName == $cl->name) {echo "selected=selected";} ?>><?php  echo $cl->name ?></option>
+                                                    <?php
+                                                }
+                                           }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div> 
                                 <div class="col-md-6">
                                     <div class="form-group">
                                     <label for="status">Status</label>
@@ -187,9 +211,17 @@ if(!empty($clients))
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/editUser.js" type="text/javascript"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-show-password.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/jquery.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()
   });
+</script>
+<script type="text/javascript">
+    function showfield(name){
+    if(name=='Other')document.getElementById('div1').innerHTML='Other: <input type="text" class="form-control" name="other" placeholder="Enter Operating System"/>';
+    else document.getElementById('div1').innerHTML='';
+    }
 </script>

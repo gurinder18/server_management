@@ -88,6 +88,8 @@ class Client extends BaseController
             $this->form_validation->set_rules('city','City','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('organisation','Organisation','trim|xss_clean');
+            $this->form_validation->set_rules('contacts','Contacts','trim|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|numeric');
             
            
@@ -106,14 +108,17 @@ class Client extends BaseController
                 $state = $this->input->post('state');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
+                $organisation = $this->input->post('organisation');
+                $contacts = $this->input->post('contacts');
                 $userId = $this->input->post('user');
                
                 if($status == "")
                 {
                     $status = 1;
+                }
                         $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                        'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,
-                        'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                        'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'organisation'=>$organisation,
+                         'contacts'=>$contacts,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
                         
                         $this->load->model('client_model');
                         $clientId = $this->client_model->add($clientInfo);
@@ -142,7 +147,6 @@ class Client extends BaseController
                                 $this->session->set_flashdata('error', 'Client'."'".'s User creation failed');
                             }
                         }
-                }
                 redirect('clients');
             }
         }
@@ -207,6 +211,8 @@ class Client extends BaseController
             $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|numeric');
+            $this->form_validation->set_rules('organisation','Organisation','trim|xss_clean');
+            $this->form_validation->set_rules('contacts','Contacts','trim|xss_clean');
             
             if($this->form_validation->run() == FALSE)
             {
@@ -223,13 +229,15 @@ class Client extends BaseController
                 $state = $this->input->post('state');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
+                $organisation = $this->input->post('organisation');
+                $contacts = $this->input->post('contacts');
                 $userId = $this->input->post('user');
                 
                 $clientInfo = array();
                 
-                 $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                    'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'updatedBy'=>$this->vendorId, 
-                    'updatedDtm'=>date('Y-m-d H:i:s'));
+                $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
+                'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'updatedBy'=>$this->vendorId, 
+                'organisation'=>$organisation,'contacts'=>$contacts,'updatedDtm'=>date('Y-m-d H:i:s'));
                 
                 $result = $this->client_model->edit($clientInfo, $id);
                 
@@ -382,8 +390,7 @@ class Client extends BaseController
         }
     }
     }
-        
-    
+     
     /**
      * This function is used to delete the client using id
      * @return boolean $result : TRUE / FALSE
@@ -411,25 +418,25 @@ class Client extends BaseController
             }
         }
         elseif(isset($_POST['delete_client'])=='Delete')
-        {
-            $del = $this->input->post('delete_clients');
-            if($del != null)
-            {
-                foreach($del as $id):
-                    $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
-                        
-                    $result = $this->client_model->deleteClient($id, $clientInfo);
-                endforeach;
-                if ($result > 0)
-                {  
-                    redirect("clients");
-                    unset($_POST['delete_client']);
+        { 
+                $del = $this->input->post('delete_clients');
+                if($del != null)
+                {
+                    foreach($del as $id):
+                        $clientInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                            
+                        $result = $this->client_model->deleteClient($id, $clientInfo);
+                    endforeach;
+                    if ($result > 0)
+                    {  
+                        redirect("clients");
+                        unset($_POST['delete_client']);
+                    }
                 }
-            }
-            else
-            {
-                redirect("clients");
-            }
+                else
+                {
+                    redirect("clients");
+                }
         }
     }
     function pageNotFound()

@@ -39,11 +39,10 @@
                     <?php
                     if(!empty($clientRecords))
                     {
-						$i = 1;
                         foreach($clientRecords as $record)
                         { 
                     ?>
-                    <tr>
+                    <tr <?php if($record->status==1){ echo "class='success'"; }else{ echo "class='danger'"; } ?>>
                       <td><input type="checkbox" class="delete_client" value="<?php echo$record->id; ?>" name="delete_clients[]"/></td>
                       <td><?php if(empty($record->name)){ echo "N/A";}else{echo $record->name;} ?></td>
                       <td><?php if(empty($record->phone)){ echo "N/A";}else{echo $record->phone;} ?></td>
@@ -54,16 +53,48 @@
                       <td><?php if(empty($record->zip)){ echo "N/A";}else{echo $record->zip;} ?></td>
                       <td><?php if(($record->status)==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
+                          <button type="button" class="btn  btn-sm btn-detail" data-toggle="modal" data-target="#exampleModal<?php echo $record->id; ?>"><i class="fa fa-search-plus"></i></button>
+                             <!-- Modal -->
+                  <div class="modal fade" id="exampleModal<?php echo $record->id; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header"> 
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h2 class="modal-title" id="exampleModalLabel">Other Contacts</h2>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-hover">
+                                            <?php
+                                                        if(!empty($record->contacts))
+                                                            {                 
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $record->contacts ?></td>
+                                            </tr>
+                                            <?php }else{ ?>
+                                            <tr><td>No Contact added</td></tr>
+                                            <?php }
+                                             ?>
+                                         </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                  </div>
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-client/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                           <a class="btn btn-sm btn-danger deleteClient" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
+                    
                     <?php
-						$i++;
                        }
                     ?>
                      <tr>
-                        <td colspan="11"><input type="submit" class="btn btn-sm btn-danger " name="delete_client" value="Delete"/></td>
+                        <td colspan="11"><input type="submit" class="btn btn-sm btn-danger" onClick="confirm('Do you want to delete this?');" name="delete_client" value="Delete"/></td>
                     </tr>
                     </form>
                     <?php
@@ -73,7 +104,7 @@
                     }
                     ?>
                   </table>
-                  
+                 
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php echo $this->pagination->create_links(); ?>
@@ -106,3 +137,4 @@
     });
 });
 </script>
+

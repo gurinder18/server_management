@@ -16,7 +16,7 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover">
                     <tr>
-                      <th><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
+                      <th><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
                       <th>Server Name</th>
                       <th>Server IP</th>
                       <th>Hostname</th>
@@ -151,7 +151,7 @@
                                     >Failed</option>
                                 </select>
                         </td>
-                        <?php if($role_slug=="sys.admin"){ ?>
+                        <?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
                         <td>
                             <select class="form-control required" id="user" name="user" > 
                                 <option value="">Select User</option>
@@ -183,7 +183,7 @@
                         { 
                     ?>
                     <tr>
-                      <td><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
+                      <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
                       <td><?php echo $record->ServerName ?></td>
                       <td><?php echo $record->ServerIP ?></td>
                       <td><?php echo $record->ServerHostname ?></td>
@@ -195,7 +195,7 @@
                     </tr>
                     <?php
                         }
-                       if($role_slug=="sys.admin"){ 
+                       if($role_slug=="sys.admin" || $role_slug=="master.admin"){ 
                     ?>
                     <tr>
                         <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></td>

@@ -39,7 +39,7 @@
                         foreach($userRecords as $record)
                         {  
                     ?>
-                    <tr> 
+                    <tr <?php if($record->status==1){ echo "class='success'"; }else{ echo "class='danger'"; } ?>> 
                       <td><input type="checkbox" class="delete_user" value="<?php echo$record->userId; ?>" name="delete_users[]"/></td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->email ?></td>
@@ -48,12 +48,16 @@
                       <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-user/'.$record->userId; ?>"><i class="fa fa-pencil"></i></a>
+                          <?php
+                            if( $record->role != "Master Administrator"){
+                          ?>
                           <a class="btn btn-sm btn-danger deleteUser" href="#" data-id="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
+                            <?php } ?>
                       </td>
                     </tr>
                     <?php  }  ?>
                     <tr>
-                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_user" value="Delete"/></td>
+                        <td colspan='8'><input type="submit" class="btn btn-sm btn-danger"  onClick="confirm('Do you want to delete this?');" name="delete_user" value="Delete"/></td>
                     </tr>
                     </form>
                     <?php

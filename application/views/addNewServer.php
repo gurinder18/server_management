@@ -83,23 +83,27 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="client">Client *</label>
-                                        <select class="form-control required" id="client" name="client" > 
-                                            <option value="">Select Client</option>
+                                        <label for="status">Operating System *</label>
+                                        <select class="form-control required" id="os" name="os" onchange="showfield(this.options[this.selectedIndex].value)" > 
+                                            <option value="">Select Operating System</option>
+                                            <option value="Linux">Linux</option>
+                                            <option value="Windows">Windows</option>
                                             <?php
-                                            if(!empty($clients))
-                                            {
-                                                foreach ($clients as $cl)
-                                                { 
-                                                    ?>
-                                                    <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
-                                                    <?php
+                                                if(!empty($os))
+                                                {
+                                                foreach ($os as $operatingSystem)
+                                                    { 
+                                                        ?>
+                                                        <option value="<?php echo $operatingSystem->operatingSystem ?>"><?php  echo $operatingSystem->operatingSystem ?></option>
+                                                        <?php
+                                                    }
                                                 }
-                                            }
                                             ?>
+                                            <option value="Other">Others</option>
                                         </select>
+                                        <div id="div1" ></div>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">                                
@@ -125,11 +129,30 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control " id="password" name="password" maxlength="50" minlength="4">
+                                        <input type="password" class="form-control " id="password" name="password" data-toggle="password" >
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="client">Client *</label>
+                                        <select class="form-control required" id="client" name="client" > 
+                                            <option value="">Select Client</option>
+                                            <?php
+                                            if(!empty($clients))
+                                            {
+                                                foreach ($clients as $cl)
+                                                { 
+                                                    ?>
+                                                    <option value="<?php echo $cl->id ?>"><?php echo $cl->name ?></option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div> 
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="status">Status *</label>
@@ -176,6 +199,14 @@
                                 <?php echo form_open_multipart('server/addServers');?>  
                                     <td> <input type="file" name="serverfile" /></td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <h4>Format for excel file</h4>
+                                        <p><b>Total fields - </b></p>
+                                        <p><b>Server_name, Client_name, Server_IP, Hostname, Username, Password, Status, Details</b></p>
+                                        <p><span style="color:red;"><b>(Username and Password can have null values)</b></span></p>
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                         <div class="modal-footer">
@@ -191,9 +222,18 @@
      
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-show-password.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/jquery.min.js"></script>
+
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
   $(function() {
     $('textarea').froalaEditor()
   });
+</script>
+<script type="text/javascript">
+    function showfield(name){
+    if(name=='Other')document.getElementById('div1').innerHTML='Other: <input type="text" class="form-control" name="other" placeholder="Enter Operating System"/>';
+    else document.getElementById('div1').innerHTML='';
+    }
 </script>

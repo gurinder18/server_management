@@ -29,12 +29,14 @@ class User_model extends CI_Model
      */
     function userListing($page, $segment)
     {
-        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status, Role.role');
+        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status, 
+        Role.role');
         $this->db->from('tbl_users as BaseTbl');
         $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
        
         $this->db->where('BaseTbl.isDeleted', 0);
-        //$this->db->where('BaseTbl.roleId !=', 1);
+        $this->db->order_by('BaseTbl.roleId', 'asc');
+        $this->db->order_by('BaseTbl.name', 'asc');
         $this->db->limit($page, $segment);
         $query = $this->db->get();
         
@@ -50,7 +52,7 @@ class User_model extends CI_Model
     {
         $this->db->select('roleId, role');
         $this->db->from('tbl_roles');
-        //$this->db->where('roleId !=', 1);
+        
         $query = $this->db->get();
         
         return $query->result();
@@ -103,7 +105,7 @@ class User_model extends CI_Model
         $this->db->select('userId, name, email,password, mobile, roleId,status');
         $this->db->from('tbl_users');
         $this->db->where('isDeleted', 0);
-		//$this->db->where('roleId !=', 1);
+		
         $this->db->where('userId', $userId);
         $query = $this->db->get();
         
@@ -117,7 +119,6 @@ class User_model extends CI_Model
      */
     function editUser($userInfo, $userId)
     {
-       // print_r($userInfo);die;
         $this->db->where('userId', $userId);
         $this->db->update('tbl_users', $userInfo);
         
@@ -131,10 +132,25 @@ class User_model extends CI_Model
      */
     function deleteUser($userId, $userInfo)
     {
-        $this->db->where('userId', $userId);
-        $this->db->update('tbl_users', $userInfo);
-       // echo $res = $this->db->affected_rows();die; 
-        return $this->db->affected_rows();
+        $this->db->select('roleId');
+        $this->db->from('tbl_roles');
+        $this->db->where('slug', "master.admin");
+
+        $query = $this->db->get();
+        $role_Id = $query->result();
+       
+        foreach($role_Id as $role)
+        {
+             $role->roleId;
+        }
+        if(!empty($role_Id))
+        {
+            $this->db->where('roleId !=', $role->roleId);
+            $this->db->where('userId', $userId);
+            $this->db->update('tbl_users', $userInfo);
+            
+            return $this->db->affected_rows();
+        }
     }
 
 
@@ -174,6 +190,20 @@ class User_model extends CI_Model
         $this->db->update('tbl_users', $userInfo);
         
         return $this->db->affected_rows();
+    }
+    /**
+     * This function is used to add mail log 
+     */
+    function addMailLog($mailLogInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_mail_log', $mailLogInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
     }
 }
 

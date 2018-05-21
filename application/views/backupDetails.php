@@ -29,17 +29,17 @@
                     </tr>
                     <tr>
                       <th>Server IP</th> <td><?php echo $record->server ?></td>
-                      </tr>
+                    </tr>
                     <tr>
                       <th>Hostname</th><td><?php echo $record->hostname ?></td>
-                      </tr>
+                    </tr>
                     <tr>
                     <?php if($role==1){ ?>
                       <th>Username</th><td><?php if($record->username ==""){ echo "N/A";}else{echo $record->username; } ?></td>
-                      </tr>
+                    </tr>
                     <tr>
                       <th>Password</th><td><?php if($record->password ==""){ echo "N/A";}else{ echo $record->password; } ?></td>
-                      </tr>
+                    </tr>
                     <?php } ?>
                     <tr>
                       <th>Details</th> 
@@ -75,9 +75,7 @@
                     <?php
                     }
                     ?>
-                   
                   </table>
-                  
                 </div><!-- /.box-body -->
               </div><!-- /.box -->
             </div>
@@ -101,13 +99,13 @@
                     </tr>
                     <tr>
                       <th>Client</th> <td><?php echo $backupInfo['ClientName'] ?></td>
-                      </tr>
+                    </tr>
                     <tr>
                       <th>Server</th> <td><?php echo $backupInfo['ServerName'] ?></td>
-                      </tr>
-                      <tr>
+                    </tr>
+                    <tr>
                       <th>Schedule Type</th> <td><?php echo $backupInfo['scheduleType'] ?></td>
-                      </tr>
+                    </tr>
                     <tr>
                       <th>Schedule Timings</th> <td><?php echo $backupInfo['scheduleTimings'] ?></td>
                     </tr>
@@ -168,7 +166,7 @@
                   ?>
                   <p class="text-muted text-center"><h4><?php echo $cl->name ?></h4></p>
                          <!-- Button trigger modal -->
-                         <?php if($role_slug=="sys.admin"){ ?>
+                         <?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
                             View Details
                         </button>
@@ -182,7 +180,6 @@
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                         <h2 class="modal-title" id="exampleModalLabel">Client details</h2>
-                                       
                                     </div>
                                     <div class="modal-body">
                                     <table class="table table-hover">
@@ -215,7 +212,7 @@
                                       <?php } ?>
                                   </table>
                                     </div>
-                                    <?php if($role_slug=="sys.admin" && !empty($clients)){  ?>
+                                    <?php if($role_slug=="sys.admin" || $role_slug=="master.admin" && !empty($clients)){  ?>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     </div>

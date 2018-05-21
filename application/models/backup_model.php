@@ -12,24 +12,24 @@ class Backup_model extends CI_Model
         $this->db->select('BaseTbl.id,BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId,
         BaseTbl.scheduleType, BaseTbl.scheduleTimings, BaseTbl.information');
         $this->db->from('tbl_backups as BaseTbl');
-        //$this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+        
         if($search_data['userId']!=null){
             $this->db->where('BaseTbl.userId', $search_data['userId']);
-       }
-       if($search_data['clientId']!=null){
-            $this->db->where('BaseTbl.clientId', $search_data['clientId']);
-       }
-       if($search_data['serverId']!=null){
-           $this->db->where('BaseTbl.serverId', $search_data['serverId']);
-       }
-       if($search_data['scheduleType']!=null){
-            $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
-       }
-       if($search_data['scheduleTimings']!=null){
-            $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
+        }
+        if($search_data['clientId']!=null){
+                $this->db->where('BaseTbl.clientId', $search_data['clientId']);
+        }
+        if($search_data['serverId']!=null){
+            $this->db->where('BaseTbl.serverId', $search_data['serverId']);
+        }
+        if($search_data['scheduleType']!=null){
+                $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
+        }
+        if($search_data['scheduleTimings']!=null){
+                $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
         }
         $this->db->where('BaseTbl.isDeleted', 0);
-        //$this->db->where('BaseTbl.roleId !=', 1);
+       
         $this->db->limit($page, $segment);
         $query = $this->db->get();
         return count($query->result());
@@ -45,9 +45,9 @@ class Backup_model extends CI_Model
      */
     function backups( $page, $segment,$search_data=null)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
-         BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
-         Client.name As ClientName,Server.name As ServerName');
+        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, 
+        BaseTbl.scheduleType,BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
+        Client.name As ClientName,Server.name As ServerName,Server.status As ServerStatus');
          //$this->db->select('BaseTbl.*');
         $this->db->from('tbl_backups as BaseTbl');
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -65,18 +65,22 @@ class Backup_model extends CI_Model
        if($search_data['serverId']!=null){
            $this->db->where('BaseTbl.serverId', $search_data['serverId']);
        }
+       if($search_data['serverStatus']!=null){
+        $this->db->where('Server.status', $search_data['serverStatus']);
+      }
        if($search_data['scheduleType']!=null){
             $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
        }
        if($search_data['scheduleTimings']!=null){
             $this->db->where('BaseTbl.scheduleTimings', $search_data['scheduleTimings']);
         }
-        $this->db->order_by("BaseTbl.createdDtm", "asc");
+        $this->db->order_by("User.name", "asc");
+        $this->db->order_by("Client.name", "asc");
         $this->db->limit($page, $segment);
         
         $query = $this->db->get();
         $result = $query->result();    
-        //print_r($result); die;    
+           
         return $result;
     }
 
@@ -89,7 +93,7 @@ class Backup_model extends CI_Model
     {
         $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
         BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
-        Client.name As ClientName,Server.name As ServerName');
+        Client.name As ClientName,Server.name As ServerName,Server.status As ServerStatus');
         //$this->db->select('BaseTbl.*');
        $this->db->from('tbl_backups as BaseTbl');
        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -106,6 +110,9 @@ class Backup_model extends CI_Model
       }
       if($search_data['serverId']!=null){
           $this->db->where('BaseTbl.serverId', $search_data['serverId']);
+      }
+      if($search_data['serverStatus']!=null){
+        $this->db->where('Server.status', $search_data['serverStatus']);
       }
       if($search_data['scheduleType']!=null){
            $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
@@ -128,9 +135,9 @@ class Backup_model extends CI_Model
      */
     function membersBackups( $page, $segment,$userId,$search_data=NULL)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, BaseTbl.scheduleType,
-        BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
-        Client.name As ClientName,Server.name As ServerName');
+        $this->db->select('BaseTbl.id, BaseTbl.userId, BaseTbl.clientId, BaseTbl.serverId, 
+        BaseTbl.scheduleType, BaseTbl.scheduleTimings, BaseTbl.information,User.name As UserName,
+        Client.name As ClientName,Server.name As ServerName,Server.status As ServerStatus');
       
        $this->db->from('tbl_backups as BaseTbl');
        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -146,6 +153,9 @@ class Backup_model extends CI_Model
         if($search_data['serverId']!=null){
             $this->db->where('BaseTbl.serverId', $search_data['serverId']);
         }
+        if($search_data['serverStatus']!=null){
+            $this->db->where('Server.status', $search_data['serverStatus']);
+          }
         if($search_data['scheduleType']!=null){
                 $this->db->where('BaseTbl.scheduleType', $search_data['scheduleType']);
         }
@@ -168,9 +178,10 @@ class Backup_model extends CI_Model
      */
     function getUsers()
     {
-        $this->db->select('userId, name');
-        $this->db->from('tbl_users');
-        $this->db->where('roleId =', 2);
+        $this->db->select('BaseTbl.userId, BaseTbl.name');
+        $this->db->from('tbl_users as BaseTbl');
+        $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+        $this->db->where('Role.slug ', "member" );
         $this->db->where('isDeleted !=', 1);
         $this->db->where('status', 1);
         $query = $this->db->get();
@@ -375,7 +386,7 @@ class Backup_model extends CI_Model
        
         $query = $this->db->get();
         $result = $query->result();    
-       
+        
         return $result;
     }
      /**

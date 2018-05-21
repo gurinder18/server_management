@@ -9,6 +9,8 @@ $city = '';
 $state = '';
 $zip = '';
 $status = '';
+$organisation = '';
+$contacts = '';
 
 if(!empty($clientInfo))
 {
@@ -23,6 +25,8 @@ if(!empty($clientInfo))
         $state = $cf->state;
         $zip = $cf->zip;
         $status = $cf->status;
+        $organisation = $cf->organisation;
+        $contacts = $cf->contacts;
     }
 }
 
@@ -143,10 +147,24 @@ if(!empty($clientInfo))
                                 </div>    
                             </div>
                             <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="organisation">Organisation </label>
+                                        <input type="text" class="form-control " id="organisation" name="organisation" value="<?php echo $organisation; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="contacts">Other Contacts </label>
+                                        <input type="text" class="form-control " id="contacts" name="contacts" value="<?php echo $contacts; ?>" placeholder="Name-Contact No.-Organisation">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <div> <label for="user">Users </label></div>
-                                        <select class="multipleSelect form-control" multiple name="user[]" id="user">
+                                        <div> <label for="user">Users </label>(Click in box to select)</div>
+                                        <select class="multipleSelect form-control" multiple name="user[]" id="user" required>
                                            
                                             <?php
                                             if(!empty($users))

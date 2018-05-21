@@ -12,16 +12,12 @@ class Schedule_model extends CI_Model
         $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
         BaseTbl.status');
         $this->db->from('tbl_backup_schedule as BaseTbl');
-        //$this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
-      
+        
         $this->db->where('BaseTbl.date', $date);
         $this->db->where('BaseTbl.userId', $userId);
-       // $this->db->where('BaseTbl.status', 1);
        
-       // $this->db->where('BaseTbl.isDeleted', 0);
-        //$this->db->where('BaseTbl.roleId !=', 1);
         $query = $this->db->get();
-        //print_r($this->db);
+        
         return count($query->result());
     }
     
@@ -36,7 +32,7 @@ class Schedule_model extends CI_Model
         BaseTbl.status,Client.name As ClientName,Backup.serverId,Server.name As ServerName,Server.server As ServerIP,
         Server.hostname As ServerHostname,Server.name As ServerName,Status.status As ScheduleStatus');
         $this->db->from('tbl_backup_schedule as BaseTbl');
-        //$this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+        
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
         $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
@@ -45,36 +41,33 @@ class Schedule_model extends CI_Model
       
         $this->db->where('BaseTbl.date', $date);
         $this->db->where('BaseTbl.userId', $userId);
-        //$this->db->where('BaseTbl.status', 1);
-       
+        
         $likeCriteria='';
         if( $search_data['serverIP']!=null) {
             $likeCriteria = "( Server.server  LIKE '%".$search_data['serverIP']."%')";
-                          
         }
         if($search_data['hostname']!=null ) {
             $likeCriteria = "(Server.hostname  LIKE '%".$search_data['hostname']."%' )";
-                          
         }
         if(!$likeCriteria==''){
             $this->db->where($likeCriteria);
-         }
+        }
         if($search_data['serverId']!=null){
             $this->db->where('Server.id', $search_data['serverId']);
-       }
-       if($search_data['clientId']!=null){
+        }
+        if($search_data['clientId']!=null){
             $this->db->where('BaseTbl.clientId', $search_data['clientId']);
-       }
-       if($search_data['status']!=null){
-        $this->db->where('BaseTbl.status', $search_data['status']);
-   }
-       // $this->db->where('BaseTbl.isDeleted', 0);
-        //$this->db->where('BaseTbl.roleId !=', 1);
+        }
+        if($search_data['status']!=null){
+            $this->db->where('BaseTbl.status', $search_data['status']);
+        }
+        $this->db->order_by('Client.name', 'asc');
+        
         $this->db->limit($page, $segment);
         
         $query = $this->db->get();
         $result = $query->result();    
-        //print_r($result); die;    
+           
         return $result;
     }
 

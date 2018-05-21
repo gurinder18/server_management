@@ -48,23 +48,12 @@ class Backup extends BaseController
             $count = $this->backup_model->memberbackupCount(null,null,$this->vendorId,null);
             $returns = $this->paginationCompress ( "backups/", $count, 5 );
 
-            if(isset($_GET['search_backup'])!='Search')
-            {
-                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId);
-                $returns = $this->paginationCompress ( "backups/", $count, 5 );
-                $data['backupRecords'] = $this->backup_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-              
-               
-                $this->loadViews("backups", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_backup'])=='Search')
+            if(isset($_GET['search_backup'])=='Search' || isset($_GET['user']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['status']) || isset($_GET['scheduleType']) || isset($_GET['scheduleTimings']))
             {
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['serverId'] = $this->input->get('server');
+                $search_data['serverStatus'] = $this->input->get('status');
                 $search_data['scheduleType'] = $this->input->get('scheduleType');
                 $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
 
@@ -77,8 +66,18 @@ class Backup extends BaseController
                
                 $this->loadViews("backups", $this->global, $data, NULL);
                
-            }else{}
-           
+            }
+            elseif(isset($_GET['search_backup'])!='Search')
+            {
+                $count = $this->backup_model->memberbackupCount($returns["page"], $returns["segment"],$this->vendorId);
+                $returns = $this->paginationCompress ( "backups/", $count, 5 );
+                $data['backupRecords'] = $this->backup_model->membersBackups( $returns["page"], $returns["segment"],$this->vendorId);
+                $data['clients'] = $this->backup_model->getClients();
+                $data['users'] = $this->backup_model->getUsers();
+                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+              
+                $this->loadViews("backups", $this->global, $data, NULL);
+            }
         }
         elseif($this->isAdmin() == TRUE)
         {
@@ -89,20 +88,13 @@ class Backup extends BaseController
             
             $count = $this->backup_model->backupListingCount(null,null,null);
             $returns = $this->paginationCompress ( "backups/", $count, 5 );
-            if(isset($_GET['search_backup'])!='Search')
-            {
-                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],null);
-                $data['clients'] = $this->backup_model->getClients();
-                $data['users'] = $this->backup_model->getUsers();
-                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                
-                $this->loadViews("backups", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_backup'])=='Search')
+           
+            if(isset($_GET['search_backup'])=='Search' || isset($_GET['user']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['status']) || isset($_GET['scheduleType']) || isset($_GET['scheduleTimings']))
             {
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['serverId'] = $this->input->get('server');
+                $search_data['serverStatus'] = $this->input->get('status');
                 $search_data['scheduleType'] = $this->input->get('scheduleType');
                 $search_data['scheduleTimings'] = $this->input->get('scheduleTimings');
 
@@ -112,9 +104,17 @@ class Backup extends BaseController
                 $data['clients'] = $this->backup_model->getClients();
                 $data['users'] = $this->backup_model->getUsers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
-                //print_r($data);
+                
                 $this->loadViews("backups", $this->global, $data, NULL);
-               
+            }
+            elseif(isset($_GET['search_backup'])!='Search')
+            {
+                $data['backupRecords'] = $this->backup_model->backups( $returns["page"], $returns["segment"],null);
+                $data['clients'] = $this->backup_model->getClients();
+                $data['users'] = $this->backup_model->getUsers();
+                $this->global['pageTitle'] = 'Orion eSolutions : Backup Listing';
+                
+                $this->loadViews("backups", $this->global, $data, NULL);
             }
         }
     }
@@ -131,7 +131,6 @@ class Backup extends BaseController
                 redirect('backups');
             }
             
-           // $data['roles'] = $this->user_model->getUserRoles();
             $data['backupInfo'] = $this->backup_model->getBackupInfo($id);
             foreach($data as $backup)
             {

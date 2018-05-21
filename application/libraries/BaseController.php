@@ -41,11 +41,14 @@ class BaseController extends CI_Controller {
 			$this->name = $this->session->userdata ( 'name' );
 			$this->roleText = $this->session->userdata ( 'roleText' );
 			$this->roleSlug = $this->session->userdata ( 'slug' );
+			$this->updatedBy = $this->session->userdata ( 'updatedBy' );
 			
 			$this->global ['name'] = $this->name;
 			$this->global ['role'] = $this->role;
 			$this->global ['role_text'] = $this->roleText;
 			$this->global ['role_slug'] = $this->roleSlug;
+			$this->global ['updatedBy'] = $this->updatedBy;
+			$this->global ['vendorId'] = $this->vendorId;
 		}
 	}
 	
@@ -53,7 +56,7 @@ class BaseController extends CI_Controller {
 	 * This function is used to check the access
 	 */
 	function isAdmin() {
-		if ($this->roleSlug == 'sys.admin') {
+		if ($this->roleSlug == 'sys.admin' || $this->roleSlug == 'master.admin') {
 			return true;
 		} else {
 			return false;

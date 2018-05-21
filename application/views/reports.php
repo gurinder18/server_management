@@ -37,14 +37,14 @@
                             }else
                             {
                         ?>
-                            <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
-                            <?php } ?>
+                        <form role="form" id="searchBackup" action="<?php echo base_url() ?>backup-report" method="get" role="form">
+                        <?php } ?>
                             <td class="date_search">
                                 <div class="form-group">
                                     <div class="date">
-                                        <input type="text" class="form-control datepicker" id="datepicker" name="fromDate"
+                                        <input type="text" class="form-control datepicker" id="datepicker" name="fromDate" 
                                         value="<?php
-                                            if(isset($_GET['search_BackupSchedule'])=='Searchsearch')
+                                            if(isset($_GET['fromDate']))
                                             { 
                                                 if(!($_GET['fromDate']) == NULL)
                                                 {
@@ -60,9 +60,9 @@
                             <td class="date_search">
                                 <div class="form-group">
                                     <div class="date">
-                                        <input type="text" class="form-control datepicker" id="datepicker" name="toDate"
+                                        <input type="text" class="form-control datepicker" id="datepicker" name="toDate" 
                                         value="<?php
-                                            if(isset($_GET['search_BackupSchedule'])=='Search')
+                                            if(isset($_GET['toDate']))
                                             { 
                                                 if(!($_GET['toDate']) == NULL)
                                                 {
@@ -76,7 +76,7 @@
                                 </div>
                             </td>
                             <td>
-                                <select class="form-control " id="client" name="client" > 
+                                <select class="form-control " id="client" name="client" onchange='this.form.submit()'> 
                                     <option value="">Select Client</option>
                                     <?php
                                         if(!empty($clients))
@@ -86,7 +86,7 @@
                                     ?>
                                     <option value="<?php echo $cl['id'] ?>"
                                     <?php
-                                        if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                        if(isset($_GET['client'])){ 
                                             if(!($_GET['client']) == NULL)
                                             {
                                                     if($_GET['client']== $cl['id'])
@@ -104,7 +104,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-control " id="server" name="server" > 
+                                <select class="form-control " id="server" name="server" onchange='this.form.submit()'> 
                                     <option value="">Select server</option>
                                     <?php
                                         if(!empty($servers))
@@ -114,7 +114,7 @@
                                     ?>
                                     <option value="<?php echo $br['id'] ?>"
                                     <?php
-                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        if(isset($_GET['server']))
                                         { 
                                             if(!($_GET['server']) == NULL)
                                             {
@@ -133,7 +133,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-control " id="user" name="user" > 
+                                <select class="form-control " id="user" name="user" onchange='this.form.submit()' > 
                                     <option value="">Select User</option>
                                     <?php
                                         if(!empty($users))
@@ -143,7 +143,7 @@
                                     ?>
                                     <option value="<?php echo $us->userId ?>"
                                     <?php
-                                        if(isset($_GET['search_BackupSchedule'])=='Submit')
+                                        if(isset($_GET['user']))
                                         { 
                                             if(!($_GET['user']) == NULL)
                                             {
@@ -162,11 +162,11 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-control " id="status" name="status" > 
+                                <select class="form-control " id="status" name="status" onchange='this.form.submit()' > 
                                     <option value="">Select Status</option>
                                     <option value="1"
                                     <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if(isset($_GET['status'])){ 
                                         if($_GET['status'] == 1)
                                         {
                                             echo "selected";
@@ -176,7 +176,7 @@
                                     >Pending</option>
                                     <option value="2"
                                     <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if(isset($_GET['status'])){ 
                                         if($_GET['status'] == 2)
                                         {
                                             echo "selected";
@@ -186,7 +186,7 @@
                                     >Inprogress</option>
                                     <option value="3"
                                     <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if(isset($_GET['status'])){ 
                                         if($_GET['status'] == 3)
                                         {
                                             echo "selected";
@@ -196,7 +196,7 @@
                                     >Completed</option>
                                     <option value="4"
                                     <?php
-                                    if(isset($_GET['search_BackupSchedule'])=='Submit'){ 
+                                    if(isset($_GET['status'])){ 
                                         if($_GET['status'] == 4)
                                         {
                                             echo "selected";
@@ -206,11 +206,41 @@
                                     >Failed</option>
                                 </select>
                             </td>
-                            <?php if($role_slug=="sys.admin"){ ?>
-                            <td class="date_search2">
-                                
+                            <td>
+                                <select class="form-control " id="scheduleType" name="scheduleType" onchange='this.form.submit()'> 
+                                    <option value="">Select Type</option>
+                                    <option value="Daily"
+                                    <?php
+                                    if(isset($_GET['scheduleType'])){ 
+                                        if($_GET['scheduleType'] == "Daily")
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Daily</option>
+                                    <option value="Weekly"
+                                    <?php
+                                    if(isset($_GET['scheduleType'])){ 
+                                        if($_GET['scheduleType'] == "Weekly")
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Weekly</option>
+                                    <option value="Monthly"
+                                    <?php
+                                    if(isset($_GET['scheduleType'])){ 
+                                        if($_GET['scheduleType'] == "Monthly")
+                                        {
+                                            echo "selected";
+                                        }
+                                    }
+                                    ?>
+                                    >Monthly</option>
+                                </select>
                             </td>
-                            <?php } ?>
                             <td> 
                                 <input type="submit" class="btn btn-primary" name='search_BackupSchedule' value="Search" />
                             </td>
@@ -252,14 +282,14 @@
                             <td><?php echo $record->ServerName ?></td>
                             <td><?php echo $record->UserName ?></td>
                             <td><?php echo $record->ScheduleStatus ?></td>
-                            <td><?php echo $record->Day ?></td>
+                            <td><?php echo $record->ScheduleType." | ".$record->Day ?></td>
                             <td class="text-center">
                                 <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
                             </td> 
                         </tr>
                         <?php
                             }
-                            if($role_slug=="sys.admin"){ 
+                            if($role_slug=="sys.admin" || $role_slug=="master.admin"){ 
                         ?>
                         <tr>
                         </tr>

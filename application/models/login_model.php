@@ -13,7 +13,8 @@ class Login_model extends CI_Model
      */
     function loginMe($email, $password)
     {
-        $this->db->select('BaseTbl.userId, BaseTbl.password, BaseTbl.name, BaseTbl.roleId, Roles.role, Roles.slug');
+        $this->db->select('BaseTbl.userId, BaseTbl.password, BaseTbl.name, BaseTbl.roleId,BaseTbl.lastLogin,
+        BaseTbl.updatedBy,Roles.role, Roles.slug');
         $this->db->from('tbl_users as BaseTbl');
         $this->db->join('tbl_roles as Roles','Roles.roleId = BaseTbl.roleId');
         $this->db->where('BaseTbl.email', $email);
@@ -31,6 +32,19 @@ class Login_model extends CI_Model
         } else {
             return array();
         }
+    }
+     /**
+     * This function is used to update last login 
+     * @param number $userId : This is user id
+     * @param array $userInfo : This is user updation info
+     */
+    function lastLogin($userId, $userInfo)
+    {
+        $this->db->where('userId', $userId);
+        $this->db->where('isDeleted', 0);
+        $this->db->update('tbl_users', $userInfo);
+        
+        return $this->db->affected_rows();
     }
 
     /**
@@ -97,7 +111,8 @@ class Login_model extends CI_Model
         $this->db->where('email', $email);
         $this->db->where('activation_id', $activation_id);
         $query = $this->db->get();
-        return $query->num_rows;
+       
+        return $query->num_rows();
     }
 
     // This function used to create new password by reset link

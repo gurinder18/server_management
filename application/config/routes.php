@@ -69,6 +69,9 @@ $route['createPasswordUser'] = "login/createPasswordUser";
 /*********** SERVER DEFINED ROUTES *******************/
 $route['servers'] = 'server/serverListing';
 $route['servers/(:num)'] = "server/serverListing/$1";
+
+$route['all-servers'] = "server/allServerListing";
+$route['all-servers/(:num)'] = "server/allServerListing/$1";
 $route['add-server'] = "server/addServer";
 $route['add-server(:any)'] = "server/addServer/$1";
 $route['edit-server/(:num)'] = "server/editServer/$1";

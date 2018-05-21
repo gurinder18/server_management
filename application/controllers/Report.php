@@ -47,21 +47,7 @@ class Report extends BaseController
             $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
             $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
 
-            if(isset($_GET['search_BackupSchedule'])!='Search')
-            {
-                $count = $this->report_model->reportCount($returns["page"],$returns["segment"],null, $fromDate,$toDate);
-                $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
-                
-                $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
-                $data['clients'] = $this->report_model->getClients();
-                $data['servers'] = $this->report_model->getServers();
-                $data['users'] = $this->report_model->getUsers();
-              
-                $this->global['pageTitle'] = 'Orion eSolutions : Schedules Report';
-               
-                $this->loadViews("reports", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_BackupSchedule'])=='Search')
+            if(isset($_GET['search_BackupSchedule'])=='Search' || isset($_GET['fromDate']) || isset($_GET['toDate']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['user']) || isset($_GET['status']) && isset($_GET['scheduleType']))
             {
                 // converting selected fromDate and toDate format(mm/dd/yyyy) into format(yyyy-mm-dd)
                
@@ -103,7 +89,8 @@ class Report extends BaseController
                 $search_data['serverId'] = $this->input->get('server');
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['status'] = $this->input->get('status');
-
+                $search_data['scheduleType'] = $this->input->get('scheduleType');
+                
                 $count = $this->report_model->reportCount($returns["page"], $returns["segment"],$search_data, null,null);
            
                 $returns = $this->paginationCompress ( "backup-report/", $count,5);
@@ -113,6 +100,20 @@ class Report extends BaseController
                 $data['users'] = $this->report_model->getUsers();
                
                 $this->global['pageTitle'] = 'Orion eSolutions : Schedule Report';
+                $this->loadViews("reports", $this->global, $data, NULL);
+            }
+            elseif(isset($_GET['search_BackupSchedule'])!='Search')
+            {
+                $count = $this->report_model->reportCount($returns["page"],$returns["segment"],null, $fromDate,$toDate);
+                $returns = $this->paginationCompress ( "backup-report/", $count, 5 );
+                
+                $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
+                $data['clients'] = $this->report_model->getClients();
+                $data['servers'] = $this->report_model->getServers();
+                $data['users'] = $this->report_model->getUsers();
+              
+                $this->global['pageTitle'] = 'Orion eSolutions : Schedules Report';
+               
                 $this->loadViews("reports", $this->global, $data, NULL);
             }
         }
@@ -133,47 +134,38 @@ class Report extends BaseController
             $count = $this->report_model->reportCount(null,null,null, $fromDate,$toDate);
             $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
 
-            if(isset($_GET['search_BackupSchedule'])!='Search')
-            {
-                $count = $this->report_model->reportCount($returns["page"],$returns["segment"],null, $fromDate,$toDate);
-                $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
-                
-                $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
-                $data['clients'] = $this->report_model->getClients();
-                $data['servers'] = $this->report_model->getServers();
-                $data['users'] = $this->report_model->getUsers();
-              
-                $this->global['pageTitle'] = 'Orion eSolutions : Schedules Report';
-               
-                $this->loadViews("reports", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_BackupSchedule'])=='Search')
+            if(isset($_GET['search_BackupSchedule'])=='Search' || isset($_GET['fromDate']) || isset($_GET['toDate']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['user']) || isset($_GET['status']) && isset($_GET['scheduleType']))
             {
                 // converting selected fromDate format(mm/dd/yyyy) into format(yyyy-mm-dd)
                 $from =  $this->input->get('fromDate');
                 $to =  $this->input->get('toDate');
-                if($from!=null && $to!=null)
+                if(isset($_GET['backups']) && $_GET['backups']=="today")
                 {
-                    $from2[] = explode("/",$from);
-                    foreach($from2 AS $fromDate)
-                    {
-                        $from3[] = $fromDate[2];
-                        $from3[] = $fromDate[0];
-                        $from3[] = $fromDate[1];
-                    }
-                    $from4 = implode("-",$from3);
-                    $search_data['fromDate'] =  $from4;
-                    
-                    $to2[] = explode("/",$to);
-                    foreach($to2 AS $t)
-                    {
-                        $to3[] = $t[2];
-                        $to3[] = $t[0];
-                        $to3[] = $t[1];
-                    }
-                    $to4 = implode("-",$to3);
-                    $search_data['toDate'] = $to4;
+                    $from = date('m/d/Y');
+                    $to = date('m/d/Y',strtotime("+1 days"));
                 }
+                    if($from!=null && $to!=null)
+                    {
+                        $from2[] = explode("/",$from);
+                        foreach($from2 AS $fromDate)
+                        {
+                            $from3[] = $fromDate[2];
+                            $from3[] = $fromDate[0];
+                            $from3[] = $fromDate[1];
+                        }
+                        $from4 = implode("-",$from3);
+                        $search_data['fromDate'] =  $from4;
+                        
+                        $to2[] = explode("/",$to);
+                        foreach($to2 AS $t)
+                        {
+                            $to3[] = $t[2];
+                            $to3[] = $t[0];
+                            $to3[] = $t[1];
+                        }
+                        $to4 = implode("-",$to3);
+                        $search_data['toDate'] = $to4;
+                    }
                 elseif($from!=null || $to!=null)
                 {
                     echo "<script>alert('Please select From-date and To-date');</script>";
@@ -188,6 +180,7 @@ class Report extends BaseController
                 $search_data['serverId'] = $this->input->get('server');
                 $search_data['userId'] = $this->input->get('user');
                 $search_data['status'] = $this->input->get('status');
+                $search_data['scheduleType'] = $this->input->get('scheduleType');
                
                 $count = $this->report_model->reportCount($returns["page"], $returns["segment"],$search_data, null,null);
                 $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
@@ -199,6 +192,20 @@ class Report extends BaseController
                 $this->global['pageTitle'] = 'Orion eSolutions : Schedule Report';
                 $this->loadViews("reports", $this->global, $data, NULL);
                
+            }
+            elseif(isset($_GET['search_BackupSchedule'])!='Search')
+            {
+                $count = $this->report_model->reportCount($returns["page"],$returns["segment"],null, $fromDate,$toDate);
+                $returns = $this->paginationCompress ( "backups-report/", $count, 0 );
+                
+                $data['scheduleRecords'] = $this->report_model->report( $returns["page"], $returns["segment"],null, $fromDate,$toDate);
+                $data['clients'] = $this->report_model->getClients();
+                $data['servers'] = $this->report_model->getServers();
+                $data['users'] = $this->report_model->getUsers();
+              
+                $this->global['pageTitle'] = 'Orion eSolutions : Schedules Report';
+               
+                $this->loadViews("reports", $this->global, $data, NULL);
             }
         }
     }

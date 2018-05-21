@@ -80,7 +80,7 @@ if(!empty($userInfo))
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="name">Full Name</label>
+                                        <label for="name">Full Name *</label>
                                         <input type="text" class="form-control" id="name" placeholder="Full Name" name="name" value="<?php echo $name; ?>" maxlength="128">
                                         <input type="hidden" value="<?php echo $userId; ?>" name="userId" id="userId" />    
                                     </div>
@@ -88,7 +88,7 @@ if(!empty($userInfo))
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email">Email address</label>
+                                        <label for="email">Email address *</label>
                                         <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" value="<?php echo $email; ?>" maxlength="128">
                                     </div>
                                 </div>
@@ -97,12 +97,12 @@ if(!empty($userInfo))
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" minlength="4">
+                                        <input type="password" class="form-control" id="password" placeholder="Password" name="password" data-toggle="password">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="mobile">Mobile Number</label>
+                                        <label for="mobile">Mobile Number *</label>
                                         <input type="text" class="form-control" id="mobile" placeholder="Mobile Number" name="mobile" value="<?php echo $mobile; ?>" maxlength="10">
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ if(!empty($userInfo))
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="role">Role</label>
+                                        <label for="role">Role *</label>
                                         <select class="form-control" id="role" name="role">
                                             <option value="0">Select Role</option>
                                             <?php
@@ -129,7 +129,7 @@ if(!empty($userInfo))
                                 </div>    
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                    <label for="status">Status</label>
+                                    <label for="status">Status *</label>
                                     <select class="form-control" id="status" name="status">
                                         <option value="">Select Status</option>
                                         <option value="1" <?php if($status == '1') {echo "selected=selected";} ?>>Active</option>
@@ -152,3 +152,5 @@ if(!empty($userInfo))
 </div>
 
 <script src="<?php echo base_url(); ?>assets/js/editUser.js" type="text/javascript"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-show-password.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/jquery.min.js"></script>

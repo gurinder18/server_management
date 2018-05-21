@@ -25,10 +25,11 @@
                 <div class="box-body table-responsive no-padding">
                   <table class="table table-hover td-align">
                     <tr>
-                      <th><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
+                      <th><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
                       <th class="td-align">User</th>
                       <th class="td-align">Client</th>
                       <th class="td-align">Server</th>
+                      <th class="td-align">Server Status</th>
                       <th class="td-align">Schedule Type</th>
                       <th class="td-align">Schedule Timings</th>
                       <th class="td-align" class="text-center">Actions</th>
@@ -37,7 +38,7 @@
                     <td></td> 
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
                     
-                        <td><?php if($role_slug=="sys.admin"){ ?>
+                        <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
                             <select class="form-control required" id="user" name="user" > 
                                 <option value="">Select User</option>
                                 <?php
@@ -128,6 +129,31 @@
                             </select>
                         </td>
                         <td>
+                            <select class="form-control required" id="status" name="status" onchange="this.form.submit();" > 
+                                <option value="">Select Status</option>
+                                <option value="1" 
+                                <?php
+                                if(isset($_GET['status'])){ 
+                                    if($_GET['status'] == '1')
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                >Active</option>
+                                <option value="0" 
+                                <?php
+                                if(isset($_GET['status'])){ 
+                                    if($_GET['status'] == '0')
+                                    {
+                                        echo "selected";
+                                    }
+                                }
+                                ?>
+                                 >Deactive</option>
+                            </select>
+                        </td>
+                        <td>
                             <select class="form-control required" id="scheduleType" name="scheduleType" > 
                                 <option value="">Select type</option>
                                 <option value="Daily" 
@@ -164,9 +190,9 @@
                         </td>
                         <td>
                             <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                            <option value="">Select timings</option>
+                            <option value=''>Select timings</option>
                                 <?php
-                                        if(isset($_GET['search_backup'])=='Search')
+                                        if(isset($_GET['scheduleTimings']))
                                         { 
                                             if(!empty($_GET['scheduleTimings'] ))
                                             {
@@ -178,7 +204,7 @@
                                             }
                                         }
                                         else{ 
-                                            echo "<option value=''>Select schedule timings</option>";
+                                            echo "<option value=''>Select timings</option>";
                                         }
                                 ?>
                             </select>
@@ -196,16 +222,17 @@
                         foreach($backupRecords as $record)
                         { 
                     ?>
-                    <tr>
-                      <td><?php if($role_slug=="sys.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
+                    <tr <?php if($record->ServerStatus==1){ echo "class='success'"; }else{ echo "class='danger'"; } ?>>
+                      <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
                       <td><?php echo $record->UserName ?></td>
                       <td><?php echo $record->ClientName ?></td>
                       <td><?php echo $record->ServerName ?></td>
+                      <td><?php if($record->ServerStatus==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td><?php echo $record->scheduleType ?></td>
                       <td><?php echo $record->scheduleTimings ?></td>
                       <td class="text-center">
                           <a class="btn btn-sm btn-detail" href="<?php echo base_url().'backup-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
-                          <?php if($role_slug=="sys.admin"){ ?>
+                          <?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
                              <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                               <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                           <?php } ?>
@@ -213,24 +240,22 @@
                     </tr>
                     <?php
                         }
-                       if($role_slug=="sys.admin"){ 
+                       if($role_slug=="sys.admin" || $role_slug=="master.admin"){ 
                     ?>
                     <tr>
-                        <th colspan='8'><input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/></th>
+                        <th colspan='8'><input type="submit" class="btn btn-sm btn-danger"  onClick="confirm('Do you want to delete this?');" name="delete_backup" value="Delete"/></th>
                     </tr>
                     </form>
                     <?php
-                    }}
-                    else{
-                        echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
-                    }
-                    
+                        }}
+                        else{
+                            echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
+                        }
                     ?>
                   </table>
                 </div><!-- /.box-body -->
                 <div class="box-footer clearfix">
                     <?php echo $this->pagination->create_links(); 
-                   
                     ?>
                 </div>
               </div><!-- /.box -->

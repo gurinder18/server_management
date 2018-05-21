@@ -91,64 +91,133 @@
         
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
-            <li class="treeview">
+              <li class="treeview">
+                  <?php 
+                  if($role_slug == "member" && $updatedBy != $vendorId)
+                  {
+                ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>dashboard">
                 <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
               </a>
+                <?php } ?>
             </li>
             <?php
-              if($role_slug == "sys.admin")
+              if($role_slug == "sys.admin" || $role_slug == "master.admin")
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                <i class="fa fa-users"></i><span>Users</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>users">
-                <i class="fa fa-users"></i>
-                <span>Users</span>
+                <i class="fa fa-users"></i><span>Users</span>
               </a>
+              <?php } ?>
             </li>
             <?php 
               }
-              if($role_slug == "sys.admin" || $role_slug == "member")
+              if($role_slug == "sys.admin" || $role_slug == "master.admin" || $role_slug == "member")
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-list-alt"></i>
+                  <span>Servers</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>servers">
                 <i class="fa fa-list-alt"></i>
                 <span>Servers</span>
               </a>
+              <?php } ?>
             </li>
             <?php 
               }
-              if($role_slug == "sys.admin")
+              if($role_slug == "sys.admin" || $role_slug == "master.admin")
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-user"></i>
+                  <span>Clients</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>clients">
                 <i class="fa fa-user"></i>
                 <span>Clients</span>
               </a>
+              <?php } ?>
             </li>
             <?php 
               }
-              if($role_slug == "sys.admin" || $role_slug == "member")
+              if($role_slug == "sys.admin" || $role_slug == "master.admin" || $role_slug == "member")
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-arrow-circle-up"></i>
+                  <span>Backups</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>backups">
                 <i class="fa fa-arrow-circle-up"></i>
                 <span>Backups</span>
               </a>
+                <?php } ?>
             </li>
             <?php
               }
-              if($role_slug == "sys.admin")
+              if($role_slug == "sys.admin" || $role_slug == "master.admin")
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-th"></i>
+                  <span>Report</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>backup-report">
                 <i class="fa fa-th"></i>
                 <span>Report</span>
               </a>
+                <?php } ?>
             </li>
             <?php
               } 
@@ -156,19 +225,43 @@
               {
             ?>
             <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-arrow-circle-up"></i>
+                  <span>Backup Schedules</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>schedules">
                 <i class="fa fa-arrow-circle-up"></i>
                 <span>Backup Schedules</span>
               </a>
+              <?php } ?>
             </li>
             <?php
              }
             ?>
              <li class="treeview">
+              <?php 
+                if($role_slug == "member" && $updatedBy != $vendorId)
+                {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-list-alt"></i>
+                  <span>Check IP Blacklist</span>
+                </a>
+              <?php
+                }else{
+              ?>
               <a href="<?php echo base_url(); ?>check-ip-blacklist">
                 <i class="fa fa-list-alt"></i>
                 <span>Check IP Blacklist</span>
               </a>
+                <?php } ?>
             </li>
           </ul>
         </section>

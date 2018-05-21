@@ -53,14 +53,14 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="name">Name *</label>
-                                        <input type="text" class="form-control required" id="name" name="name" maxlength="50">
+                                        <input type="text" class="form-control required" id="name" name="name" value="<?php echo isset($_POST["name"]) ? $_POST["name"] : ''; ?>" maxlength="50">
                                     </div>
                                     
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="phone">Phone Number</label>
-                                        <input type="text" class="form-control digits" id="phone"  name="phone" maxlength="10">
+                                        <input type="text" class="form-control digits" id="phone"  name="phone" value="<?php echo isset($_POST["phone"]) ? $_POST["phone"] : ''; ?>" maxlength="10">
                                     </div>
                                 </div>
                             </div>
@@ -68,13 +68,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="email">Email address </label>
-                                        <input type="text" class="form-control email" id="email"  name="email" maxlength="100">
+                                        <input type="text" class="form-control email" id="email"  name="email" value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>" maxlength="100">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="address">Address</label>
-                                        <input type="text" class="form-control " id="address"  name="address" >
+                                        <input type="text" class="form-control " id="address"  name="address" value="<?php echo isset($_POST["address"]) ? $_POST["address"] : ''; ?>" >
                                     </div>
                                 </div>
                             </div>
@@ -82,13 +82,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="city">City </label>
-                                        <input type="text" class="form-control " id="city" name="city" maxlength="50">
+                                        <input type="text" class="form-control " id="city" name="city" value="<?php echo isset($_POST["city"]) ? $_POST["city"] : ''; ?>" maxlength="50">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="state">State </label>
-                                        <input type="text" class="form-control " id="state" name="state" maxlength="50">
+                                        <input type="text" class="form-control " id="state" name="state" value="<?php echo isset($_POST["state"]) ? $_POST["state"] : ''; ?>" maxlength="50">
                                     </div>
                                 </div>
                             </div>
@@ -96,7 +96,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="zip">Zip </label>
-                                        <input type="text" class="form-control " id="zip" name="zip" maxlength="100">
+                                        <input type="text" class="form-control " id="zip" name="zip" value="<?php echo isset($_POST["zip"]) ? $_POST["zip"] : ''; ?>" maxlength="100">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -113,8 +113,22 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                       <div> <label for="user">Users </label></div>
-                                        <select class="multipleSelect form-control" multiple name="user[]" id="user">
+                                        <label for="organisation">Organisation </label>
+                                        <input type="text" class="form-control " id="organisation" name="organisation" value="<?php echo isset($_POST["organisation"]) ? $_POST["organisation"] : ''; ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="contacts">Other Contacts </label>
+                                        <input type="text" class="form-control " id="contacts" name="contacts" value="<?php echo isset($_POST["contacts"]) ? $_POST["contacts"] : ''; ?>" placeholder="Name-Contact No.-Organisation">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <div> <label for="user">Users </label>(Click in box to select)</div>
+                                        <select class="multipleSelect form-control" multiple name="user[]" id="user" required>
                                             <?php
                                             if(!empty($users))
                                             {
@@ -126,7 +140,7 @@
                                                 }
                                             }
                                             ?>
-                                        </select>
+                                        </select> 
                                         </div> 
                                 </div>    
                             </div>

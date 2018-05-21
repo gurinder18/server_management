@@ -54,14 +54,14 @@
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                        <label for="name">Full Name</label>
+                                        <label for="name">Full Name *</label>
                                         <input type="text" class="form-control required" id="name" name="name"  value="<?php echo isset($_POST["name"]) ? $_POST["name"] : ''; ?>" maxlength="128">
                                        
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="email">Email address</label>
+                                    <div class="form-group ">
+                                        <label for="email">Email address *</label>
                                         <input type="text" class="form-control required email" id="email"  name="email" maxlength="128"  value="<?php echo isset($_POST["email"]) ? $_POST["email"] : ''; ?>">
                                     </div>
                                 </div>
@@ -69,27 +69,28 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control required" id="password"  name="password" minlength="4">
+                                        <label for="password">Password *</label>
+                                        <input type="password" class="form-control required" id="password"  name="password" data-toggle="password">
+                                       
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="cpassword">Confirm Password</label>
-                                        <input type="password" class="form-control required equalTo" id="cpassword" name="cpassword" minlength="4">
+                                        <label for="cpassword">Confirm Password *</label>
+                                        <input type="password" class="form-control required equalTo" id="cpassword" name="cpassword">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="mobile">Mobile Number</label>
+                                        <label for="mobile">Mobile Number *</label>
                                         <input type="text" class="form-control required digits" id="mobile" name="mobile" maxlength="10"  value="<?php echo isset($_POST["mobile"]) ? $_POST["mobile"] : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="role">Role</label>
+                                        <label for="role">Role *</label>
                                         <select class="form-control required" id="role" name="role">
                                             <option value="0">Select Role</option>
                                             <?php
@@ -133,3 +134,8 @@
     
 </div>
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-show-password.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/jquery.min.js"></script>
+<script type="text/javascript">
+	//$("#password").password('toggle');
+</script>

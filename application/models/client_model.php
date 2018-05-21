@@ -12,7 +12,7 @@ class Client_model extends CI_Model
     function clientListingCount($searchText = '')
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status');
+        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
         $this->db->from('tbl_clients as BaseTbl');
        
         if(!empty($searchText)) {
@@ -37,14 +37,11 @@ class Client_model extends CI_Model
     function clients($searchText = '', $page, $segment)
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-         BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status');
+         BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
         $this->db->from('tbl_clients as BaseTbl');
         
-        //$this->db->join('tbl_client_users as ClientUser', 'ClientUser.clientId = BaseTbl.id','left');
-       // $this->db->join('tbl_users as User', 'User.userId = ClientUser.userId','left');
-       
         $this->db->where('BaseTbl.isDeleted', 0);
-        //$this->db->where('User.roleId !=', 1);
+        $this->db->order_by("BaseTbl.name", "asc");
         $this->db->limit($page, $segment);
         $query = $this->db->get();
         
@@ -59,9 +56,10 @@ class Client_model extends CI_Model
      */
     function getUsers()
     {
-        $this->db->select('userId, name');
-        $this->db->from('tbl_users');
-        $this->db->where('roleId =', 2);
+        $this->db->select('BaseTbl.userId, BaseTbl.name');
+        $this->db->from('tbl_users as BaseTbl');
+        $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+        $this->db->where('Role.slug ', "member" );
         $this->db->where('isDeleted !=', 1);
         $this->db->where('status', 1);
         $query = $this->db->get();
@@ -108,7 +106,7 @@ class Client_model extends CI_Model
     function getClientInfo($id)
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status');
+        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
         
         $this->db->from('tbl_clients as BaseTbl');
         //$this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -131,24 +129,6 @@ class Client_model extends CI_Model
         
         $this->db->from('tbl_client_users as BaseTbl');
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
-       
-        $this->db->where('BaseTbl.isDeleted', 0);
-		//$this->db->where('roleId !=', 1);
-        $this->db->where('clientId', $id);
-        $query = $this->db->get();
-        
-        return $query->result();
-    }
-     /**
-     * This function used to get client information by id
-     * @param number $id : This is client id
-     * @return array $result : This is client information
-     */
-    function getClientUserInfo($id)
-    {
-        $this->db->select('BaseTbl.id, BaseTbl.clientId, BaseTbl.userId, User.name As UserName');
-        
-        $this->db->from('tbl_client_users as BaseTbl');
        
         $this->db->where('BaseTbl.isDeleted', 0);
 		//$this->db->where('roleId !=', 1);
@@ -197,7 +177,6 @@ class Client_model extends CI_Model
     function editClientsUser($clientUserInfo, $id )
     {
         $this->db->where('id', $id);
-       // $this->db->where('userId', $userId);
         $this->db->update('tbl_client_users', $clientUserInfo);
        
         return TRUE;

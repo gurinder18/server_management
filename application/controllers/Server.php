@@ -50,19 +50,10 @@ class Server extends BaseController
            
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
 
-            if(isset($_GET['search_server'])!='Search')
-            {
-                $data['clients'] = $this->server_model->getClients();
-                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
-                $data['servers'] = $this->server_model->membersServers( $returns["page"], $returns["segment"],$this->vendorId);
-               
-                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-                
-                $this->loadViews("servers", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_server'])=='Search')
+            if(isset($_GET['search_server'])=='Search' || isset($_GET['name']) || isset($_GET['os']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['hostname']) || isset($_GET['status']))
             {
                 $search_data['name'] = $this->input->get('name');
+                $search_data['os'] = $this->input->get('os');
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['server'] = $this->input->get('server');
                 $search_data['hostname'] = $this->input->get('hostname');
@@ -70,12 +61,24 @@ class Server extends BaseController
 
                 $data['servers'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
                 $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
                 $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId,$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 
                 $this->loadViews("servers", $this->global, $data, NULL);
                
-            }else{}
+            }
+            elseif(isset($_GET['search_server'])!='Search')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
+                $data['servers'] = $this->server_model->membersServers( $returns["page"], $returns["segment"],$this->vendorId);
+               
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
            
         }
         elseif($this->isAdmin() == FALSE)
@@ -91,18 +94,10 @@ class Server extends BaseController
             $count = $this->server_model->serverListingCount();
             $returns = $this->paginationCompress ( "servers/", $count, 5 );
             
-            if(isset($_GET['search_server'])!='Search')
-            {
-                $data['clients'] = $this->server_model->getClients();
-                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
-                $data['serverRecords'] = $this->server_model->serverListing( $returns["page"], $returns["segment"]);
-                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
-                
-                $this->loadViews("servers", $this->global, $data, NULL);
-            }
-            elseif(isset($_GET['search_server'])=='Search')
+            if(isset($_GET['search_server'])=='Search' || isset($_GET['name'])  || isset($_GET['os'])  || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['hostname']) || isset($_GET['status']))
             {
                 $search_data['name'] = $this->input->get('name');
+                $search_data['os'] = $this->input->get('os');
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['server'] = $this->input->get('server');
                 $search_data['hostname'] = $this->input->get('hostname');
@@ -110,11 +105,113 @@ class Server extends BaseController
 
                 $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
                 $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
                 $data['serverRecords'] = $this->server_model->searchServer($returns["page"], $returns["segment"],$search_data);
                 $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
                 
                 $this->loadViews("servers", $this->global, $data, NULL);
-            }else{}
+            }
+            elseif(isset($_GET['search_server'])!='Search')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
+                $data['serverRecords'] = $this->server_model->serverListing( $returns["page"], $returns["segment"]);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
+        }
+    }  
+    /**
+     * This function is used to load the all servers list
+     */
+   
+    function allServerListing()
+    {
+        if($this->isMember() == TRUE)
+        {
+            $this->load->model('server_model');
+        
+            $this->load->library('pagination');
+            
+            $count = $this->server_model->membersServersCount($this->vendorId);
+           
+            $returns = $this->paginationCompress ( "all-servers/", $count, 0 );
+
+            
+            if(isset($_GET['search_server'])=='Search' || isset($_GET['name']) || isset($_GET['os']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['hostname']) || isset($_GET['status']))
+            {
+                $search_data['name'] = $this->input->get('name');
+                $search_data['os'] = $this->input->get('os');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['server'] = $this->input->get('server');
+                $search_data['hostname'] = $this->input->get('hostname');
+                $search_data['status'] = $this->input->get('status');
+
+                $data['servers'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId,$search_data);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+               
+            }
+            elseif(isset($_GET['search_server'])!='Search')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['serverRecords'] = $this->server_model->membersServers($returns["page"], $returns["segment"],$this->vendorId);
+                $data['servers'] = $this->server_model->membersServers( $returns["page"], $returns["segment"],$this->vendorId);
+               
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
+           
+        }
+        elseif($this->isAdmin() == FALSE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+            $this->load->model('server_model');
+        
+            $this->load->library('pagination');
+            
+            $count = $this->server_model->serverListingCount();
+            $returns = $this->paginationCompress ( "servers/", $count, 0 );
+            
+           
+            if(isset($_GET['search_server'])=='Search' || isset($_GET['name']) || isset($_GET['os']) || isset($_GET['client']) || isset($_GET['server']) || isset($_GET['hostname']) || isset($_GET['status']))
+            {
+                $search_data['name'] = $this->input->get('name');
+                $search_data['os'] = $this->input->get('os');
+                $search_data['clientId'] = $this->input->get('client');
+                $search_data['server'] = $this->input->get('server');
+                $search_data['hostname'] = $this->input->get('hostname');
+                $search_data['status'] = $this->input->get('status');
+
+                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['serverRecords'] = $this->server_model->searchServer($returns["page"], $returns["segment"],$search_data);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
+            elseif(isset($_GET['search_server'])!='Search')
+            {
+                $data['clients'] = $this->server_model->getClients();
+                $data['os'] = $this->server_model->getOs();
+                $data['servers'] = $this->server_model->serverListing( null, $returns["segment"]);
+                $data['serverRecords'] = $this->server_model->serverListing( $returns["page"], $returns["segment"]);
+                $this->global['pageTitle'] = 'Orion eSolutions : Server Listing';
+                
+                $this->loadViews("servers", $this->global, $data, NULL);
+            }
         }
     }  
     /**
@@ -130,6 +227,7 @@ class Server extends BaseController
         {
             $this->load->model('server_model');
             $data['clients'] = $this->server_model->getClients();
+            $data['os'] = $this->server_model->getOs();
            
             $this->global['pageTitle'] = 'Orion eSolutions : Add New Server';
            
@@ -143,7 +241,7 @@ class Server extends BaseController
             $this->form_validation->set_rules('server','Server','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('hostname','Hostname','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('username','Username','max_length[20]');
-            $this->form_validation->set_rules('password','Password','max_length[20]');
+            $this->form_validation->set_rules('password','Password','max_length[20]|min_length[4]');
             $this->form_validation->set_rules('status','Status','trim|required|numeric');
             $this->form_validation->set_rules('details','Details','trim|xss_clean');
            
@@ -162,8 +260,17 @@ class Server extends BaseController
                 $password = $this->input->post('password');
                 $status = $this->input->post('status');
                 $details = $this->input->post('details');
-                
-                $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
+                $os = $this->input->post('os');
+                $other = $this->input->post('other');
+                if($os == "Other")
+                {
+                    $operatingSystem =  $other;
+                }
+                else
+                {
+                    $operatingSystem =  $os;
+                }
+                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
                 'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
                 'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
                 
@@ -203,6 +310,8 @@ class Server extends BaseController
             
             $data['serverInfo'] = $this->server_model->getServerInfo($id);
             $data['clients'] = $this->server_model->getClients();
+            $data['os'] = $this->server_model->getOs();
+            
             $this->global['pageTitle'] = 'Orion eSolutions : Edit Server';
            
             $this->loadViews("editOldServer", $this->global, $data, NULL);
@@ -217,7 +326,7 @@ class Server extends BaseController
             $this->form_validation->set_rules('server','Server','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('hostname','Hostname','trim|required|max_length[100]|xss_clean');
             $this->form_validation->set_rules('username','Username','max_length[20]');
-            $this->form_validation->set_rules('password','Password','max_length[20]');
+            $this->form_validation->set_rules('password','Password','max_length[20]|min_length[4]');
             $this->form_validation->set_rules('status','Status','trim|required|numeric');
             $this->form_validation->set_rules('details','Details','trim|xss_clean');
             
@@ -236,10 +345,19 @@ class Server extends BaseController
                 $password = $this->input->post('password');
                 $status = $this->input->post('status');
                 $details = $this->input->post('details');
-               
+                $os = $this->input->post('os');
+                $other = $this->input->post('other');
+                if($os == "Other")
+                {
+                    $operatingSystem =  $other;
+                }
+                else
+                {
+                    $operatingSystem =  $os;
+                }
                 $serverInfo = array();
                 
-                $serverInfo = array('name'=>ucwords($name),'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
+                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
                 'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details, 'updatedBy'=>$this->vendorId, 
                         'updatedDtm'=>date('Y-m-d H:i:s'));
                 

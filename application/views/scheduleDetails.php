@@ -228,7 +228,24 @@
                                     foreach($commentInfo AS $comments)
                                     {
                             ?>
-                            <tr>
+                            <tr 
+                                <?php if($comments->CommentStatus==1)
+                                        { echo 'class=""';
+                                        }
+                                        elseif($comments->CommentStatus==2)
+                                        {
+                                            echo 'class="warning"';
+                                        }
+                                        elseif($comments->CommentStatus==3)
+                                        {
+                                            echo 'class="success"';
+                                        }
+                                        elseif($comments->CommentStatus==4)
+                                        {
+                                            echo 'class="danger"';
+                                        }
+                                ?>
+                            >
                                 <td><?php echo date('d-m-Y H:i:s') ?></td>
                                 <td>
                                     <?php 
@@ -246,7 +263,7 @@
                                         } 
                                         if($comments->CommentStatus==4)
                                         {
-                                            echo "Cancelled";
+                                            echo "Failed";
                                         } 
                                     ?>
                                 </td>
@@ -280,8 +297,8 @@
                                                                 <table class="table table-hover">
                                                                     <tr>
                                                                        <td id="attachfiles">
-                                                                      <?php  
-                                                                            echo  $comments->file; ?>
+                                                                          <img class="profile-user-img img-responsive " src="<?php echo base_url(); ?>/assets/files/<?php echo $comments->file; ?>" alt="">
+                  
                                                                        </td> 
                                                                     </tr>
                                                                 </table>
