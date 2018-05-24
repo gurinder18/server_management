@@ -122,9 +122,15 @@ $route['backups-report/(:num)'] = "report/allBackupReport/$1";
 $route['export-excel'] = "report/excel";
 
 /*********** IP Blacklist DEFINED ROUTES *******************/
-$route['check-ip-blacklist'] = 'server/checkBlacklist';
+$route['check-ip-blacklist'] = 'server/checkBlacklisting';
+$route['check-ip-blacklisting'] = 'server/checkBlacklist';
 $route['check-ip-blacklist/(:any)'] = 'server/checkBlacklist/$1';
 $route['blacklist'] = 'server/blacklist';
+
+$route['add-ip'] = "server/addIP";
+$route['add-ip(:any)'] = "server/addIP/$1";
+$route['edit-ip/(:num)'] = "server/editIP/$1";
+$route['deleteIP'] = "server/deleteIP";
 
 //$route['paging-users'] = 'paging/custom';
 

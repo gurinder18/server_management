@@ -93,20 +93,20 @@ class Login extends CI_Controller
                         $res  = $this->login_model->lastLogin($userId, $userInfo);
                         redirect('/loadChangePass');
                     }
-                    elseif($updatedBy == "" || $updatedBy != $this->vendorId)
+                    elseif($updatedBy == "" )
                     {
                          $loginCount = $loginCount + 1;
                          $userInfo = array( 'lastLogin'=>$loginCount);
                          $res  = $this->login_model->lastLogin($userId, $userInfo);
                          redirect('/loadChangePass');
                     }
-                    // elseif($updatedBy != $this->vendorId )
-                    // {
-                    //      $loginCount = $loginCount + 1;
-                    //      $userInfo = array( 'lastLogin'=>$loginCount);
-                    //      $res  = $this->login_model->lastLogin($userId, $userInfo);
-                    //      redirect('/loadChangePass');
-                    // }
+                    elseif($updatedBy != $res->userId )
+                    {
+                         $loginCount = $loginCount + 1;
+                         $userInfo = array( 'lastLogin'=>$loginCount);
+                         $res  = $this->login_model->lastLogin($userId, $userInfo);
+                         redirect('/loadChangePass');
+                    }
                     else
                     {
                         $loginCount = $loginCount + 1;

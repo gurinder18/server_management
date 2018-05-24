@@ -28,14 +28,15 @@ class Server_model extends CI_Model
      */
     function serverListing($page=null, $segment=null)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, BaseTbl.hostname,
-         BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,Client.name As ClientName');
+        $this->db->select('BaseTbl.id, BaseTbl.name,BaseTbl.operatingSystem, BaseTbl.clientId, BaseTbl.server, 
+        BaseTbl.hostname, BaseTbl.username, BaseTbl.password, BaseTbl.status, BaseTbl.details,
+        Client.name As ClientName');
         // $this->db->select('BaseTbl.*'," Client.*");
         $this->db->from('tbl_servers as BaseTbl');
         $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
        
         $this->db->where('BaseTbl.isDeleted', 0);
-        $this->db->order_by('BaseTbl.isDeleted', 0);
+        //$this->db->order_by('BaseTbl.isDeleted', 0);
         $this->db->limit($page, $segment);
         $this->db->order_by("Client.name", "asc");
         $query = $this->db->get();
@@ -299,7 +300,143 @@ class Server_model extends CI_Model
         
         return $query->row_array();
     }
-    
+     /**
+     * This function is used to get  IP List
+     */
+    function ipListing()
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.ip');
+       
+        $this->db->from('tbl_ip as BaseTbl');
+       
+        $this->db->where('BaseTbl.isDeleted', 0);
+       
+        $this->db->order_by("BaseTbl.ip", "asc");
+        $query = $this->db->get();
+        $result = $query->result();    
+        
+        return $result;
+    }
+    /**
+     * This function is used to add new ip to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addNewIP($ipInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_ip', $ipInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
+      /**
+     * This function is used to update the ip information
+     * @param array $serverInfo : This is ips updated information
+     * @param number $id : This is ip- id
+     */
+    function editIP($ipInfo, $id)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('tbl_ip', $ipInfo);
+        
+        return TRUE;
+    }
+    /**
+     * This function is used to delete the ip information
+     * @param number $id : This is ip- id
+     * @return boolean $result : TRUE / FALSE
+     */
+    function deleteIP($id, $ipInfo)
+    {
+        $this->db->where('id', $id);
+      
+        $this->db->update('tbl_ip', $ipInfo);
+        $result = $this->db->affected_rows();
+        
+        return $result;
+    }
+     /**
+     * This function is used to add mail log 
+     */
+    function addMailLog($mailLogInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_mail_log', $mailLogInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
+     /**
+     * This function is used to get the user info
+     */
+    function userListing()
+    {
+        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status, 
+        Role.role');
+        $this->db->from('tbl_users as BaseTbl');
+        $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+       
+        $this->db->where('BaseTbl.isDeleted', 0);
+        $this->db->where('BaseTbl.status', 1);
+        $this->db->order_by('BaseTbl.roleId', 'asc');
+        $this->db->order_by('BaseTbl.name', 'asc');
+        $query = $this->db->get();
+        
+        $result = $query->result();        
+        return $result;
+    }
+     /**
+     * This function is used to add new ip blacklist to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addIPBlacklist($ipInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_ip_blacklist', $ipInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
+    /**
+     * This function is used to get the blacklisted-ip list 
+     * @return array $result : This is result
+     */
+    function getAllIP()
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.ip');
+       
+        $this->db->from('tbl_ip_blacklist as BaseTbl');
+       
+        $this->db->group_by("BaseTbl.ip");
+        $query = $this->db->get();
+        $result = $query->result();    
+        
+        return $result;
+    }
+     /**
+     * This function is used to get the ip-blacklist info
+     * @return array $result : This is result
+     */
+    function getIPBlacklist()
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.ip,BaseTbl.serverId, BaseTbl.host, BaseTbl.isListed');
+       
+        $this->db->from('tbl_ip_blacklist as BaseTbl');
+       
+        $query = $this->db->get();
+        $result = $query->result();    
+        
+        return $result;
+    }
 }
 
   

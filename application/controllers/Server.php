@@ -21,6 +21,7 @@ class Server extends BaseController
         parent::__construct();
         $this->load->model('server_model');
         $this->isLoggedIn();   
+        $this->load->library('email');
     }
   
     /**
@@ -270,15 +271,19 @@ class Server extends BaseController
                 {
                     $operatingSystem =  $os;
                 }
-                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
-                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
-                'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,
+                'server'=>$server,'hostname'=>$hostname,'username'=>$username,'password'=>$password,
+                'status'=>$status,'details'=>$details, 'createdBy'=>$this->vendorId,
+                 'createdDtm'=>date('Y-m-d H:i:s'));
                 
                 $this->load->model('server_model');
                 $result = $this->server_model->addNewServer($serverInfo);
                 
                 if($result > 0)
                 {
+                    //$ipInfo = array('ip'=>$server,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                
+                   // $res = $this->server_model->addNewIP($ipInfo);
                     $this->session->set_flashdata('success', 'New server created successfully');
                 }
                 else
@@ -357,14 +362,16 @@ class Server extends BaseController
                 }
                 $serverInfo = array();
                 
-                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,
-                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details, 'updatedBy'=>$this->vendorId, 
-                        'updatedDtm'=>date('Y-m-d H:i:s'));
+                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
+                'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,'username'=>$username,
+                'password'=>$password,'status'=>$status,'details'=>$details, 'updatedBy'=>$this->vendorId, 
+                'updatedDtm'=>date('Y-m-d H:i:s'));
                 
                 $result = $this->server_model->editServer($serverInfo, $id);
                 
                 if($result == true)
                 {
+
                     $this->session->set_flashdata('success', 'Server updated successfully');
                 }
                 else
@@ -552,25 +559,173 @@ class Server extends BaseController
             return $result['id'];
         }
     }
-    
-    /**
-     * This function is used to load the add new server
+     /**
+     * This function is used to load the Check IP Blacklist 
      */
     function checkBlacklist()
+    {
+        $this->load->model('server_model');
+        $data['IP_List'] = $this->server_model->ipListing();
+
+        $data['server_ip'] = $this->server_model->serverListing( null, null);
+        $list = array();
+        $ip_list = array_merge($data['IP_List'], $data['server_ip']);
+        
+        foreach( $ip_list as $servers)
+        {
+            if(isset($servers->server))
+            {
+                $serverId = $servers->id;
+                $ip = $servers->server;
+                $serverName = $servers->name;
+            }
+            else
+            {
+                $serverId = "";
+                $ip =$servers->ip;
+                $serverName = "";
+            }
+            $data["listing"][] = $this->dnsbllookup($ip, TRUE);
+            foreach( $data["listing"] as $datalist)
+            {
+                foreach( $datalist as $data)
+                {
+                    $ip = $data['ip'];
+                    $host = $data['host'];
+                    if($data['listed'] == "Listed")
+                    {
+                        $isListed = 1;
+                    }
+                    elseif($data['listed'] == "Not Listed")
+                    {
+                        $isListed = 0;
+                    }
+                    if($serverId != "")
+                    {
+                        $ipInfo = array('ip'=>$ip,'serverId'=>$serverId,'host'=>$host,'isListed'=>$isListed,
+                        'createdDtm'=>date('Y-m-d H:i:s'));
+                    }
+                    else
+                    {
+                        $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed,
+                        'createdDtm'=>date('Y-m-d H:i:s'));
+                    }
+                    $result = $this->server_model->addIPBlacklist($ipInfo);
+                    $data['blacklist'] = $this->server_model->getIPBlacklist();
+                    foreach($data["blacklist"] as  $list => $li)
+                    { 
+                        if($li->ip == $ip)  
+                        {   
+                            if($li->isListed == "1")  
+                            {
+                                $id = $li->id;
+                                $isBlacklisted = "Listed";
+                                break;
+                            }
+                            else
+                            {
+                                $id = $li->id;
+                                $isBlacklisted = "Not Listed"; 
+                            }
+                        }
+                    }
+                    if($serverName != "")
+                    {
+                        $statusList[] = array("id"=>$id,
+                                        "serverName"=>$servers->name,
+                                        "ip"=> $ip,
+                                        "isListed"=> $isBlacklisted
+                        );
+                        break;
+                    }
+                    else
+                    {
+                        $statusList[] = array("id"=>$id,
+                                        "serverName"=>NULL,
+                                        "ip"=> $ip,
+                                        "isListed"=> $isBlacklisted
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+        $data['status'] = $statusList;
+        $this->blacklistMail($data['status']);
+    }
+    /**
+     * This function is used to load the Check IP Blacklist page
+     */
+    function checkBlacklisting()
     {
         if($this->isAdmin() == FALSE && $this->isMember() == FALSE)
         {
             $this->loadThis();
         }
         $this->load->model('server_model');
-        $data['clients'] = $this->server_model->getClients();
-           
-        $this->global['pageTitle'] = 'Orion eSolutions : Add New Server';
+        $data['IP_List'] = $this->server_model->ipListing();
+
+        $data['server_ip'] = $this->server_model->serverListing( null, null);
+        $list = array();
+        $ip_list = array_merge($data['IP_List'], $data['server_ip']);
+        
+        foreach( $ip_list as $servers)
+        {
+            if(isset($servers->server))
+            {
+                $serverId = $servers->id;
+                $ip = $servers->server;
+                $serverName = $servers->name;
+            }
+            else
+            {
+                $serverId = "";
+                $ip =$servers->ip;
+                $serverName = "";
+            }
+            $data['blacklist'] = $this->server_model->getIPBlacklist();
+            foreach($data["blacklist"] as  $list => $li)
+            { 
+                if($li->ip == $ip)  
+                {   
+                    if($li->isListed == "1")  
+                    {
+                        $id = $li->id;
+                        $isBlacklisted = "Listed";
+                        break;
+                    }
+                    else
+                    {
+                        $id = $li->id;
+                        $isBlacklisted = "Not Listed"; 
+                    
+                    }
+                }
+            }
+            if($serverName != "")
+            {
+                $statusList[] = array("id"=>$id,
+                                "serverName"=>$servers->name,
+                                "ip"=> $ip,
+                                "isListed"=> $isBlacklisted
+                );
+            }
+            else
+            {
+                $statusList[] = array("id"=>$id,
+                                "serverName"=>NULL,
+                                "ip"=> $ip,
+                                "isListed"=> $isBlacklisted
+                );
+            }
+        }
+        $data['status'] = $statusList;
+        $this->global['pageTitle'] = 'Orion eSolutions : Check IP Blacklist';
            
          $this->loadViews("checkBlacklist", $this->global, $data, NULL);
         
     }
-    function dnsbllookup($ip)
+    function dnsbllookup($ip, $list)
     {
         // Add your preferred list of DNSBL's
         $dnsbl_lookup = [
@@ -583,40 +738,252 @@ class Server extends BaseController
             "bl.spamcop.net",
             "list.dsbl.org",
             "sbl.spamhaus.org",
-            "xbl.spamhaus.org"
+            "xbl.spamhaus.org",
+            "b.barracudacentral.org"
         ];
         $listed = "";
+        $listing = array();
         if ($ip) {
             $reverse_ip = implode(".", array_reverse(explode(".", $ip)));
             foreach ($dnsbl_lookup as $host) {
-                if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) {
+                if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) { 
                     $listed .= '</br>'.$reverse_ip . '.' . $host ;
+                     $listing[] = array('ip'=>$ip,
+                                      'host'=>$host,
+                                      'listed'=>'Listed'    
+                             );
+                }
+                else
+                {
+                     $listing[] = array('ip'=>$ip,
+                                      'host'=>$host,
+                                      'listed'=>'Not Listed'    
+                             );
                 }
             }
         }
-        if (empty($listed)) {
-            $message = 'Record was not found';
-            redirect("check-ip-blacklist?status=".$message);
-        } else {
-            redirect("check-ip-blacklist?listed=".$listed);
+        if($list == TRUE)
+        {
+            return $listing;
         }
+        if($list == FALSE)
+        {
+            if(empty($listed) ) {
+                $message = 'Record was not found';
+                redirect("check-ip-blacklist?status=".$message);
+            } else {
+                redirect("check-ip-blacklist?listed=".$listed);
+            }
+        }
+        
     }
     function blacklist()
     {
-        if (isset($_GET['ip']) && $_GET['ip'] != null)
-        {
-            $ip = $_GET['ip'];
-            if (filter_var($ip, FILTER_VALIDATE_IP)) 
+            if (isset($_GET['ip']) && $_GET['ip'] != null)
             {
-                echo $this->dnsbllookup($ip);
+                $ip = $_GET['ip'];
+                if (filter_var($ip, FILTER_VALIDATE_IP)) 
+                {
+                    $this->dnsbllookup($ip, FALSE);
+                }
+                else 
+                {
+                    $notValid = "Please enter a valid IP";
+                    redirect("check-ip-blacklist?invalid=".$notValid);
+                }
+            }
+    }
+    /**
+     * This function is used to send mail for IP Blacklist
+     */
+    function blacklistMail($data)
+    {
+        $row = "";
+        $userInfo = $this->server_model->userListing();
+       
+         if(!empty($data))
+        {
+            foreach($data as $list)
+            { 
+                if($list['isListed'] == "Listed")
+                {
+                    $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;" >
+                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                            '.$list['ip'].'
+                            </td>
+                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                            '. $list['isListed'].'
+                            </td>
+                        </tr>'; 
+                }
+            }
+        }  
+        $message = '<table style="border:1px solid #e8e8e8;border-spacing:0;width:100%;">
+                                <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
+                                    <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                        IP Address
+                                    </th>
+                                    <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                        is Listed?
+                                    </th>
+                                </tr>
+                                    '.$row.'
+                                <tr>
+                                    <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                        <a href="'.base_url().'/check-ip-blacklist">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>';
+        if(!empty($userInfo))
+        {
+            foreach($userInfo as $user)
+            { 
+                $name = $user->name;
+                $email = $user->email;
+        $body = '
+            <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+            <p>Hi '.$name.'</p>
+            <p>IP Blacklist: </p> 
+            '.$message.'
+            ';
+       
+        $config['mailtype'] = 'html';
+        $this->email->initialize($config);
+        $subject = "IP Blacklist";
+        $result = $this->email
+            ->from('webmaster@example.com','Orion eSolutions')
+            // ->reply_to('')    // Optional, an account where a human being reads.
+            ->to($email)
+            ->subject($subject)
+            ->message($body)
+            ->send();
+       
+        if($result == TRUE)
+        {
+            $mailLogInfo = array('email_to'=>$email,'email_from'=>"webmaster@example.com",
+            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"ip_blacklist");
+            $res = $this->server_model->addMailLog($mailLogInfo);
+        }
+        //var_dump($result);
+        //echo '<br />';
+        //echo $this->email->print_debugger();
+        }
+    }
+    }
+     /**
+     * This function is used to load the add new ip
+     */
+    function addIP()
+    {
+        if(isset($_POST['add_ip'])=='Submit')
+        {
+            $this->load->library('form_validation');
+            
+            $this->form_validation->set_rules('ip','IP','trim|required|xss_clean');
+           
+            $ip = $this->input->post('ip');
+               
+            $ipInfo = array('ip'=>$ip,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                
+                $this->load->model('server_model');
+                $result = $this->server_model->addNewIP($ipInfo);
+                if($result > 0)
+                {
+                    $this->session->set_flashdata('success', 'New ip created successfully');
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'IP creation failed');
+                }
+                redirect("check-ip-blacklist");
+        }
+        redirect("check-ip-blacklist");
+    }
+  /**
+     * This function is server load ip edit information
+     * @param number $id : Optional : This is ip id
+     */
+    function editIP($id = NULL)
+    {
+        if(isset($_POST['edit_ip'])!='Edit')
+        {
+            if($id == null)
+            {
+                redirect('check-ip-blacklist');
+            }
+        }
+        elseif(isset($_POST['edit_ip'])=='Edit'){
+            $this->load->library('form_validation');
+            
+            $id = $this->input->post('id');
+            $this->form_validation->set_rules('ip','IP','trim|required|xss_clean');
+           
+            $ip = $this->input->post('ip');
+               
+                $ipInfo = array();
+                
+                $ipInfo = array('ip'=>$ip,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                
+                $result = $this->server_model->editIP($ipInfo, $id);
+                
+                if($result == true)
+                {
+                    $this->session->set_flashdata('success', 'IP updated successfully');
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'IP updation failed');
+                }
+                redirect('check-ip-blacklist');
+            }
+    }
+     /**
+     * This function is used to delete the ip using id
+     * @return boolean $result : TRUE / FALSE
+     */
+    function deleteIP()
+    {
+        if(isset($_POST['delete_ip'])!='Delete')
+        {
+            $id = $this->input->post('id');
+            $ipInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+            
+            $result = $this->server_model->deleteIP($id, $ipInfo);
+            
+            if ($result > 0)
+            { 
+                echo(json_encode(array('status'=>TRUE))); 
             }
             else 
             {
-                $notValid = "Please enter a valid IP";
-                redirect("check-ip-blacklist?invalid=".$notValid);
+                echo(json_encode(array('status'=>FALSE))); 
+            }
+        }
+        elseif(isset($_POST['delete_ips'])=='Delete')
+        {
+            $del = $this->input->post('delete_ips');
+            if($del != null)
+            {
+                foreach($del as $id):
+                    $ipInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                    
+                    $result = $this->server_model->deleteIP($id, $ipInfo);
+                endforeach;
+                if ($result > 0)
+                {  
+                    redirect('check-ip-blacklist');
+                    unset($_POST['delete_ips']);
+                }
+            }
+            else
+            {
+                redirect('check-ip-blacklist');
             }
         }
     }
+    
     function pageNotFound()
     {
         $this->global['pageTitle'] = 'Orion eSolutions : 404 - Page Not Found';

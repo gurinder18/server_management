@@ -40,7 +40,13 @@
                         {  
                     ?>
                     <tr <?php if($record->status==1){ echo "class='success'"; }else{ echo "class='danger'"; } ?>> 
-                      <td><input type="checkbox" class="delete_user" value="<?php echo$record->userId; ?>" name="delete_users[]"/></td>
+                      <td>
+                        <?php
+                            if( $record->role != "Master Administrator"){
+                        ?>
+                            <input type="checkbox" class="delete_user" value="<?php echo$record->userId; ?>" name="delete_users[]"/>
+                        <?php } ?>
+                      </td>
                       <td><?php echo $record->name ?></td>
                       <td><?php echo $record->email ?></td>
                       <td><?php echo $record->mobile ?></td>

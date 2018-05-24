@@ -108,7 +108,32 @@ jQuery(document).ready(function(){
 			}
 		});
 	});
+	jQuery(document).ready(function(){
 	
+		jQuery(document).on("click", ".deleteIP", function(){
+			var id = $(this).data("id"),
+			hitURL = baseURL + "deleteIP",
+			currentRow = $(this);
+			
+			var confirmation = confirm("Are you sure to delete this ip ?");
+			
+			if(confirmation)
+			{
+				jQuery.ajax({
+				type : "POST",
+				dataType : "json",
+				url : hitURL,
+				data : { id : id } 
+				}).done(function(data){
+					console.log(data);
+					currentRow.parents('tr').remove();
+					if(data.status = true) { alert("IP successfully deleted"); }
+					else if(data.status = false) { alert("IP deletion failed"); }
+					else { alert("Access denied..!"); }
+				});
+			}
+		});
+	});
 
 jQuery(document).on("click", ".searchList", function(){
 	

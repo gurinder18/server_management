@@ -55,7 +55,7 @@
                       <td class="text-center">
                           <button type="button" class="btn  btn-sm btn-detail" data-toggle="modal" data-target="#exampleModal<?php echo $record->id; ?>"><i class="fa fa-search-plus"></i></button>
                              <!-- Modal -->
-                  <div class="modal fade" id="exampleModal<?php echo $record->id; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal<?php echo $record->id; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header"> 
@@ -84,7 +84,7 @@
                                     </div>
                                 </div>
                             </div>
-                  </div>
+                    </div>
                           <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-client/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                           <a class="btn btn-sm btn-danger deleteClient" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                       </td>
