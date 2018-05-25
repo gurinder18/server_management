@@ -41,7 +41,23 @@ class Dashboard_model extends CI_Model
         $query = $this->db->get();
         return count($query->result());
     }
-
+  /**
+     * This function is used to get the todays schedule listing count
+    
+     * @return number $count : This is row count
+     */
+    function userBackupDetails($date)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
+        BaseTbl.status');
+        $this->db->from('tbl_backup_schedule as BaseTbl');
+       
+        $this->db->where('BaseTbl.date', $date);
+      
+        
+        $query = $this->db->get();
+        return count($query->result());
+    }
 
 }
 

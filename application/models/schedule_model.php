@@ -137,8 +137,8 @@ class Schedule_model extends CI_Model
      */
     function getCommentInfo($scheduleId)
     {
-        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.userId, BaseTbl.statusId AS CommentStatus, BaseTbl.userComment,
-        Attach.filePath As file');
+        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.userId, BaseTbl.statusId AS CommentStatus, 
+        BaseTbl.userComment,BaseTbl.createdDtm AS createdTime, Attach.filePath As file');
         $this->db->from('tbl_backup_comments as BaseTbl');
 
         $this->db->join('tbl_backup_attachments as Attach', 'Attach.commentId = BaseTbl.id','left');

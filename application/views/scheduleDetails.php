@@ -245,8 +245,16 @@
                                             echo 'class="danger"';
                                         }
                                 ?>
-                            >
-                                <td><?php echo date('d-m-Y H:i:s') ?></td>
+                            > <?php  
+                                    $dateTime = explode(" ",$comments->createdTime);
+                                    $Date = $dateTime[0]; 
+                                    $date_array = explode("-",$Date);
+                                    $year = $date_array[0]; 
+                                    $month = $date_array[1];
+                                    $date = $date_array[2];
+                                    $createdDate = $date."-".$month."-".$year;
+                                ?>
+                               <td><?php echo $createdDate; ?></td>
                                 <td>
                                     <?php 
                                         if($comments->CommentStatus==1)

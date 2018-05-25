@@ -431,8 +431,10 @@ class Server_model extends CI_Model
         $this->db->select('BaseTbl.id, BaseTbl.ip,BaseTbl.serverId, BaseTbl.host, BaseTbl.isListed');
        
         $this->db->from('tbl_ip_blacklist as BaseTbl');
-       
+       // $this->db->where('BaseTbl.createdDtm', date("Y-m-d"));
+        $this->db->where('BaseTbl.createdDtm BETWEEN "'. date("Y-m-d").'" AND "'.date("Y-m-d", strtotime("+1 day")).'"');
         $query = $this->db->get();
+
         $result = $query->result();    
         
         return $result;

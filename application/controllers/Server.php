@@ -570,7 +570,7 @@ class Server extends BaseController
         $data['server_ip'] = $this->server_model->serverListing( null, null);
         $list = array();
         $ip_list = array_merge($data['IP_List'], $data['server_ip']);
-        
+        $statusList = array();
         foreach( $ip_list as $servers)
         {
             if(isset($servers->server))
@@ -585,12 +585,12 @@ class Server extends BaseController
                 $ip =$servers->ip;
                 $serverName = "";
             }
-            $data["listing"][] = $this->dnsbllookup($ip, TRUE);
-            foreach( $data["listing"] as $datalist)
+           $data["listing"][] = $this->dnsbllookup($ip, TRUE);
+           foreach( $data["listing"] as $datalist)
             {
-                foreach( $datalist as $data)
-                {
-                    $ip = $data['ip'];
+               foreach( $datalist as $data)
+               {
+                   $ip = $data['ip'];
                     $host = $data['host'];
                     if($data['listed'] == "Listed")
                     {
@@ -602,61 +602,65 @@ class Server extends BaseController
                     }
                     if($serverId != "")
                     {
-                        $ipInfo = array('ip'=>$ip,'serverId'=>$serverId,'host'=>$host,'isListed'=>$isListed,
-                        'createdDtm'=>date('Y-m-d H:i:s'));
+                        $ipInfo = array('ip'=>$ip,'serverId'=>$serverId,'host'=>$host,'isListed'=>$isListed);
                     }
                     else
                     {
-                        $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed,
-                        'createdDtm'=>date('Y-m-d H:i:s'));
+                        $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed);
                     }
                     $result = $this->server_model->addIPBlacklist($ipInfo);
                     $data['blacklist'] = $this->server_model->getIPBlacklist();
-                    foreach($data["blacklist"] as  $list => $li)
-                    { 
-                        if($li->ip == $ip)  
-                        {   
-                            if($li->isListed == "1")  
+                    $id = "";
+                    $isBlacklisted = "Not Checked";
+                    if(!empty($data['blacklist']))
+                    {
+                        foreach($data["blacklist"] as  $list => $li)
+                        { 
+                            if($li->ip == $ip)  
+                            {   
+                                if($li->isListed == "1")  
+                                {
+                                    $id = $li->id;
+                                    $isBlacklisted = "Listed";
+                                    break;
+                                }
+                                else
+                                {
+                                    $id = $li->id;
+                                    $isBlacklisted = "Not Listed"; 
+                                }
+                            }
+                            if($serverName != "")
                             {
-                                $id = $li->id;
-                                $isBlacklisted = "Listed";
+                                $statusList[] = array("id"=>$id,
+                                                "serverName"=>$servers->name,
+                                                "ip"=> $ip,
+                                                "isListed"=> $isBlacklisted
+                                );
                                 break;
                             }
                             else
                             {
-                                $id = $li->id;
-                                $isBlacklisted = "Not Listed"; 
+                                $statusList[] = array("id"=>$id,
+                                                "serverName"=>NULL,
+                                                "ip"=> $ip,
+                                                "isListed"=> $isBlacklisted
+                                );
+                                break;
                             }
                         }
-                    }
-                    if($serverName != "")
-                    {
-                        $statusList[] = array("id"=>$id,
-                                        "serverName"=>$servers->name,
-                                        "ip"=> $ip,
-                                        "isListed"=> $isBlacklisted
-                        );
-                        break;
-                    }
-                    else
-                    {
-                        $statusList[] = array("id"=>$id,
-                                        "serverName"=>NULL,
-                                        "ip"=> $ip,
-                                        "isListed"=> $isBlacklisted
-                        );
-                        break;
+                        var_dump($statusList);
                     }
                 }
-            }
-        }
-        $data['status'] = $statusList;
+            } 
+       }
+       $data['status'] = $statusList;var_dump($data['status']);
         $this->blacklistMail($data['status']);
     }
     /**
      * This function is used to load the Check IP Blacklist page
      */
-    function checkBlacklisting()
+    function ipBlacklisting()
     {
         if($this->isAdmin() == FALSE && $this->isMember() == FALSE)
         {
@@ -668,7 +672,6 @@ class Server extends BaseController
         $data['server_ip'] = $this->server_model->serverListing( null, null);
         $list = array();
         $ip_list = array_merge($data['IP_List'], $data['server_ip']);
-        
         foreach( $ip_list as $servers)
         {
             if(isset($servers->server))
@@ -684,21 +687,26 @@ class Server extends BaseController
                 $serverName = "";
             }
             $data['blacklist'] = $this->server_model->getIPBlacklist();
-            foreach($data["blacklist"] as  $list => $li)
-            { 
-                if($li->ip == $ip)  
-                {   
-                    if($li->isListed == "1")  
-                    {
-                        $id = $li->id;
-                        $isBlacklisted = "Listed";
-                        break;
-                    }
-                    else
-                    {
-                        $id = $li->id;
-                        $isBlacklisted = "Not Listed"; 
-                    
+            $isBlacklisted = "Not checked";
+            $id = $servers->id;
+            if(!empty($data['blacklist']))
+            {
+                foreach($data["blacklist"] as  $list => $li)
+                { 
+                    if($li->ip == $ip)  
+                    {   
+                        if($li->isListed == "1")  
+                        {
+                            $id = $li->id;
+                            $isBlacklisted = "Listed";
+                            break;
+                        }
+                        else
+                        {
+                            $id = $li->id;
+                            $isBlacklisted = "Not Listed"; 
+                        
+                        }
                     }
                 }
             }
@@ -928,7 +936,7 @@ class Server extends BaseController
                 
                 $result = $this->server_model->editIP($ipInfo, $id);
                 
-                if($result == true)
+                if($result > 0)
                 {
                     $this->session->set_flashdata('success', 'IP updated successfully');
                 }
