@@ -66,6 +66,8 @@ $route['resetPasswordConfirmUser/(:any)'] = "login/resetPasswordConfirmUser/$1";
 $route['resetPasswordConfirmUser/(:any)/(:any)'] = "login/resetPasswordConfirmUser/$1/$2";
 $route['createPasswordUser'] = "login/createPasswordUser";
 
+$route['assign-duties'] = 'user/assignDuties';
+$route['request-user'] = "user/requestUser";
 /*********** SERVER DEFINED ROUTES *******************/
 $route['servers'] = 'server/serverListing';
 $route['servers/(:num)'] = "server/serverListing/$1";

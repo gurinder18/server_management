@@ -58,5 +58,169 @@
               </div>
             </div><?php } ?><!-- ./col -->
           </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                  <h3 class="box-title">Monthly User's Backup-Status</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive ">
+                  <form  method="get">
+                    <div class="box-body">
+                      <div class="row">
+                        <div class="col-md-3">                                
+                          <div class="form-group">
+                            <label for="name">User</label>
+                            <select class="form-control" id="user" name="user" onchange="" > 
+                              <option value="">Select User</option>
+                              <?php
+                                if(!empty($users))
+                                {
+                                  foreach ($users as $user)
+                                  { 
+                              ?>
+                              <option value="<?php echo $user->userId ?>"><?php  echo $user->name ?></option>
+                              <?php
+                                  }
+                                }
+                              ?>
+                              </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="status">Server</label>
+                            <select class="form-control" id="server" name="server" onchange="" > 
+                              <option value="">Select Server</option>
+                              <?php
+                                if(!empty($servers))
+                                {
+                                  foreach ($servers as $server)
+                                  { 
+                              ?>
+                              <option value="<?php echo $server->id ?>"><?php  echo $server->name ?></option>
+                              <?php
+                                  }
+                                }
+                              ?>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="status">Month</label>
+                            <select class="form-control" id="month" name="month" onchange="" > 
+                              <option value="">Select month</option>
+                              <?php
+                                for($i = 01;$i <= 12; $i++)
+                                {
+                              ?>
+                              <option value="<?php echo $i; ?>"><?php  echo $i ?></option>
+                              <?php
+                                }
+                              ?>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <input class="btn btn-primary" id="search" name="search" type="submit" value="LOOKUP"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  <div id="chart_div" style="width: 900px; height: 500px;"></div> 
+                  <table class="table table-hover">
+                  </table>
+                </div>
+              </div><!-- /.box -->
+            </div>
+          </div>
     </section>
 </div> 
+<!--Load the AJAX API--> 
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/charts/loader.js"></script> 
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+    <?php if(isset($_GET['search'])!='LOOKUP'){ ?>
+    <script type="text/javascript"> 
+    
+    // Load the Visualization API and the piechart package. 
+    google.charts.load('current', {'packages':['corechart']}); 
+       
+    // Set a callback to run when the Google Visualization API is loaded. 
+    google.charts.setOnLoadCallback(drawChart); 
+       
+    function drawChart() { 
+     
+      var jsonData = $.ajax({ 
+          url: "<?php echo base_url() ?>dashboard/getdata", 
+          dataType: "json", 
+          async: false 
+          }).responseText; 
+           
+      // Create our data table out of JSON data loaded from server. 
+      var data = new google.visualization.DataTable(jsonData); 
+ 
+      var options = {
+          title: "Monthly User's Backup-Status",
+          slices: {
+            0: { color: 'red' },
+            1: { color: 'yellow' },
+            2: { color: 'green' },
+            3: { color: 'brown' }
+          }
+        };
+      // Instantiate and draw our chart, passing in some options. 
+      var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
+      chart.draw(data,options ); 
+    } 
+ 
+    </script> 
+    
+    <?php 
+      }
+    ?>
+     <script type="text/javascript"> 
+  
+  $('#search').click(function() {
+       
+    var userId = $("#user").val();
+    var serverId = $("#server").val();
+    var months = $("#month").val();
+     
+     // Load the Visualization API and the piechart package. 
+     google.charts.load('current', {'packages':['corechart']}); 
+        
+     // Set a callback to run when the Google Visualization API is loaded. 
+     google.charts.setOnLoadCallback(drawChart); 
+        
+     function drawChart() { 
+      
+       var jsonData = $.ajax({ 
+           type: "GET",
+           url: "<?php echo base_url() ?>dashboard/getdata2",
+           data:  { user: userId, server: serverId, month: months  },
+           dataType: "json", 
+           async: false 
+           }).responseText; 
+            
+       // Create our data table out of JSON data loaded from server. 
+       var data = new google.visualization.DataTable(jsonData); 
+  
+       var options = {
+           title: "Monthly User's Backup-Status",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+       // Instantiate and draw our chart, passing in some options. 
+       var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
+       chart.draw(data,options ); 
+     } });
+     </script> 
+     
+     

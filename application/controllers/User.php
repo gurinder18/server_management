@@ -158,7 +158,7 @@ class User extends BaseController
                 
                 redirect('users');
             }
-        }else{}
+        }
     }
 
     /**
@@ -295,8 +295,6 @@ class User extends BaseController
         //}
     }
     
-    
-
     /**
      * This function is used to delete the user using userId
      * @return boolean $result : TRUE / FALSE
@@ -356,7 +354,6 @@ class User extends BaseController
         $this->loadViews("changePassword", $this->global, NULL, NULL);
     }
     
-    
     /**
      * This function is used to change the password of the user
      */
@@ -408,6 +405,116 @@ class User extends BaseController
         
         $this->loadViews("404", $this->global, NULL, NULL);
     }
+     /**
+     * This function is used to load the user list
+     */
+    function assignDuties()
+    {
+        if($this->isMember() == FALSE)
+        {
+            $this->loadThis();
+        }
+        else
+        {
+            $this->load->model('user_model');
+            $data['users'] = $this->user_model->userListing(NULL, NULL, "member", $this->vendorId);
+            $this->global['pageTitle'] = 'Orion eSolutions : Assign Duties';
+          
+            $this->loadViews("assignDuties", $this->global, $data, NULL);
+        }
+    }
+     /**
+     * This function is used to load the add new form
+     */
+    function requestUser()
+    {
+       if(isset($_POST['request_user'])=='Submit'){
+            $this->load->library('form_validation');
+            
+            $this->form_validation->set_rules('user','User','required');
+            $this->form_validation->set_rules('startDate','StartDate','required');
+            $this->form_validation->set_rules('endDate','EndDate','required');
+           
+            if($this->form_validation->run() == FALSE)
+            {
+                unset($_POST['request_user']);
+                $this->requestUser();
+            }
+            else
+            {
+                $requestedUser = $this->input->post('user');
+                $startDate = $this->input->post('startDate');
+                $endDate = $this->input->post('endDate');
+                $start = new DateTime($startDate);
+                $end = new DateTime($endDate);
+                $diff= date_diff($start,$end);
+                $numDays = $diff->format("%a ");
+               
+                $userInfo = array( 'userId'=> $this->vendorId,'startDate'=>$startDate, 'endDate'=>$endDate,
+                'numDays'=>$numDays, 'requestedUser'=> $requestedUser,
+                 'createdAt'=>date('Y-m-d H:i:s'));
+                
+                $this->load->model('user_model');
+                $result = $this->user_model->requestUser($userInfo);
+               
+                if($result > 0)
+                {
+                    $this->session->set_flashdata('success', 'Request send successfully');
+                    $userInfo = $this->user_model->getUserInfo($requestedUser);
+                    foreach( $userInfo as $user)
+                    {
+                        $userEmail = $user->email;
+                        $userName = $user->name;
+                    }
+                    echo $body = '
+                        <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                        <p>Hi '.$userName.'</p>
+                        <p>'.$this->name.' is requesting you to accept his  assigned backup-schedules
+                         for '.$numDays.' i.e. from '.$startDate.' to '.$endDate.'</p> 
+                         Request <a href="" >Accepted</a> or <a href="">Rejected</a>. 
+                        ';
+                        $subject = "Request for assigning duties";
+
+                        $config['mailtype'] = 'html';
+                        $this->email->initialize($config);
+                        
+                         $res = $this->email
+                            ->from('webmaster@example.com','Orion eSolutions')
+                            // ->reply_to('')    // Optional, an account where a human being reads.
+                            ->to($userEmail)
+                            ->subject($subject)
+                            ->message($body)
+                            ->send();
+                        
+                        // // Always set content-type when sending HTML email
+                        // $headers = "MIME-Version: 1.0" . "\r\n";
+                        // $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                
+                        // // More headers
+                        // $headers .= 'From: <webmaster@example.com>' . "\r\n";
+                        // $headers .= 'Cc: myboss@example.com' . "\r\n";
+                        // $result = mail($email,$subject,$body,$headers);
+                        if($res == TRUE)
+                        {
+                            $mailLogInfo = array('email_to'=>$userEmail,'email_from'=>"webmaster@example.com",
+                            'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"request_user_to_assign_duties");
+                            $res1 = $this->user_model->addMailLog($mailLogInfo);
+                        }
+                        var_dump($result);
+                        echo '<br />';
+                        echo $this->email->print_debugger();
+
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'Request failed');
+                }
+                
+                redirect('assign-duties');
+            }
+        }
+    }
+
 }
 
 ?>

@@ -9,7 +9,8 @@ class User_model extends CI_Model
      */
     function userListingCount()
     {
-        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status, Role.role');
+        $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status,
+         Role.role');
         $this->db->from('tbl_users as BaseTbl');
         $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
         
@@ -27,7 +28,7 @@ class User_model extends CI_Model
      * @param number $segment : This is pagination limit
      * @return array $result : This is result
      */
-    function userListing($page, $segment)
+    function userListing($page, $segment, $role = NULL ,$userId = NULL)
     {
         $this->db->select('BaseTbl.userId, BaseTbl.email, BaseTbl.name, BaseTbl.mobile,BaseTbl.status, 
         Role.role');
@@ -35,6 +36,11 @@ class User_model extends CI_Model
         $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
        
         $this->db->where('BaseTbl.isDeleted', 0);
+        if($role != NULL && $userId != NULL)
+        {
+            $this->db->where('Role.slug', "member");
+            $this->db->where('Basetbl.userId !=', $userId);
+        }
         $this->db->order_by('BaseTbl.roleId', 'asc');
         $this->db->order_by('BaseTbl.name', 'asc');
         $this->db->limit($page, $segment);
@@ -198,6 +204,22 @@ class User_model extends CI_Model
     {
         $this->db->trans_start();
         $this->db->insert('tbl_mail_log', $mailLogInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
+     
+    /**
+     * This function is used to add new user to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function requestUser($userInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_assign_duties', $userInfo);
         
         $insert_id = $this->db->insert_id();
         

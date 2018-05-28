@@ -38,15 +38,16 @@ class Dashboard extends BaseController
     function dashboardSchedule()
     {
         $current_date = date('d-m-Y');
+        $userId = 2;
+        $data['users'] = $this->dashboard_model->getUsers();
+        $data['servers'] = $this->dashboard_model->getServers($userId);
         if($this->isMember() == TRUE)
         {
             $this->load->model('dashboard_model');
+            $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date,$this->vendorId);
+            $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
                 
-               
-                $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date,$this->vendorId);
-                $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
-                
-                $this->loadViews("dashboard", $this->global, $data, NULL);
+            $this->loadViews("dashboard", $this->global, $data, NULL);
         }
         elseif($this->isAdmin() == TRUE)
         {
@@ -110,7 +111,109 @@ class Dashboard extends BaseController
         
         $this->loadViews("404", $this->global, NULL, NULL);
     }
-   
+     
+    /**
+     * This function is used to load the backup status list
+     */
+    function getdata() 
+    { 
+            $data1 = $this->dashboard_model->userBackupstatus(1); 
+            $data['Pending'] = $data1;
+            
+            $data2 = $this->dashboard_model->userBackupstatus(2); 
+            $data['Inprogress'] = $data2;
+           
+            $data3 = $this->dashboard_model->userBackupstatus(3); 
+            $data['Completed'] = $data3;
+            
+            $data4 = $this->dashboard_model->userBackupstatus(4); 
+            $data['Failed'] = $data4;
+        
+        //         //data to json 
+ 
+        $responce->cols[] = array( 
+            "id" => "", 
+            "label" => "Topping", 
+            "pattern" => "", 
+            "type" => "string" 
+        ); 
+        $responce->cols[] = array( 
+            "id" => "", 
+            "label" => "Total", 
+            "pattern" => "", 
+            "type" => "number" 
+        ); 
+        foreach($data as  $key => $value)
+        { 
+            $responce->rows[]["c"] = array( 
+                array( 
+                    "v" => $key, 
+                    "f" => null 
+                ) , 
+                array( 
+                    "v" => (int)$value, 
+                    "f" => null 
+                ) 
+            ); 
+        } 
+        echo json_encode($responce); 
+        } 
+   /**
+     * This function is used to load the backup status list
+     */
+    function getdata2() 
+    { 
+            $user = $this->input->get('user');
+            $server = $this->input->get('server');
+            $month = $this->input->get('month');
+       
+            $searchInfo = array();
+                    
+            $searchInfo = array('user'=>$user,'server'=>$server,'month'=>$month);
+           
+           
+                $data1 = $this->dashboard_model->userBackupstatus(1, $searchInfo); 
+                $data['Pending'] = $data1;
+                
+                $data2 = $this->dashboard_model->userBackupstatus(2, $searchInfo); 
+                $data['Inprogress'] = $data2;
+            
+                $data3 = $this->dashboard_model->userBackupstatus(3, $searchInfo); 
+                $data['Completed'] = $data3;
+                
+                $data4 = $this->dashboard_model->userBackupstatus(4, $searchInfo); 
+                $data['Failed'] = $data4;
+       
+        //         //data to json 
+
+        $responce->cols[] = array( 
+            "id" => "", 
+            "label" => "Topping", 
+            "pattern" => "", 
+            "type" => "string" 
+        ); 
+        $responce->cols[] = array( 
+            "id" => "", 
+            "label" => "Total", 
+            "pattern" => "", 
+            "type" => "number" 
+        ); 
+        foreach($data as  $key => $value)
+        { 
+            $responce->rows[]["c"] = array( 
+                array( 
+                    "v" => $key, 
+                    "f" => null 
+                ) , 
+                array( 
+                    "v" => (int)$value, 
+                    "f" => null 
+                ) 
+            ); 
+        } 
+ 
+        echo json_encode($responce); 
+        } 
 }
 
 ?>

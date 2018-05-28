@@ -202,7 +202,8 @@ class Cron extends BaseController
         $this->current_date = date("j");
         
         $this->current_fulldate = date('d-m-Y');
-        
+        $userMailResult = "";
+        $adminMailResult = "";
         $count = 1;
         $this->checkBackupId ='';
         // get all users of todays pending backup 
@@ -375,7 +376,7 @@ class Cron extends BaseController
             }
             $count=1;
             $data['backupInfo'] =  $backupData;
-           
+           //var_dump($data['backupInfo']);die;
             foreach( $backupData as $d)
             { 
                 $adminData[] =   $d;

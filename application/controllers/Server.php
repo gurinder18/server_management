@@ -609,52 +609,54 @@ class Server extends BaseController
                         $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed);
                     }
                     $result = $this->server_model->addIPBlacklist($ipInfo);
-                    $data['blacklist'] = $this->server_model->getIPBlacklist();
-                    $id = "";
-                    $isBlacklisted = "Not Checked";
-                    if(!empty($data['blacklist']))
-                    {
-                        foreach($data["blacklist"] as  $list => $li)
-                        { 
-                            if($li->ip == $ip)  
-                            {   
-                                if($li->isListed == "1")  
-                                {
-                                    $id = $li->id;
-                                    $isBlacklisted = "Listed";
-                                    break;
-                                }
-                                else
-                                {
-                                    $id = $li->id;
-                                    $isBlacklisted = "Not Listed"; 
-                                }
-                            }
-                            if($serverName != "")
-                            {
-                                $statusList[] = array("id"=>$id,
-                                                "serverName"=>$servers->name,
-                                                "ip"=> $ip,
-                                                "isListed"=> $isBlacklisted
-                                );
-                                break;
-                            }
-                            else
-                            {
-                                $statusList[] = array("id"=>$id,
-                                                "serverName"=>NULL,
-                                                "ip"=> $ip,
-                                                "isListed"=> $isBlacklisted
-                                );
-                                break;
-                            }
-                        }
-                        var_dump($statusList);
-                    }
+                   
                 }
             } 
-       }
-       $data['status'] = $statusList;var_dump($data['status']);
+        }
+        foreach( $ip_list as $ipList)
+        {
+            if(isset($ipList->server))
+            {
+                $serverId = $ipList->id;
+                $ip = $ipList->server;
+                $serverName = $ipList->name;
+            }
+            else
+            {
+                $serverId = "";
+                $ip =$ipList->ip;
+                $serverName = "";
+            }
+       $data['blacklist'] = $this->server_model->getIPBlacklist();
+       $id = "";
+       $isBlacklisted = "Not Checked";
+       if(!empty($data['blacklist']))
+       {
+           foreach($data["blacklist"] as  $list => $li)
+           { 
+               if($li->ip == $ip)  
+               {   
+                   if($li->isListed == "1")  
+                   {
+                       $id = $li->id;
+                       $isBlacklisted = "Listed";
+                       break;
+                   }
+                   else
+                   {
+                       $id = $li->id;
+                       $isBlacklisted = "Not Listed"; 
+                   }
+               }
+           }
+        }
+        $statusList[] = array("id"=>$id,
+                              "ip"=> $ip,
+                              "isListed"=> $isBlacklisted
+                            );
+    }
+       $data['status'] = $statusList;
+       var_dump($data['status']);
         $this->blacklistMail($data['status']);
     }
     /**
@@ -733,7 +735,7 @@ class Server extends BaseController
          $this->loadViews("checkBlacklist", $this->global, $data, NULL);
         
     }
-    function dnsbllookup($ip, $list)
+    function dnsbllookup($ip, $isList)
     {
         // Add your preferred list of DNSBL's
         $dnsbl_lookup = [
@@ -770,11 +772,11 @@ class Server extends BaseController
                 }
             }
         }
-        if($list == TRUE)
+        if($isList == TRUE)
         {
             return $listing;
         }
-        if($list == FALSE)
+        if($isList == FALSE)
         {
             if(empty($listed) ) {
                 $message = 'Record was not found';

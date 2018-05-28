@@ -285,8 +285,6 @@ class Server_model extends CI_Model
     }
      /**
      * This function is used to check whether email id is already exist or not
-     * @param {string} $email : This is email id
-     * @param {number} $userId : This is user id
      * @return {mixed} $result : This is searched result
      */
     function checkClientExists($clientName)
@@ -316,6 +314,21 @@ class Server_model extends CI_Model
         $result = $query->result();    
         
         return $result;
+    }
+    /**
+     * This function is used to check whether ip already exist or not
+     * @return {mixed} $result : This is searched result
+     */
+    function checkIpExists($ip)
+    {
+        $this->db->select("id,ip");
+        $this->db->from("tbl_ip");
+        $this->db->where("ip", $ip);   
+        $this->db->where("isDeleted", 0);
+      
+        $query = $this->db->get();
+        
+        return $query->row_array();
     }
     /**
      * This function is used to add new ip to system
