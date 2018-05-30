@@ -22,7 +22,7 @@ class Schedule_model extends CI_Model
     }
     
     /**
-     * This function is used to get the pending schedule listing 
+     * This function is used to get the today pending schedule listing 
     
      * @return number $count : This is row count
      */
@@ -30,7 +30,8 @@ class Schedule_model extends CI_Model
     {
         $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
         BaseTbl.status,Client.name As ClientName,Backup.serverId,Server.name As ServerName,Server.server As ServerIP,
-        Server.hostname As ServerHostname,Server.name As ServerName,Status.status As ScheduleStatus');
+        Server.hostname As ServerHostname,Server.name As ServerName,Status.status As ScheduleStatus,
+        User.name AS UserName');
         $this->db->from('tbl_backup_schedule as BaseTbl');
         
         $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
@@ -61,16 +62,79 @@ class Schedule_model extends CI_Model
         if($search_data['status']!=null){
             $this->db->where('BaseTbl.status', $search_data['status']);
         }
-        $this->db->order_by('Client.name', 'asc');
+        $this->db->order_by('ClientName', 'asc');
         
         $this->db->limit($page, $segment);
         
         $query = $this->db->get();
         $result = $query->result();    
-           
+         
         return $result;
     }
-
+    
+    /**
+     * This function is used to get the duties-assignee information
+     * @return array $result : This is result of the query
+     */
+    function getAssigneeId($userId)
+    {
+        $this->db->select('userId');
+        $this->db->from('tbl_assign_duties');
+        $this->db->where('requestedUser', $userId);
+        $this->db->where('status', 1);
+        $this->db->where('startDate <=', date("Y-m-d"));
+        $this->db->where('endDate >=', date("Y-m-d"));
+        $query = $this->db->get(); 
+        if(count($query)>0){
+            return $query->result_array();
+        }
+       
+        return [];
+    }
+    
+     /**
+     * This function is used to get the pending schedule listing 
+    
+     * @return number $count : This is row count
+     */
+    function getPendingBackups($scheduleInfo)
+    {
+        $this->db->select('BaseTbl.id as scheduleId ,BaseTbl.backupId,Backup.id ,  Backup.clientId, Backup.serverId,
+        Backup.scheduleType,Backup.scheduleTimings, Backup.information,User.name As UserName,
+        User.email As UserEmail,Client.name As ClientName,Server.name As ServerName,
+         Server.server As ServerIP, Server.hostname As ServerHostname,BaseTbl.userId,
+         Status.status As ScheduleStatus ');
+        //$this->db->select('BaseTbl.*');
+       $this->db->from('tbl_backup_schedule as BaseTbl');
+       $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+       $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+       $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+       $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+       $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
+      
+       $this->db->where('Backup.isDeleted', 0);
+       if($scheduleInfo['daily'] != '')
+       {
+            $this->db->where('Backup.scheduleType', "Daily");
+       }
+       $this->db->where('BaseTbl.status', 1);
+       if($scheduleInfo['fullDate']!='')
+       {
+            $this->db->where('BaseTbl.date', $scheduleInfo['fullDate']);
+       }
+       $this->db->where('BaseTbl.userId', $scheduleInfo['user']);
+       if($scheduleInfo['backupId']!='')
+       {
+            $this->db->where('BaseTbl.backupId', $scheduleInfo['backupId']);
+       }
+   
+       $query = $this->db->get();
+       $result = $query->result();    
+      //print_r( $this->db);
+       return $result;
+    }
+  
+    
     /**
      * This function is used to get the clients information
      * @return array $result : This is result of the query

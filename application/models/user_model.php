@@ -227,6 +227,35 @@ class User_model extends CI_Model
         
         return $insert_id;
     }
+    /**
+     * This function used to get user information by id
+     * @param number $userId : This is user id
+     * @return array $result : This is user information
+     */
+    function getUserAssignedDuties($userId)
+    {
+        $this->db->select('Basetbl.id, Basetbl.startDate, Basetbl.endDate, Basetbl.numDays,
+         Basetbl.requestedUser, Basetbl.status, User.name AS UserName');
+        $this->db->from('tbl_assign_duties AS Basetbl');
+        $this->db->join('tbl_users as User', 'User.userId = Basetbl.requestedUser','left');
+       
+        $this->db->where('Basetbl.userId', $userId);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+     /**
+     * This function is used to update request status for of assigning duties
+     * @param number $requestId : This is request id
+     * @param array $data : This is user updation info
+     */
+    function requestStatus($requestId, $data)
+    {
+        $this->db->where('id', $requestId);
+        $this->db->update('tbl_assign_duties', $data);
+        
+        return $this->db->affected_rows();
+    }
 }
 
   

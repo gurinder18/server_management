@@ -418,6 +418,8 @@ class User extends BaseController
         {
             $this->load->model('user_model');
             $data['users'] = $this->user_model->userListing(NULL, NULL, "member", $this->vendorId);
+            $data['assigned_duties'] = $this->user_model->getUserAssignedDuties($this->vendorId);
+            
             $this->global['pageTitle'] = 'Orion eSolutions : Assign Duties';
           
             $this->loadViews("assignDuties", $this->global, $data, NULL);
@@ -448,8 +450,8 @@ class User extends BaseController
                 $start = new DateTime($startDate);
                 $end = new DateTime($endDate);
                 $diff= date_diff($start,$end);
-                $numDays = $diff->format("%a ");
-               
+                $dayCount = $diff->format("%a ");
+                $numDays = $dayCount + 1;
                 $userInfo = array( 'userId'=> $this->vendorId,'startDate'=>$startDate, 'endDate'=>$endDate,
                 'numDays'=>$numDays, 'requestedUser'=> $requestedUser,
                  'createdAt'=>date('Y-m-d H:i:s'));
@@ -470,8 +472,15 @@ class User extends BaseController
                         <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
                         <p>Hi '.$userName.'</p>
                         <p>'.$this->name.' is requesting you to accept his  assigned backup-schedules
-                         for '.$numDays.' i.e. from '.$startDate.' to '.$endDate.'</p> 
-                         Request <a href="" >Accepted</a> or <a href="">Rejected</a>. 
+                         for '.$numDays.' days i.e. from '.$startDate.' to '.$endDate.'.</p> 
+                        <div >
+                            <a href="'. base_url() .'request-reply/1?request_id='.$result.'">
+                                <button style="background:green;color:white;border:1px solid green;border-radius:5px;">ACCEPT</button>
+                            </a>
+                            <a href="'. base_url() .'request-reply/2?request_id='.$result.'">
+                                <button style="background:red;color:white;margin-left:10px;border:1px solid red;border-radius:5px;">REJECT</button>
+                            </a>
+                        </div> 
                         ';
                         $subject = "Request for assigning duties";
 
@@ -481,7 +490,8 @@ class User extends BaseController
                          $res = $this->email
                             ->from('webmaster@example.com','Orion eSolutions')
                             // ->reply_to('')    // Optional, an account where a human being reads.
-                            ->to($userEmail)
+                           //->to($userEmail)
+                           ->to("testingmail@yopmail.com")
                             ->subject($subject)
                             ->message($body)
                             ->send();
@@ -513,6 +523,40 @@ class User extends BaseController
                 redirect('assign-duties');
             }
         }
+    }
+     /**
+     * This function is used to update the request status
+     */
+    function requestStatus($reply)
+    {
+        
+            if($reply == 1)
+            {
+                $requestId = $_GET['request_id'];
+                $data = array('status'=>1,'updatedAt'=>date('Y-m-d H:i:s'));
+            
+                $result = $this->user_model->requestStatus($requestId, $data);
+                if($result > 0)
+                {
+                    echo "<script>alert('Request accepted')</script>";
+                }
+            }
+            elseif($reply == 2)
+            {
+                $requestId = $_GET['request_id'];
+                $data = array('status'=>2,'updatedAt'=>date('Y-m-d H:i:s'));
+            
+                $result = $this->user_model->requestStatus($requestId, $data);
+                if($result > 0)
+                {
+                    echo "<script>alert('Request rejected')</script>";
+                }
+            }
+        
+        $data['users'] = $this->user_model->userListing(NULL, NULL, "member", $this->vendorId);
+        $this->global['pageTitle'] = 'Orion eSolutions : Assign Duties';
+          
+        $this->loadViews("assignDuties", $this->global, $data, NULL);
     }
 
 }

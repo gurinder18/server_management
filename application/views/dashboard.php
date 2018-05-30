@@ -68,10 +68,11 @@
                   <form  method="get">
                     <div class="box-body">
                       <div class="row">
+                      <?php if($role_slug=="sys.admin" || $role_slug == "master.admin"){ ?>
                         <div class="col-md-3">                                
                           <div class="form-group">
                             <label for="name">User</label>
-                            <select class="form-control" id="user" name="user" onchange="" > 
+                            <select class="form-control" id="user" name="user" onchange="drawChart()" > 
                               <option value="">Select User</option>
                               <?php
                                 if(!empty($users))
@@ -87,10 +88,11 @@
                               </select>
                           </div>
                         </div>
+                        <?php } ?>
                         <div class="col-md-3">
                           <div class="form-group">
                             <label for="status">Server</label>
-                            <select class="form-control" id="server" name="server" onchange="" > 
+                            <select class="form-control" id="server" name="server" onchange="drawChart()" > 
                               <option value="">Select Server</option>
                               <?php
                                 if(!empty($servers))
@@ -109,7 +111,7 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label for="status">Month</label>
-                            <select class="form-control" id="month" name="month" onchange="" > 
+                            <select class="form-control" id="month" name="month" onchange="drawChart()" > 
                               <option value="">Select month</option>
                               <?php
                                 for($i = 01;$i <= 12; $i++)
@@ -120,11 +122,6 @@
                                 }
                               ?>
                             </select>
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-group">
-                            <input class="btn btn-primary" id="search" name="search" type="submit" value="LOOKUP"/>
                           </div>
                         </div>
                       </div>
@@ -139,10 +136,10 @@
           </div>
     </section>
 </div> 
-<!--Load the AJAX API--> 
-<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/charts/loader.js"></script> 
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-    <?php if(isset($_GET['search'])!='LOOKUP'){ ?>
+  <!--Load the AJAX API--> 
+  <script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/charts/loader.js"></script> 
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+ 
     <script type="text/javascript"> 
     
     // Load the Visualization API and the piechart package. 
@@ -178,38 +175,52 @@
  
     </script> 
     
-    <?php 
-      }
-    ?>
-     <script type="text/javascript"> 
-  
-  $('#search').click(function() {
-       
-    var userId = $("#user").val();
-    var serverId = $("#server").val();
-    var months = $("#month").val();
-     
-     // Load the Visualization API and the piechart package. 
-     google.charts.load('current', {'packages':['corechart']}); 
-        
-     // Set a callback to run when the Google Visualization API is loaded. 
-     google.charts.setOnLoadCallback(drawChart); 
-        
-     function drawChart() { 
-      
+    <script type="text/javascript"> 
+      function drawChart() { 
+        var userId = $("#user option:selected").val();
+        var UserName = $("#user option:selected").text();
+        var serverId = $("#server option:selected").val();
+        var ServerName = $("#server option:selected").text();
+        var months = $("#month ").val();
+        if(userId == "")
+        {
+          userId = null;
+        }
+        if(serverId == "" )
+        {
+          serverId = null;
+        }
+        if( months == "")
+        {
+          months = null;
+        } 
        var jsonData = $.ajax({ 
-           type: "GET",
+           type: "Get",
            url: "<?php echo base_url() ?>dashboard/getdata2",
-           data:  { user: userId, server: serverId, month: months  },
+           data:  { user: userId, server: serverId, month: months },
            dataType: "json", 
            async: false 
            }).responseText; 
-            
+          
        // Create our data table out of JSON data loaded from server. 
-       var data = new google.visualization.DataTable(jsonData); 
-  
-       var options = {
-           title: "Monthly User's Backup-Status",
+       var data = new google.visualization.DataTable(jsonData);
+      
+       <?php
+       if($role_slug != "member")
+       { 
+        ?>
+       if(userId != null)
+        {
+          if(ServerName == "Select Server")
+          {
+            ServerName = "All";
+          }
+          if(months == null)
+          {
+            months = "Current";
+          }
+          var options = {
+           title: "Backup-Status of User: '"+UserName + "' for Server: '"+ServerName+"' of "+months+" month",
            slices: {
              0: { color: 'red' },
              1: { color: 'yellow' },
@@ -217,10 +228,119 @@
              3: { color: 'brown' }
            }
          };
+        }
+        else if(serverId != null )
+        {
+          if(UserName == "Select User")
+          {
+            UserName = "All";
+          }
+          if(months == null)
+          {
+            months = "Current";
+          }
+          var options = {
+           title: " Backup-Status of User: '"+UserName + "' for Server: '"+ServerName+"' of "+months+" month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+        }
+        else if( months != null)
+        {
+          if(UserName == "Select User")
+          {
+            UserName = "All";
+          }
+          if(ServerName == null)
+          {
+            ServerName = "All";
+          }
+          var options = {
+           title: " Backup-Status of User: '"+UserName + "' for Server: '"+ServerName+"' of "+months+" month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+        }
+        else if(userId != null || userId != "" && serverId != null || serverId != "" && months != null|| months != "" )
+        {
+          UserName = "All";
+          ServerName = "All";
+          var options = {
+           title: " Backup-Status of User: '"+UserName + "' for Server: '"+ServerName+"' of Current month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+        }
+      <?php 
+       }
+       else
+       {
+       ?>
+        if(serverId != null )
+        {
+          if(months == null)
+          {
+            months = "Current";
+          }
+          var options = {
+           title: " Backup-Status for Server: '"+ServerName+"' of "+months+" month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+        }
+        else if( months != null)
+        {
+          if(ServerName == null)
+          {
+            ServerName = "All";
+          }
+          var options = {
+           title: " Backup-Status for Server: '"+ServerName+"' of "+months+" month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+          };
+        }
+        else if(serverId != null || serverId != "" && months != null|| months != "" )
+        {
+          ServerName = "All";
+          var options = {
+           title: " Backup-Status  for Server: '"+ServerName+"' of Current month",
+           slices: {
+             0: { color: 'red' },
+             1: { color: 'yellow' },
+             2: { color: 'green' },
+             3: { color: 'brown' }
+           }
+         };
+        }
+      <?php } ?>
+      
        // Instantiate and draw our chart, passing in some options. 
        var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
        chart.draw(data,options ); 
-     } });
+     }
      </script> 
-     
+     <?php 
+      
+    ?>
      

@@ -83,8 +83,6 @@ class BaseController extends CI_Controller {
 			return false;
 		}
 	}
-	
-	
 	/**
 	 * This function is used to load the set of views
 	 */

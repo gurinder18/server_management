@@ -52,10 +52,10 @@
                     </div><!-- /.box-header -->
                     <!-- form start -->
                     
-                    <form role="form" id="addBackup" action="<?php echo base_url() ?>request-user" method="post" role="form">
-                        <div class="box-body">
+                    <div class="box-body">
+                        <form role="form" id="addBackup" action="<?php echo base_url() ?>request-user" method="post" role="form">
                             <div class="row">
-                                <div class="col-md-6">                                
+                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="user">Select User *</label>
                                         <select class="form-control required" id="user" name="user" required> 
@@ -85,22 +85,70 @@
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
-                                    <label for="client">End Date *</label>
-                                    <input class="form-control required"  type="date" name="endDate" id="endDate" />
-                                    
+                                        <label for="client">End Date *</label>
+                                        <input class="form-control required"  type="date" name="endDate" id="endDate" />
                                     </div>
                                 </div>
                             </div>
-                        </div><!-- /.box-body -->
-    
-                        <div class="box-footer">
-                            <input type="submit" class="btn btn-primary" name='request_user' value="Submit" />
-                            <input type="reset" class="btn btn-default" value="Reset" />
+                            <div class="box-footer">
+                                <input type="submit" class="btn btn-primary" name='request_user' value="Submit" />
+                                <input type="reset" class="btn btn-default" value="Reset" />
+                            </div>
+                        </form>
+                    </div><!-- /.box-body -->
+                    <?php
+                        if(!empty($assigned_duties))
+                        {
+                    ?>
+                    <div class="box-body">
+                        <div class="box-header">
+                            <h3 class="box-title">Assigned Duties</h3>
+                        </div><!-- /.box-header -->
+                        <div class="row">
+                            <div class="col-md-12"> 
+                                <div class="box-body table-responsive">
+                                    <table class="table table-hover td-align">
+                                        <tr>
+                                            <th class="td-align">Start date</th>
+                                            <th class="td-align">End date</th>
+                                            <th class="td-align">Total days</th>
+                                            <th class="td-align">Assigned to</th>
+                                            <th class="td-align">Status</th>
+                                        </tr>
+                                        <?php
+                                            foreach ($assigned_duties as $duties)
+                                            {
+                                                if($duties->endDate >= date("Y-m-d")) 
+                                                {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $duties->startDate; ?></td>
+                                            <td><?php echo $duties->endDate; ?></td>
+                                            <td><?php echo $duties->numDays; ?></td>
+                                            <td><?php echo $duties->UserName; ?></td>
+                                            <td style=
+                                                <?php if($duties->status == 0){echo "color:red"; }
+                                                      elseif($duties->status == 1){echo "color:green";}
+                                                      elseif($duties->status == 2){echo "color:brown";}       
+                                                ?>
+                                            >
+                                                <?php if($duties->status == 0){echo "Pending"; }
+                                                      elseif($duties->status == 1){echo "Accepted";}
+                                                      elseif($duties->status == 2){echo "Rejected";}       
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <?php }
+                                        } ?>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div> <!-- /.box-body -->    
+                    <?php } ?>
+                </div> 
             </div> 
-        </div>    
+        </div>
     </section>
     
 </div>
@@ -171,5 +219,40 @@ $(document).on("change","#client",function(){
 	});
     
 });
+$(function(){
+    var dtToday = new Date();
+    
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+    
+    var maxDate = year + '-' + month + '-' + day;
+   
+    $('#startDate').attr('min', maxDate);
 
+    $('#startDate').change(function()
+    {
+       
+        var inputDate = new Date(this.value);
+
+        var incrementedMaxDate = inputDate.setDate(inputDate.getDate() + 15);
+        var newMaxDate = new Date(incrementedMaxDate);
+        var newMaxMonth = newMaxDate.getMonth() + 1;
+        var newMaxDay = newMaxDate.getDate();
+        var newMaxYear = newMaxDate.getFullYear();
+        if(month < 10)
+            var newMaxMonth = '0' + newMaxMonth.toString();
+        if(day < 10)
+            var newMaxDay = '0' + newMaxDay.toString();
+        
+        var endMaxDate = newMaxYear + '-' + newMaxMonth + '-' + newMaxDay;
+        $('#endDate').attr('min', this.value);
+        $('#endDate').attr('max', endMaxDate);
+    });
+});
 </script>

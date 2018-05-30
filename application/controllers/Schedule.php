@@ -45,12 +45,28 @@ class Schedule extends BaseController
             $current_date = date('d-m-Y');    
             $count = $this->schedule_model->schedulesCount(null,null,null, $current_date,$this->vendorId);
             $returns = $this->paginationCompress ( "schedules/", $count, 5 );
-
+            $assigneeId = $this->schedule_model->getAssigneeId($this->vendorId);
+            $userIds[] = $this->vendorId;
+            if(!empty($assigneeId))
+            {
+                foreach($assigneeId as $id)
+                {
+                    $userIds[] = $id['userId'];
+                }
+            }
             if(isset($_GET['search_backup'])!='Search')
             {
-                $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],null, $current_date,$this->vendorId);
-                $returns = $this->paginationCompress ( "schedules/", $count, 5 );
-                $data['scheduleRecords'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],null,$current_date,$this->vendorId);
+                foreach($userIds as $user)
+                { 
+                    $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],NULL, $current_date,  $user);
+                    $returns = $this->paginationCompress ( "schedules/", $count, 5 );
+                    $data1 = $this->schedule_model->schedules( $returns["page"], $returns["segment"],NULL,$current_date, $user);
+                   
+                    foreach($data1 as $d)
+                    {
+                    $data['scheduleRecords'][] = $d;
+                    }
+                }
                 $data['clients'] = $this->schedule_model->getClients();
                 $data['servers'] = $this->schedule_model->getServers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Schedules Listing';
@@ -65,9 +81,196 @@ class Schedule extends BaseController
                 $search_data['clientId'] = $this->input->get('client');
                 $search_data['status'] = $this->input->get('status');
                
-                $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],$search_data, $current_date,$this->vendorId);
-                $returns = $this->paginationCompress ( "schedules/", $count, 5 );
-                $data['scheduleRecords'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],$search_data,$current_date,$this->vendorId);
+                $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
+                $this->current_day = (jddayofweek($date,1));
+                $this->current_date = date("j");
+                
+                $this->current_fulldate = date('d-m-Y');
+                $this->checkBackupId ='';
+                // get all users of todays pending backup 
+                
+                foreach($userIds as $user):
+                
+                    $count = $this->schedule_model->schedulesCount($returns["page"], $returns["segment"],$search_data, $current_date,  $user);
+                    $returns = $this->paginationCompress ( "schedules/", $count, 5 );
+                    $data['scheduleRecords'] = $this->schedule_model->schedules( $returns["page"], $returns["segment"],$search_data,$current_date,  $user);
+               
+                    $UserId = $user;
+                    $scheduleInfo = array(
+                        'fullDate'=>$this->current_fulldate,
+                        'user'=>$UserId,
+                        'backupId'=>'' ,
+                        'daily' => '',
+                        'day'=> '',
+                        'date' => ''
+                    );
+                    // get all todays pending backups of user 
+                    $result = $this->backup_model->getPendingBackups($scheduleInfo);
+                    $backupData = array();
+                    foreach($result as $backups)
+                    {
+                        $scheduleId = $backups->scheduleId;
+                        $backupId = $backups->id;
+                        
+                        $backupDaily1 = array();
+                        $backupWeekly1 = array();
+                        $backupMonthly1 = array();
+                        if( $backups->scheduleType == "Daily")
+                        { 
+                            for($d = 1; $d <= 1; $d++ )
+                            {
+                                $this->d1 =  date('d-m-Y',strtotime("-$d days"));
+                                $timing = array(
+                                    'fullDate'=>$this->d1,
+                                    'user'=>$UserId,
+                                    'backupId'=>$backupId,
+                                    'daily' => "daily"
+                                ); 
+                                // check each backup was pending last time or not
+                                $res = $this->schedule_model->getPendingBackups($timing);
+                               
+                                if(!empty($res))
+                                {   
+                                    $count++;
+                                    foreach($res as $r)
+                                    {
+                                        if(!($this->checkBackupId == $r->backupId ))
+                                        {
+                                            // create array of each pending tasks of user
+                                            $backupDaily1 = array(
+                                                'scheduleId' =>$r->scheduleId,
+                                                'backupId'=>$backupId,
+                                                'user'=>$r->UserName,
+                                                'server'=>$r->ServerName,
+                                                'serverIP'=> $r->ServerIP,
+                                                'hostname'=>$r->ServerHostname,
+                                                'type'=> $r->scheduleType,
+                                                'timings'=>$r->scheduleTimings,
+                                                'clientName'=>$r->ClientName,
+                                                'status'=>$r->ScheduleStatus
+                                            );
+                                        }  
+                                        $this->checkBackupId = $r->backupId;
+                                    } 
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+                        } 
+                        if($backupDaily1 != null)
+                        {
+                            $backupDaily2 =array('count' => $count);
+                            $backupData[] = array_merge($backupDaily1, $backupDaily2);
+                            unset($backupDaily1);
+                        } 
+                        $count= 1;
+                        if( $backups->scheduleType == "Weekly")
+                        {
+                            for($d = 1; $d <= 1; $d++ )
+                            {
+                                $this->day =  date('d-m-Y',strtotime("-$d week"));echo "<br>";
+                                $timing = array(
+                                    'fullDate'=> $this->day,
+                                    'user'=>$UserId,
+                                    'backupId'=>$backupId,
+                                    'daily' => ''
+                                );
+                                // check each backup was pending last time or not
+                                $res = $this->schedule_model->getPendingBackups($timing);
+                            
+                                if(!empty($res))
+                                {
+                                    $count++;
+                                    var_dump($res);
+                                    foreach($res as $r)
+                                    { 
+                                        if($this->checkBackupId != $r->backupId )
+                                        {
+                                            // create array of each pending tasks of user
+                                            $backupWeekly1 = array(
+                                                'scheduleId' => $r->scheduleId,
+                                                'backupId'=>$backupId,
+                                                'user'=>$r->UserName,
+                                                'server'=>$r->ServerName,
+                                                'serverIP'=> $r->ServerIP,
+                                                'hostname'=>$r->ServerHostname,
+                                                'type'=> $r->scheduleType,
+                                                'timings'=>$r->scheduleTimings,
+                                                'clientName'=>$r->ClientName,
+                                                'status'=>$r->ScheduleStatus
+                                            );
+                                        }
+                                        $this->checkBackupId = $r->backupId;
+                                    } 
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+                        } 
+                        if($backupWeekly1 != null)
+                        {
+                            $backupWeekly2 =array('count' => $count);
+                            $backupData[] = array_merge($backupWeekly1, $backupWeekly2);
+                            unset($backupWeekly1);
+                        }
+                        $count=1;
+                        if( $backups->scheduleType == "Monthly")
+                        {
+                            for($d = 1; $d <= 1; $d++ )
+                            {
+                                $this->monthDate =  date('d-m-Y',strtotime("-$d month"));
+                            
+                                $timing = array(
+                                    'fullDate'=>$this->monthDate,
+                                    'user'=>$UserId,
+                                    'backupId'=>$backupId,
+                                    'daily' => ''
+                                );
+                                // check each backup was pending last time or not
+                                $res = $this->schedule_model->getPendingBackups($timing);
+                                if(!empty($res))
+                                {
+                                    $count++;
+                                    foreach($res as $r)
+                                    {
+                                        if($this->checkBackupId != $r->backupId )
+                                        {
+                                            // create array of each pending tasks of user
+                                            $backupMonthly1 = array(
+                                                'scheduleId' =>$r->scheduleId,
+                                                'backupId'=>$backupId,
+                                                'user'=>$r->UserName,
+                                                'server'=>$r->ServerName,
+                                                'serverIP'=> $r->ServerIP,
+                                                'hostname'=>$r->ServerHostname,
+                                                'type'=> $r->scheduleType,
+                                                'timings'=>$r->scheduleTimings,
+                                                'clientName'=>$r->ClientName,
+                                                'status'=>$r->ScheduleStatus
+                                            );
+                                        }
+                                        $this->checkBackupId = $r->backupId;
+                                    } 
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+                        }
+                    if($backupMonthly1 != null)
+                    {
+                        $backupMonthly2 =array('count' => $count);
+                        $backupData[] = array_merge($backupMonthly1, $backupMonthly2);
+                        unset($backupMonthly1);
+                    }
+                } 
+                $count=1;
+                $data['backupInfo'] =  $backupData;
+                    
+                endforeach;
+                
                 $data['clients'] = $this->schedule_model->getClients();
                 $data['servers'] = $this->schedule_model->getServers();
                 $this->global['pageTitle'] = 'Orion eSolutions : Schedule Listing';

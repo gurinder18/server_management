@@ -96,7 +96,7 @@ class Dashboard_model extends CI_Model
     
      * @return number $count : This is row count
      */
-    function userBackupstatus($status , $searchInfo = NULL)
+    function userBackupstatus($status ,$userId = NULL, $searchInfo = NULL)
     {
         $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
         BaseTbl.status');
@@ -105,7 +105,10 @@ class Dashboard_model extends CI_Model
         $this->db->join('tbl_servers as Server', 'Backup.serverId = Server.id','left');
      
         $this->db->where('BaseTbl.date BETWEEN "'. date("01-m-Y").'" AND "'.date("d-m-Y").'"');
-        //$this->db->where('BaseTbl.date', $date);
+        if($userId != NULL)
+        {
+            $this->db->where('BaseTbl.userId', $userId);
+        }//$this->db->where('BaseTbl.date', $date);
         if($searchInfo['user'] != NULL)
         {
             $this->db->where('BaseTbl.userId', $searchInfo['user']);
@@ -117,10 +120,22 @@ class Dashboard_model extends CI_Model
         if($searchInfo['month'] != NULL)
         {
             $m = $searchInfo['month'];
-            //$this->db->where('BaseTbl.date BETWEEN "'. date("01-".$m."-Y").'" AND "'.date("d-".$m."-Y").'"') ;
+            if($m >= 1 && $m <= 9)
+            {
+                $m = "0".$m;
+            }
+            if($m == date("m"))
+            {
+            $this->db->where('BaseTbl.createdAt BETWEEN "'. date("Y-".$m."-01").'" AND "'.date("Y-".$m."-d").'"') ;
+            }
+            elseif($m != date("m"))
+            {
+                $this->db->where('BaseTbl.createdAt BETWEEN "'. date("Y-".$m."-01").'" AND "'.date("Y-".$m."-31").'"') ;
+            }
         }
         $this->db->where('BaseTbl.status', $status);
         $query = $this->db->get();
+        
         return count($query->result());
     }
 

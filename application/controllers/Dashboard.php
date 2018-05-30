@@ -117,16 +117,24 @@ class Dashboard extends BaseController
      */
     function getdata() 
     { 
-            $data1 = $this->dashboard_model->userBackupstatus(1); 
+        if($this->isAdmin() == TRUE )
+        {
+            $userId = null;
+        }
+        elseif($this->isMember() == TRUE)
+        {
+            $userId = $this->vendorId;
+        }
+            $data1 = $this->dashboard_model->userBackupstatus(1,$userId); 
             $data['Pending'] = $data1;
             
-            $data2 = $this->dashboard_model->userBackupstatus(2); 
+            $data2 = $this->dashboard_model->userBackupstatus(2,$userId); 
             $data['Inprogress'] = $data2;
            
-            $data3 = $this->dashboard_model->userBackupstatus(3); 
+            $data3 = $this->dashboard_model->userBackupstatus(3,$userId); 
             $data['Completed'] = $data3;
             
-            $data4 = $this->dashboard_model->userBackupstatus(4); 
+            $data4 = $this->dashboard_model->userBackupstatus(4,$userId); 
             $data['Failed'] = $data4;
         
         //         //data to json 
@@ -171,49 +179,49 @@ class Dashboard extends BaseController
                     
             $searchInfo = array('user'=>$user,'server'=>$server,'month'=>$month);
            
-           
-                $data1 = $this->dashboard_model->userBackupstatus(1, $searchInfo); 
+                $data1 = $this->dashboard_model->userBackupstatus(1,NULL, $searchInfo); 
                 $data['Pending'] = $data1;
                 
-                $data2 = $this->dashboard_model->userBackupstatus(2, $searchInfo); 
+                $data2 = $this->dashboard_model->userBackupstatus(2,NULL, $searchInfo); 
                 $data['Inprogress'] = $data2;
             
-                $data3 = $this->dashboard_model->userBackupstatus(3, $searchInfo); 
+                $data3 = $this->dashboard_model->userBackupstatus(3,NULL, $searchInfo); 
                 $data['Completed'] = $data3;
                 
-                $data4 = $this->dashboard_model->userBackupstatus(4, $searchInfo); 
+                $data4 = $this->dashboard_model->userBackupstatus(4,NULL, $searchInfo); 
                 $data['Failed'] = $data4;
        
         //         //data to json 
-
-        $responce->cols[] = array( 
-            "id" => "", 
-            "label" => "Topping", 
-            "pattern" => "", 
-            "type" => "string" 
-        ); 
-        $responce->cols[] = array( 
-            "id" => "", 
-            "label" => "Total", 
-            "pattern" => "", 
-            "type" => "number" 
-        ); 
-        foreach($data as  $key => $value)
-        { 
-            $responce->rows[]["c"] = array( 
-                array( 
-                    "v" => $key, 
-                    "f" => null 
-                ) , 
-                array( 
-                    "v" => (int)$value, 
-                    "f" => null 
-                ) 
+        
+            $responce->cols[] = array( 
+                "id" => "", 
+                "label" => "Topping", 
+                "pattern" => "", 
+                "type" => "string" 
             ); 
-        } 
- 
+            $responce->cols[] = array( 
+                "id" => "", 
+                "label" => "Total", 
+                "pattern" => "", 
+                "type" => "number" 
+            ); 
+            foreach($data as  $key => $value)
+            { 
+                $responce->rows[]["c"] = array( 
+                    array( 
+                        "v" => $key, 
+                        "f" => null 
+                    ) , 
+                    array( 
+                        "v" => (int)$value, 
+                        "f" => null 
+                    ) 
+                ); 
+            } 
+      
         echo json_encode($responce); 
-        } 
+       
+    } 
 }
 
 ?>

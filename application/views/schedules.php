@@ -17,6 +17,7 @@
                   <table class="table table-hover">
                     <tr>
                       <th><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
+                      <th>User</th>
                       <th>Server Name</th>
                       <th>Server IP</th>
                       <th>Hostname</th>
@@ -25,6 +26,7 @@
                       <th class="text-center">Actions</th>
                     </tr>
                     <tr>
+                    <td></td> 
                     <td></td> 
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>schedules" method="get" role="form">
                         <td>
@@ -40,18 +42,16 @@
                                 { 
                                     if(!($_GET['server']) == NULL)
                                     {
-                                            if($_GET['server']==$ser['id'])
-                                            {
-                                                echo "selected";
-                                            } 
+                                        if($_GET['server']==$ser['id'])
+                                        {
+                                            echo "selected";
+                                        } 
                                     }
                                 }
                                 ?>><?php echo $ser['name']; ?></option>
                                 <?php
                                     }
                                 ?>
-
-                               
                             </select>
                         </td>
                         <td>
@@ -182,8 +182,36 @@
                         foreach($scheduleRecords as $record)
                         { 
                     ?>
-                    <tr>
+                    <tr
+                    <?php
+                        if($record->ScheduleStatus == "Pending")
+                        { 
+                    ?> 
+                    class="danger"  
+                    <?php 
+                        }
+                        elseif($record->ScheduleStatus == "Inprogress")
+                        {
+                    ?> 
+                    class="warning"  
+                    <?php 
+                        }
+                        elseif($record->ScheduleStatus == "Completed")
+                        {
+                    ?> 
+                    class="success"  
+                    <?php       
+                        }
+                        elseif($record->ScheduleStatus == "Failed")
+                        {
+                    ?> 
+                    class=""  
+                    <?php       
+                        }
+                    ?>
+                    >
                       <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $record->id; ?>" name="delete_backups[]"/><?php } ?></td>
+                      <td><?php echo $record->UserName ?></td>
                       <td><?php echo $record->ServerName ?></td>
                       <td><?php echo $record->ServerIP ?></td>
                       <td><?php echo $record->ServerHostname ?></td>
@@ -216,6 +244,97 @@
                     ?>
                 </div>
               </div><!-- /.box -->
+              
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">Pending Schedules List</h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <tr>
+                            <th><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" id="delete_all" /><?php } ?></th>
+                            <th>User</th>
+                            <th>Server Name</th>
+                            <th>Server IP</th>
+                            <th>Hostname</th>
+                            <th>Client</th>
+                            <th>Status</th>
+                            <th class="text-center">Actions</th>
+                            </tr>
+                            <?php
+                            if(!empty($backupInfo))
+                            {
+                                foreach($backupInfo as $info)
+                                { 
+                            ?>
+                            <tr
+                                <?php
+                                    if($info['status'] == "Pending")
+                                    { 
+                                ?> 
+                                class="danger"  
+                                <?php 
+                                    }
+                                    elseif($info['status'] == "Inprogress")
+                                    {
+                                ?> 
+                                class="warning"  
+                                <?php 
+                                    }
+                                    elseif($info['status'] == "Completed")
+                                    {
+                                ?> 
+                                class="success"  
+                                <?php       
+                                    }
+                                    elseif($info['status'] == "Failed")
+                                    {
+                                ?> 
+                                class=""  
+                                <?php       
+                                    }
+                                ?>
+                            >
+                            <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?><input type="checkbox" class="delete_backup" value="<?php echo $info['scheduleId']; ?>" name="delete_backups[]"/><?php } ?></td>
+                            <td><?php echo $info['user'] ?></td>
+                            <td><?php echo $info['server'] ?></td>
+                            <td><?php echo $info['serverIP'] ?></td>
+                            <td><?php echo $info['hostname'] ?></td>
+                            <td><?php echo $info['clientName'] ?></td>
+                            <td><?php echo $info['status'] ?></td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$info['scheduleId']; ?>">
+                                    <i class="fa fa-search-plus"></i>
+                                </a>
+                            </td> 
+                            </tr>
+                            <?php
+                                }
+                            if($role_slug=="sys.admin" || $role_slug=="master.admin"){ 
+                            ?>
+                            <tr>
+                                <td colspan='8'>
+                                    <input type="submit" class="btn btn-sm btn-danger " name="delete_backup" value="Delete"/>
+                                </td>
+                            </tr>
+                            <?php
+                            }}
+                            else{
+                                echo "<tr><td colspan='8' style='color:red'>No Pending Backup</td></tr>";
+                            }
+                            ?>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <div class="box-footer clearfix">
+                        <?php echo $this->pagination->create_links(); 
+                    //if (isset($links)) {  echo $links;}
+                    ?>
+                </div>
+                </div>
             </div>
         </div>
     </section>

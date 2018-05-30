@@ -656,7 +656,7 @@ class Server extends BaseController
                             );
     }
        $data['status'] = $statusList;
-       var_dump($data['status']);
+       //var_dump($data['status']);
         $this->blacklistMail($data['status']);
     }
     /**
