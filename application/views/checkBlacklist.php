@@ -64,7 +64,7 @@
             <div class="col-xs-12 text-right">
                 <div class="form-group">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addIpModal">
-                        <i class="fa fa-plus"></i>Add new
+                        <i class="fa fa-plus"></i> Add new
                     </button>
                 </div>
             </div>
@@ -94,126 +94,199 @@
         <div class="row">
             <!-- IP Blacklist -->
             <div class="col-xs-7">
-              <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">IP Blacklist</h3>
-                </div><!-- /.box-header -->
-                <div class="box-body table-responsive ">
-                  <table class="table table-hover">
-                    <tr>
-                      <th>IP Address</th>
-                      <th>Is Listed?</th>
-                      <th>Action</th>
-                    </tr>
-                    <?php
-                        if(!empty($status))
-                        {
-                            foreach($status as $list)
-                            { 
-                                if($list['isListed'] == "Listed" || $list['isListed'] == "Not Listed")
+              <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">IP Blacklist</h3>
+                        </div><!-- /.box-header -->
+                        <div class="box-body table-responsive ">
+                        <table class="table table-hover">
+                            <tr>
+                            <th>IP Address</th>
+                            <th>Is Listed?</th>
+                            <th>Action</th>
+                            </tr>
+                            <?php
+                                if(!empty($status))
                                 {
-                    ?>
-                   <tr  
-                        <?php if($list['isListed'] == "Listed")
-                        { 
-                            echo "class='danger'"; 
-                        }
-                        elseif($list['isListed'] == "Not Listed")
-                        {
-                            echo "class='success'";
-                        } 
-                        else
-                        {}
-                   ?>
-                   >
-                      <td><?php echo $list['ip']; ?></td>
-                      <td><?php echo $list['isListed']; ?></td>
-                      <td>
-                        
-                        <button type="button" class="btn btn-sm btn-detail" data-toggle="modal" data-target="#detailsModal<?php echo $list['id']; ?>">
-                            <i class="fa fa-search-plus"></i>
-                        </button>
-
-                         <!-- Details Modal -->
-                         <div class="modal fade" id="detailsModal<?php echo $list['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header"> 
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        <h2 class="modal-title" id="exampleModalLabel">IP: <?php echo $list['ip']; ?></h2>
-                                    </div>
-                                    <div class="modal-body">
-                                    <table class="table table-hover">
-                                    <?php 
-                                         $show = "";
-                                         if(!empty($blacklist))
-                                         { 
-                                            foreach($blacklist as  $lists => $li)
-                                            {
-                                                if($list['ip'] == $li->ip) 
-                                                {
-                                                    if($li->isListed != "")
+                                    foreach($status as $list)
+                                    { 
+                                        if($list['isListed'] == "Listed" || $list['isListed'] == "Not Listed")
+                                        {
+                            ?>
+                        <tr  
+                                <?php if($list['isListed'] == "Listed")
+                                { 
+                                    echo "class='danger'"; 
+                                }
+                                elseif($list['isListed'] == "Not Listed")
+                                {
+                                    echo "class='success'";
+                                } 
+                        ?>
+                        >
+                            <td><?php echo $list['ip']; ?></td>
+                            <td><?php echo $list['isListed']; ?></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-detail" data-toggle="modal" data-target="#detailsModal<?php echo $list['id']; ?>">
+                                    <i class="fa fa-search-plus"></i>
+                                </button>
+                                 <?php if($list['isListed'] == "Listed")
+                                { ?>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#commentModal<?php echo $list['id']; ?>">
+                                    <i class="fa fa-plus"></i> Comment
+                                </button>
+                                <?php } ?>
+                                <!-- Details Modal -->
+                                <div class="modal fade" id="detailsModal<?php echo $list['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header"> 
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h2 class="modal-title" id="exampleModalLabel">IP: <?php echo $list['ip']; ?></h2>
+                                            </div>
+                                            <div class="modal-body">
+                                            <table class="table table-hover">
+                                            <?php 
+                                                $show = "";
+                                                if(!empty($blacklist))
+                                                { 
+                                                    foreach($blacklist as  $lists => $li)
                                                     {
-                                                        $show = "show";
-                                                        break;
+                                                        if($list['ip'] == $li->ip) 
+                                                        {
+                                                            if($li->isListed != "")
+                                                            {
+                                                                $show = "show";
+                                                                break;
+                                                            }
+                                                        }
+                                                    }if($show == "show"){
+                                            ?>
+                                            <tr>
+                                                <th>Host</th>
+                                                <th>isListed?</th>
+                                            </tr>
+                                            <?php
                                                     }
-                                                }
-                                            }if($show == "show"){
-                                    ?>
-                                      <tr>
-                                         <th>Host</th>
-                                         <th>isListed?</th>
-                                      </tr>
-                                      <?php
-                                            }
-                                            else
-                                            {
-                                                echo "This IP is not Checked.";
-                                            }
-                                                foreach($blacklist as  $lists => $li)
-                                                {
-                                                    if($list['ip'] == $li->ip) 
+                                                    else
                                                     {
-                                        ?>
-                                      <tr  <?php if($li->isListed == 1){ echo "class='danger'"; }else{ echo "class='success'";} ?>>
-                                         <td><?php echo $li->host; ?></td>
-                                         <td><?php if($li->isListed == 1){ echo "Listed"; }else{ echo "Not Listed";} ?></td>
-                                      </tr>
-                                      <?php 
+                                                        echo "This IP is not Checked.";
                                                     }
-                                                }
-                                            }
-                                            else{
-                                      ?>
-                                      <tr><td>No Record Found</td></tr>
-                                      <?php } ?>
-                                  </table>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        foreach($blacklist as  $lists => $li)
+                                                        {
+                                                            if($list['ip'] == $li->ip) 
+                                                            {
+                                                ?>
+                                            <tr  <?php if($li->isListed == 1){ echo "class='danger'"; }else{ echo "class='success'";} ?>>
+                                                <td><?php echo $li->host; ?></td>
+                                                <td><?php if($li->isListed == 1){ echo "Listed"; }else{ echo "Not Listed";} ?></td>
+                                            </tr>
+                                            <?php 
+                                                            }
+                                                        }
+                                                    }
+                                                    else{
+                                            ?>
+                                            <tr><td>No Record Found</td></tr>
+                                            <?php } ?>
+                                        </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                                <!-- /.Details Modal -->
+                                <!-- Modal for Add_Comment -->
+                                <div class="modal fade" id="commentModal<?php echo $list['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header" style="text-align:center;"> 
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h2 class="modal-title" id="exampleModalLabel">Enter Comment</h2>
+                                            </div>
+                                            <div class="modal-body" style="text-align:center;">
+                                                <form action="<?php echo base_url() ?>add-ip-comment" method="post">
+                                                    <input type="hidden" id="id" name="id" value="<?php echo $list['id']; ?>" required/>
+                                                    <input type="text" id="comment" name="comment" placeholder="Enter comment" required/>
+                                                    <input type="submit" name="add_ip_comment" value="Submit"/>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.Modal for Add_Comment -->
+                            </td>
+                            </tr>
+                            <?php
+                                } }}
+                            else{
+                                echo "<tr><td colspan='11' style='color:red'>No Record Found</td></tr>";
+                            }
+                            ?>
+                        </table>
+                        </div><!-- /.box-body -->
+                        <div class="box-footer clearfix">
+                            <?php //echo $this->pagination->create_links(); ?>
                         </div>
-                         <!-- /.Details Modal -->
-                      </td>
-                       </tr>
-                    <?php
-                         } }}
-                    else{
-                        echo "<tr><td colspan='11' style='color:red'>No Record Found</td></tr>";
-                    }
-                    ?>
-                    
-                  </table>
-                 
-                </div><!-- /.box-body -->
-                <div class="box-footer clearfix">
-                    <?php //echo $this->pagination->create_links(); ?>
+                    </div><!-- /.box -->
                 </div>
-              </div><!-- /.box -->
+              </div>
+              <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">Blacklisted IP's comments</h3>
+                        </div><!-- /.box-header -->
+                        <div class="box-body table-responsive ">
+                        <table class="table table-hover">
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Comment</th>
+                                <th>User</th>
+                                <th>Commented On</th>
+                            </tr>
+                            <?php 
+                                if(!empty($Comments))
+                                {
+                                    foreach($Comments as $com)
+                                    {
+                                        if($com->isListed == "1")
+                                        {
+                                            $date = $com->createdAt;
+                                            $dt = explode(" ",$date);
+                                            $commentedOn = $dt[0];
+                            ?>
+                            <tr>
+                                <td><?php echo $com->ip; ?></td>
+                                <td><?php echo $com->comment; ?></td>
+                                <td><?php echo $com->UserName; ?></td>
+                                <td><?php echo $commentedOn; ?></td>
+                            </tr>
+                            <?php
+                                } }}
+                            else{
+                                echo "<tr><td colspan='11' style='color:red'>No Record Found</td></tr>";
+                            }
+                            ?>
+                        </table>
+                        </div><!-- /.box-body -->
+                        <div class="box-footer clearfix">
+                            <?php //echo $this->pagination->create_links(); ?>
+                        </div>
+                    </div><!-- /.box -->
+                </div>
+              </div>
             </div>
             <!-- /.IP Blacklist -->
             <div class="col-xs-5">
@@ -230,7 +303,6 @@
                                         <input type="submit" value="LOOKUP"/>
                                     </form>
                                 </div>
-                            
                             <!-- /.box-body -->
                             <div class="box-footer clearfix">
                             </div>

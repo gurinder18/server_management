@@ -7,6 +7,7 @@ $email = '';
 $address = '';
 $city = '';
 $state = '';
+$country = '';
 $zip = '';
 $status = '';
 $organisation = '';
@@ -23,6 +24,7 @@ if(!empty($clientInfo))
         $address = $cf->address;
         $city = $cf->city;
         $state = $cf->state;
+        $country = $cf->country;
         $zip = $cf->zip;
         $status = $cf->status;
         $organisation = $cf->organisation;
@@ -118,23 +120,31 @@ if(!empty($clientInfo))
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="city">City</label>
-                                        <input type="text" class="form-control" id="city" placeholder="City" name="city" value="<?php echo $city; ?>" maxlength="50">   
+                                        <input type="text" class="form-control" id="city" placeholder="City" name="city" value="<?php echo $city; ?>" maxlength="100">   
                                     </div>
                                 </div>
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="state">State</label>
-                                        <input type="text" class="form-control" id="state" placeholder="State" name="state" value="<?php echo $state; ?>" maxlength="50">   
+                                        <input type="text" class="form-control" id="state" placeholder="State" name="state" value="<?php echo $state; ?>" maxlength="100">   
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">                                
                                     <div class="form-group">
+                                        <label for="country">Country</label>
+                                        <input type="text" class="form-control" id="country" placeholder="Country" name="country" value="<?php echo $country; ?>" maxlength="100">   
+                                    </div>
+                                </div>
+                                <div class="col-md-6">                                
+                                    <div class="form-group">
                                         <label for="zip">Zip</label>
                                         <input type="text" class="form-control" id="zip" placeholder="zip" name="zip" value="<?php echo $zip; ?>" maxlength="50">   
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="status">Status</label>
@@ -145,28 +155,24 @@ if(!empty($clientInfo))
                                         </select>
                                     </div>
                                 </div>    
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="organisation">Organisation </label>
                                         <input type="text" class="form-control " id="organisation" name="organisation" value="<?php echo $organisation; ?>">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="contacts">Other Contacts </label>
                                         <input type="text" class="form-control " id="contacts" name="contacts" value="<?php echo $contacts; ?>" placeholder="Name-Contact No.-Organisation">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">                                
-                                    <div class="form-group">
-                                        <div> <label for="user">Users </label>(Click in box to select)</div>
-                                        <select class="multipleSelect form-control" multiple name="user[]" id="user" required>
-                                           
-                                            <?php
+                                </div>                  
+                                <div class="form-group">
+                                    <div> <label for="user">Users </label>(Click in box to select)</div>
+                                        <select class="multipleSelect form-control" multiple name="user[]" id="user">
+                                           <?php
                                             if(!empty($users))
                                             {
                                                 foreach ($users as $us)

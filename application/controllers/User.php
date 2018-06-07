@@ -1,4 +1,6 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowed');
+<?php 
+ob_start();
+if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 require APPPATH . '/libraries/BaseController.php';
 
@@ -18,6 +20,7 @@ class User extends BaseController
     {
         parent::__construct();
         $this->load->model('user_model');
+         date_default_timezone_set('Asia/Kolkata');
         $this->isLoggedIn(); 
         // load Pagination library
         $this->load->library('pagination'); 
@@ -224,7 +227,7 @@ class User extends BaseController
                 $status = $this->input->post('status');
 
                 $userInfo = array();
-               
+                $body = "";
                 if(empty($password))
                 {
                     $userInfo = array('name'=>$name,'email'=>$email, 'roleId'=>$roleId,  'mobile'=>$mobile, 
@@ -235,7 +238,7 @@ class User extends BaseController
                     $userInfo = array('name'=>ucwords($name),'email'=>$email, 'password'=>getHashedPassword($password), 
                     'mobile'=>$mobile, 'roleId'=>$roleId, 'status'=>$status, 'updatedBy'=>$this->vendorId, 
                         'updatedDtm'=>date('Y-m-d H:i:s'));
-                echo $body = '
+                    $body = '
                         <div style="text-align:center;"><img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
                         <p>Hi '.$name.'</p>
                         <p>Your Password has changed by Administrator.</p> 
@@ -250,17 +253,24 @@ class User extends BaseController
                     $this->session->set_flashdata('success', 'User updated successfully');
                    if($body != "")
                    {
-                        $config['mailtype'] = 'html';
-                        $this->email->initialize($config);
-                        $subject = "Your password changed by Administrator";
-                        $result = $this->email
-                            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
-                            // ->reply_to('')    // Optional, an account where a human being reads.
-                            ->to($email)
-                            ->subject($subject)
-                            ->message($body)
-                            ->send();
-                       
+                        // $config['mailtype'] = 'html';
+                        // $this->email->initialize($config);
+                        // $subject = "Your password changed by Administrator";
+                        // $result = $this->email
+                        //     ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
+                        //     // ->reply_to('')    // Optional, an account where a human being reads.
+                        //     ->to($email)
+                        //     ->subject($subject)
+                        //     ->message($body)
+                        //     ->send();
+                        // Always set content-type when sending HTML email
+                        $headers = "MIME-Version: 1.0" . "\r\n";
+                        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                
+                        // More headers
+                        $headers .= 'From: <webmaster@example.com>' . "\r\n";
+                        $headers .= 'Cc: myboss@example.com' . "\r\n";
+                        $result = mail($email,$subject,$body,$headers);
                         if($result == TRUE)
                         {
                             $mailLogInfo = array('email_to'=>$email,'email_from'=>"gurinderjeetkaur01@gmail.com",
@@ -419,7 +429,8 @@ class User extends BaseController
             $this->load->model('user_model');
             $data['users'] = $this->user_model->userListing(NULL, NULL, "member", $this->vendorId);
             $data['assigned_duties'] = $this->user_model->getUserAssignedDuties($this->vendorId);
-            
+            $data['myAssigned_duties'] = $this->user_model->getMyAssignedDuties($this->vendorId);
+
             $this->global['pageTitle'] = 'Orion eSolutions : Assign Duties';
           
             $this->loadViews("assignDuties", $this->global, $data, NULL);
@@ -484,26 +495,26 @@ class User extends BaseController
                         ';
                         $subject = "Request for assigning duties";
 
-                        $config['mailtype'] = 'html';
-                        $this->email->initialize($config);
+                        // $config['mailtype'] = 'html';
+                        // $this->email->initialize($config);
                         
-                         $res = $this->email
-                            ->from('webmaster@example.com','Orion eSolutions')
-                            // ->reply_to('')    // Optional, an account where a human being reads.
-                           //->to($userEmail)
-                           ->to("testingmail@yopmail.com")
-                            ->subject($subject)
-                            ->message($body)
-                            ->send();
+                        //  $res = $this->email
+                        //     ->from('webmaster@example.com','Orion eSolutions')
+                        //     // ->reply_to('')    // Optional, an account where a human being reads.
+                        //   //->to($userEmail)
+                        //   ->to("testingmail@yopmail.com")
+                        //     ->subject($subject)
+                        //     ->message($body)
+                        //     ->send();
                         
-                        // // Always set content-type when sending HTML email
-                        // $headers = "MIME-Version: 1.0" . "\r\n";
-                        // $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                        // Always set content-type when sending HTML email
+                        $headers = "MIME-Version: 1.0" . "\r\n";
+                        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
                 
-                        // // More headers
-                        // $headers .= 'From: <webmaster@example.com>' . "\r\n";
-                        // $headers .= 'Cc: myboss@example.com' . "\r\n";
-                        // $result = mail($email,$subject,$body,$headers);
+                        // More headers
+                        $headers .= 'From: <webmaster@example.com>' . "\r\n";
+                        $headers .= 'Cc: myboss@example.com' . "\r\n";
+                        $res = mail($userEmail,$subject,$body,$headers);
                         if($res == TRUE)
                         {
                             $mailLogInfo = array('email_to'=>$userEmail,'email_from'=>"webmaster@example.com",
@@ -560,5 +571,5 @@ class User extends BaseController
     }
 
 }
-
+ob_flush();
 ?>

@@ -2,10 +2,109 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-th"></i>Backup Schedule Report
+        <i class="fa fa-th"></i> Backup Schedule Report
       </h1>
     </section>
     <section class="content">
+        <div class="row">
+            <div class="col-md-4">
+                <?php
+                    $this->load->helper('form');
+                    $error = $this->session->flashdata('error');
+                    if($error)
+                    {
+                ?>
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <?php echo $this->session->flashdata('error'); ?>                    
+                </div>
+                <?php } ?>
+                <?php  
+                    $success = $this->session->flashdata('success');
+                    if($success)
+                    {
+                ?>
+                <div class="alert alert-success alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <?php echo $this->session->flashdata('success'); ?>
+                </div>
+                <?php } ?>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <?php echo validation_errors('<div class="alert alert-danger alert-dismissable">', ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>'); ?>
+                        <?php 
+                            if($this->input->get("invalid") != "")
+                            {
+                                echo '<div class="alert alert-danger alert-dismissable">
+                                        '.$this->input->get("invalid").'
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    </div>'; 
+                            }
+                            if($this->input->get("message") != "")
+                            {
+                                echo '<div class="alert alert-danger alert-dismissable">
+                                        '.$this->input->get("message").'
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                    </div>'; 
+                            }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 text-right">
+                <div class="form-group">
+                <?php if($role==1){ ?>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#clearDataModal">
+                        <i class="fa fa-minus"></i>  Clear Data
+                    </button>
+                <?php } ?>
+                </div>
+            </div>
+        </div>
+         <!-- Clear Data Modal -->
+         <div class="modal fade" id="clearDataModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header"> 
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                                <h2 class="modal-title" id="clearDataModalLabel">Clear Data</h2>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover" id="clear_data">
+                                <tr>
+                                    <th>
+                                       <p> Choose date-range to clear files</p>
+                                    </th>
+                                </tr> 
+                                <tr>
+                                <form id="clearData" action="<?php echo base_url() ?>clear-data" method="post" enctype="multipart/form-data" role="form">
+                                    <th>From Date</th>
+                                    <td>   
+                                        <input class="form-control required"  type="date" name="fromDate" id="fromDate" required/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>To Date</th>
+                                    <td>
+                                        <input class="form-control required"  type="date" name="toDate" id="toDate" required/>
+                                   </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="clear_data" name="clear_data" >Clear</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- \. Clear data Modal -->
         <div class="row">
             <div class="col-xs-12">
               <div class="box">
@@ -272,7 +371,7 @@
                                 }
                                 elseif($record->ScheduleStatus == "Failed")
                                 {
-                            ?> class=""  
+                            ?> class="info"  
                             <?php       
                                 }
                             ?>
@@ -383,4 +482,22 @@ $(document).ready(function () {
       autoclose: true
     });
   });
+  $(function(){
+    var dtToday = new Date();
+    
+    var month = dtToday.getMonth() - 3;
+    var day = dtToday.getDate() ;
+    var year = dtToday.getFullYear();
+    
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+        day = '0' + day.toString();
+    
+    var maxDate = year + '-' + month + '-' + day;
+   
+    $('#fromDate').attr('max', maxDate);
+    $('#toDate').attr('max', maxDate);
+    
+});
 </script>

@@ -12,7 +12,8 @@ class Client_model extends CI_Model
     function clientListingCount($searchText = '')
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
+        BaseTbl.city, BaseTbl.state, BaseTbl.country, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation,
+         BaseTbl.contacts');
         $this->db->from('tbl_clients as BaseTbl');
        
         if(!empty($searchText)) {
@@ -37,20 +38,39 @@ class Client_model extends CI_Model
     function clients($searchText = '', $page, $segment)
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-         BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
+         BaseTbl.city, BaseTbl.state,BaseTbl.country, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, 
+         BaseTbl.contacts');
         $this->db->from('tbl_clients as BaseTbl');
-        
+      
         $this->db->where('BaseTbl.isDeleted', 0);
         $this->db->order_by("BaseTbl.name", "asc");
         $this->db->limit($page, $segment);
         $query = $this->db->get();
         
         $result = $query->result();    
-       
+       //var_dump( $result);
         return $result;
     } 
-    
-       /**
+      /**
+     * This function used to get client information 
+     * @param number $id : This is client id
+     * @return array $result : This is client information
+     */
+    function getClientsUsers()
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.clientId, BaseTbl.userId, User.name As UserName');
+        
+        $this->db->from('tbl_client_users as BaseTbl');
+        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+       
+        $this->db->where('BaseTbl.isDeleted', 0);
+		//$this->db->where('roleId !=', 1);
+        //$this->db->where('clientId', $id);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+    /**
      * This function is used to get the users 
      * @return array $result : This is result of the query
      */
@@ -106,7 +126,8 @@ class Client_model extends CI_Model
     function getClientInfo($id)
     {
         $this->db->select('BaseTbl.id, BaseTbl.name, BaseTbl.phone, BaseTbl.email, BaseTbl.address,
-        BaseTbl.city, BaseTbl.state, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation, BaseTbl.contacts');
+        BaseTbl.city, BaseTbl.state,BaseTbl.country, BaseTbl.zip, BaseTbl.status, BaseTbl.organisation,
+         BaseTbl.contacts');
         
         $this->db->from('tbl_clients as BaseTbl');
         //$this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');

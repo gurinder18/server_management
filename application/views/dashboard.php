@@ -80,7 +80,20 @@
                                   foreach ($users as $user)
                                   { 
                               ?>
-                              <option value="<?php echo $user->userId ?>"><?php  echo $user->name ?></option>
+                              <option value="<?php echo $user->userId ?>"
+                                <?php
+                                  if(isset($_GET['user']))
+                                  { 
+                                    if(!($_GET['user']) == NULL)
+                                    {
+                                      if($_GET['user']==$user->userId)
+                                      {
+                                        echo "selected";
+                                      } 
+                                    }
+                                  }
+                                ?>
+                              ><?php  echo $user->name ?></option>
                               <?php
                                   }
                                 }
@@ -100,7 +113,20 @@
                                   foreach ($servers as $server)
                                   { 
                               ?>
-                              <option value="<?php echo $server->id ?>"><?php  echo $server->name ?></option>
+                              <option value="<?php echo $server->id ?>"
+                              <?php
+                                  if(isset($_GET['server']))
+                                  { 
+                                    if(!($_GET['server']) == NULL)
+                                    {
+                                      if($_GET['server']==$server->id)
+                                      {
+                                        echo "selected";
+                                      } 
+                                    }
+                                  }
+                                ?>
+                              ><?php  echo $server->name ?></option>
                               <?php
                                   }
                                 }
@@ -110,7 +136,7 @@
                         </div>
                         <div class="col-md-3">
                           <div class="form-group">
-                            <label for="status">Month</label>
+                            <!--<label for="status">Month</label>
                             <select class="form-control" id="month" name="month" onchange="drawChart()" > 
                               <option value="">Select month</option>
                               <?php
@@ -121,21 +147,130 @@
                               <?php
                                 }
                               ?>
-                            </select>
+                            </select>-->
                           </div>
                         </div>
                       </div>
                     </div>
                   </form>
-                  <div id="chart_div" style="width: 900px; height: 500px;"></div> 
+                  <div id="chart_div" style="width: 1000px; height: 500px;"></div> 
                   <table class="table table-hover">
                   </table>
                 </div>
               </div><!-- /.box -->
             </div>
           </div>
+        <?php
+          if(!empty($backupRecords))
+          {
+        ?>
+        <div class="row">
+            <div class="col-xs-12">
+              <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Report</h3>
+                </div><!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover td-align">
+                        <tr>
+                            <th class="td-align">Date</th>
+                            <th class="td-align">Client</th>
+                            <th class="td-align">Server</th>
+                            <th class="td-align">User</th> 
+                            <th class="td-align">Status</th>
+                            <th class="td-align">Day</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        <?php
+                        if(!empty($backupRecords))
+                        {
+                            foreach($backupRecords as $record)
+                            { 
+                        ?>
+                        <tr 
+                            <?php
+                                if($record->ScheduleStatus == "Pending")
+                                { 
+                            ?> class="danger"  
+                            <?php 
+                                }
+                                elseif($record->ScheduleStatus == "Inprogress")
+                                {
+                            ?> class="warning"  
+                            <?php 
+                                }
+                                elseif($record->ScheduleStatus == "Completed")
+                                {
+                            ?> class="success"  
+                            <?php       
+                                }
+                                elseif($record->ScheduleStatus == "Failed")
+                                {
+                            ?> class="info"  
+                            <?php       
+                                }
+                            ?>
+                        >
+                            <td align="center"><?php echo $record->date ?></td>
+                            <td><?php echo $record->ClientName ?></td>
+                            <td><?php echo $record->ServerName ?></td>
+                            <td><?php echo $record->UserName ?></td>
+                            <td><?php echo $record->ScheduleStatus ?></td>
+                            <td><?php echo $record->ScheduleType." | ".$record->Day ?></td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-detail" href="<?php echo base_url().'schedule-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
+                            </td> 
+                        </tr>
+                        <?php
+                            }
+                            if($role_slug=="sys.admin" || $role_slug=="master.admin"){ 
+                        ?>
+                        <tr>
+                        </tr>
+                        </form>
+                        <?php
+                        }}
+                        else{
+                            echo "<tr><td colspan='8' style='color:red'>No Record Found</td></tr>";
+                        }
+                        ?>
+                    </table>
+                </div><!-- /.box-body -->
+                <div class="box-footer clearfix">
+                    <!-- <?php 
+                        $cur_url = current_url();
+                        $url_all = base_url().'backups-report';
+
+                        if(!($cur_url == $url_all)){
+                    ?>
+                    <a href="<?php echo base_url(); ?>backups-report" >All</a>
+                    <?php 
+                        }
+                        if($cur_url == $url_all){
+                    ?>
+                    <a href="<?php echo base_url(); ?>backup-report" >Back</a>
+                    <?php }
+                        // echo $this->pagination->create_links();
+                    ?> -->
+                </div>
+              </div><!-- /.box -->
+            </div>
+        </div>
+        <?php } ?>
     </section>
 </div> 
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/common.js" charset="utf-8"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery('ul.pagination li a').click(function (e) {
+            e.preventDefault();            
+            var link = jQuery(this).get(0).href;            
+            var value = link.substring(link.lastIndexOf('/') + 1);
+            jQuery("#searchList").attr("action", baseURL + "serverListing/" + value);
+            jQuery("#searchList").submit();
+        });
+    });
+</script>
   <!--Load the AJAX API--> 
   <script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/charts/loader.js"></script> 
   <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
@@ -148,8 +283,8 @@
     // Set a callback to run when the Google Visualization API is loaded. 
     google.charts.setOnLoadCallback(drawChart); 
        
-    function drawChart() { 
-     
+    function drawChart() 
+    { 
       var jsonData = $.ajax({ 
           url: "<?php echo base_url() ?>dashboard/getdata", 
           dataType: "json", 
@@ -158,21 +293,34 @@
            
       // Create our data table out of JSON data loaded from server. 
       var data = new google.visualization.DataTable(jsonData); 
+      var obj =  JSON.stringify(data);
  
       var options = {
           title: "Monthly User's Backup-Status",
           slices: {
-            0: { color: 'red' },
+            0: { color: 'red'},
             1: { color: 'yellow' },
             2: { color: 'green' },
             3: { color: 'brown' }
-          }
+          } 
         };
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
+      function selectHandler() 
+      {
+        var selectedItem = chart.getSelection()[0];
+        if (selectedItem) {
+          var topping = data.getValue(selectedItem.row, 0);
+          //alert('The user selected ' + topping);
+          window.location.href = baseURL+"backups-status?status="+topping+"&user=user&server=server";
+          
+        }
+      }
+
+      google.visualization.events.addListener(chart, 'select', selectHandler);
       // Instantiate and draw our chart, passing in some options. 
-      var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
+     
       chart.draw(data,options ); 
     } 
- 
     </script> 
     
     <script type="text/javascript"> 
@@ -208,7 +356,7 @@
        <?php
        if($role_slug != "member")
        { 
-        ?>
+       ?>
        if(userId != null)
         {
           if(ServerName == "Select Server")
@@ -337,6 +485,24 @@
       
        // Instantiate and draw our chart, passing in some options. 
        var chart = new google.visualization.PieChart(document.getElementById('chart_div')); 
+       function selectHandler() 
+      {
+        var selectedItem = chart.getSelection()[0];
+        if (selectedItem) {
+          var topping = data.getValue(selectedItem.row, 0);
+          <?php
+          if($role_slug != "member")
+          { 
+          ?>
+          window.location.href = baseURL+"backups-status?status="+topping+"&user="+userId+"&server="+serverId;
+        <?php }else{ ?>
+          window.location.href = baseURL+"backups-status?status="+topping+"&user=user&server="+serverId;
+          <?php
+          }
+          ?>
+        }
+      }
+      google.visualization.events.addListener(chart, 'select', selectHandler);
        chart.draw(data,options ); 
      }
      </script> 

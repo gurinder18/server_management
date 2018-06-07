@@ -1,6 +1,6 @@
 <link href="<?php echo base_url(); ?>assets/dist/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo base_url(); ?>assets/dist/css/froala_style.min.css" rel="stylesheet" type="text/css" />
-
+<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/photo_slider.css">
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -96,8 +96,8 @@
                             if($role_slug=="member"  && $scheduleInfo['date']==date('d-m-Y') )
                             { 
                         ?>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleStatusModal">
-                            Update Status
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
+                             Update Status
                         </button>
                             <?php } ?>
                             <!-- Modal -->
@@ -150,14 +150,12 @@
                     if($role_slug=="member" && $scheduleInfo['date']==date('d-m-Y'))
                     { 
                 ?>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCommentModal">
-                    <i class="fa fa-plus"></i> Add Comment
-                </button>
+                
                 <?php } ?>
                 </div>
             </div>
         </div>
-          <!-- Add Comment Modal -->
+            <!-- Add Comment Modal -->
             <div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -170,7 +168,7 @@
                         <div class="modal-body">
                             <table class="table table-hover" id="add_comment"> 
                                 <tr>
-                                    <form role="form" id="addComment" action="<?php echo base_url() ?>add-comment" method="post" enctype="multipart/form-data" role="form">
+                                    <form id="addComment" action="<?php echo base_url() ?>add-comment" method="post" enctype="multipart/form-data" role="form">
                                     <th>Backup Status</th>
                                     <input type="hidden" id="scheduleId" name="scheduleId" value="<?php echo $scheduleInfo['id'] ?>" />
                                     <input type="hidden" id="userId" name="userId" value="<?php echo $scheduleInfo['userId'] ?>" />
@@ -189,7 +187,7 @@
                                 <tr>
                                     <th>Attachment</th>
                                     <td>
-                                        <input type="file" class="form-control" id="attachment"  name="attachment" maxlength="128">
+                                        <input type="file" class="form-control" id="attachment"  name="attachment[]" multiple="multiple">
                                    </td>
                                 </tr>
                                 <tr>
@@ -208,6 +206,7 @@
                     </div>
                 </div>
             </div>
+            <!-- \. Add Comment Modal -->
         <div class="row">
             <div class="col-xs-12">
                 <div class="box">
@@ -223,10 +222,13 @@
                                 <th>Comment</th>
                             </tr>
                             <?php
+                                $oldCommentId = "";
                                 if(!empty($commentInfo))
                                 {  
                                     foreach($commentInfo AS $comments)
                                     {
+                                        if($oldCommentId != $comments->id)
+                                        {
                             ?>
                             <tr 
                                 <?php if($comments->CommentStatus==1)
@@ -283,42 +285,62 @@
                                         } 
                                         else
                                         {
-                                            
                                             $id = $comments->id; 
                                     ?>
                                         <!-- Button trigger modal -->
                                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#attachmentModal<?php echo $id; ?>">
                                             View
                                         </button>
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="attachmentModal<?php echo $id; ?>" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header"> 
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                            <h2 class="modal-title" id="attachmentModalLabel">Attachments</h2>
-                                                        
-                                                        </div>
-                                                        <div class="modal-body">
-                                                                <table class="table table-hover">
-                                                                    <tr>
-                                                                       <td id="attachfiles">
-                                                                          <img class="profile-user-img img-responsive " src="<?php echo base_url(); ?>/assets/files/<?php echo $comments->file; ?>" alt="">
-                  
-                                                                       </td> 
-                                                                    </tr>
-                                                                </table>
-                                                            
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            </div>
-                                                        <?php } ?>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="attachmentModal<?php echo $id; ?>" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header"> 
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h2 class="modal-title" id="attachmentModalLabel">Attachments</h2>
+                                                    
                                                     </div>
+                                                    <div class="modal-body">
+                                                        <table class="table table-hover">
+                                                            <tr>
+                                                               <td>
+                                                                <?php
+                                                                if(!empty($attachment))
+                                                                {  
+                                                                    foreach($attachment AS $attach)
+                                                                    {
+                                                                        foreach($attach AS $att)
+                                                                        {  
+                                                                            if($id == $att->commentId)
+                                                                            {
+                                                                ?>
+                                                                <div class="w3-content w3-display-container">
+                                                                    <img class="mySlides" src="<?php echo base_url() ?>/assets/files/<?php echo $att->file; ?>" style="width:100%">
+                                                                </div>
+                                                                <?php      
+                                                                            }
+                                    
+                                                                        }
+                                                                    }
+                                                                }
+                                                                ?>
+                                                                    <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+                                                                    <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+                                                                
+                                                               </td>
+                                                            </tr>
+                                                        </table>
+                                                
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    </div>
+                                                    <?php } ?>
                                                 </div>
-                                            </div>  
+                                            </div>
+                                        </div>  
                                 </td>
                                 <td>
                                 <?php 
@@ -359,15 +381,16 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                         </div>
-                                                        
                                                     </div>
                                                 </div>
                                             </div>  
                                 </td>
                             </tr>
                             <?php
+                                    $oldCommentId = $id; 
+                                    }
+                                    }
                                 }
-                            }
                                 else
                                 {
                             ?>
@@ -398,44 +421,44 @@
             jQuery("#searchList").submit();
         });
     });
-    $(function() {
-        $('#addComment').submit(function(e) {
-            e.preventDefault();
-            var hitUrl = "<?php echo base_url(); ?>add-comment";
-        alert($('#comment_statusId').val());
-            $.ajax({
-                type            : "POST",
-                url 			: hitUrl, 
-                secureuri		:false,
-                fileElementId	:'attachment',
-                dataType		: 'json',
-                data			: {
-                    'scheduleId'			: $('#scheduleId').val(),
-                    'userId'				: $('#userId').val(),
-                    'statusId'				: $('#statusId').val(),
-                    'comment'				: $('#comment').val()
-                },
-                success	: function (data,status)
-                {
-                    if(data.status != 'error')
-                    {
-                        $('#attachfiles').html('<p>Reloading files...</p>');
-                        refresh_files();
-                        $('#comment').val('');
-                    }
-                   return false;
-                }
-            });
-            return false;
-        });
-    });
-    function refresh_files()
-    {
-        $.get(realpath(APPPATH .'../assets/files'))
-        .success(function (data){
-            $('#attachfiles').html(data);
-        });
-    }
+    // $(function() {
+    //     $('#addComment').submit(function(e) {
+    //         e.preventDefault();
+    //         var hitUrl = "<?php echo base_url(); ?>add-comment";
+    //     //alert($('#comment_statusId').val());
+    //         $.ajax({
+    //             type            : "POST",
+    //             url 			: hitUrl, 
+    //             secureuri		:false,
+    //             fileElementId	:'attachment',
+    //             dataType		: 'json',
+    //             data			: {
+    //                 'scheduleId'			: $('#scheduleId').val(),
+    //                 'userId'				: $('#userId').val(),
+    //                 'statusId'				: $('#statusId').val(),
+    //                 'comment'				: $('#comment').val()
+    //             },
+    //             success	: function (data,status)
+    //             {
+    //                 if(data.status != 'error')
+    //                 {
+    //                     $('#attachfiles').html('<p>Reloading files...</p>');
+    //                     refresh_files();
+    //                     $('#comment').val('');
+    //                 }
+    //                return false;
+    //             }
+    //         });
+    //         return false;
+    //     });
+    // });
+    // function refresh_files()
+    // {
+    //     $.get(realpath(APPPATH .'../assets/files'))
+    //     .success(function (data){
+    //         $('#attachfiles').html(data);
+    //     });
+    // }
 </script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
@@ -456,3 +479,23 @@
     });
   });
 </script>
+<script>
+var slideIndex = 1;
+showDivs(slideIndex);
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+</script>
+

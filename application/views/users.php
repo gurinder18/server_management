@@ -53,10 +53,11 @@
                       <td><?php echo $record->role ?></td>
                       <td><?php if($record->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
-                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-user/'.$record->userId; ?>"><i class="fa fa-pencil"></i></a>
-                          <?php
+                           <?php
                             if( $record->role != "Master Administrator"){
                           ?>
+                          <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-user/'.$record->userId; ?>"><i class="fa fa-pencil"></i></a>
+                         
                           <a class="btn btn-sm btn-danger deleteUser" href="#" data-id="<?php echo $record->userId; ?>"><i class="fa fa-trash"></i></a>
                             <?php } ?>
                       </td>

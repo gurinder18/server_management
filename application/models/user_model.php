@@ -39,7 +39,7 @@ class User_model extends CI_Model
         if($role != NULL && $userId != NULL)
         {
             $this->db->where('Role.slug', "member");
-            $this->db->where('Basetbl.userId !=', $userId);
+            $this->db->where('BaseTbl.userId !=', $userId);
         }
         $this->db->order_by('BaseTbl.roleId', 'asc');
         $this->db->order_by('BaseTbl.name', 'asc');
@@ -228,7 +228,7 @@ class User_model extends CI_Model
         return $insert_id;
     }
     /**
-     * This function used to get user information by id
+     * This function used to get user's-duties assigned by me information by id
      * @param number $userId : This is user id
      * @return array $result : This is user information
      */
@@ -240,6 +240,24 @@ class User_model extends CI_Model
         $this->db->join('tbl_users as User', 'User.userId = Basetbl.requestedUser','left');
        
         $this->db->where('Basetbl.userId', $userId);
+        $query = $this->db->get();
+        
+        return $query->result();
+    }
+     /**
+     * This function used to get user's- duites assigned to me information by id
+     * @param number $userId : This is user id
+     * @return array $result : This is user information
+     */
+    function getMyAssignedDuties($userId)
+    {
+        $this->db->select('Basetbl.id, Basetbl.startDate, Basetbl.endDate, Basetbl.numDays,
+         Basetbl.requestedUser, Basetbl.status, User.name AS UserName');
+        $this->db->from('tbl_assign_duties AS Basetbl');
+        $this->db->join('tbl_users as User', 'User.userId = Basetbl.userId','left');
+       
+        $this->db->where('Basetbl.requestedUser', $userId);
+        $this->db->where('Basetbl.status', 1);
         $query = $this->db->get();
         
         return $query->result();

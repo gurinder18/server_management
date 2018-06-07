@@ -213,7 +213,22 @@ class Schedule_model extends CI_Model
         
         return $result;
     }
+    /**
+     * This function used to get AttachmentsInfo information by id
+     * @param number $id : This is server id
+     * @return array $result : This is schedule information
+     */
+    function getAttachmentsInfo($commentId)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.scheduleId,BaseTbl.commentId , BaseTbl.filePath As file');
+        $this->db->from('tbl_backup_attachments as BaseTbl');
 
+        $this->db->where('BaseTbl.commentId', $commentId);
+        $query = $this->db->get();
+        $result = $query->result();    
+        
+        return $result;
+    }
       /**
      * This function is used to add new comment to system
      * @return number $insert_id : This is last inserted id
@@ -226,7 +241,6 @@ class Schedule_model extends CI_Model
         
         $insert_id = $this->db->insert_id();
         
-      
         if(!$attachmentInfo==null && $insert_id >0)
         {
             $addAttachment = array('scheduleId'=>$attachmentInfo['scheduleId'],'commentId'=>$insert_id,
@@ -241,7 +255,22 @@ class Schedule_model extends CI_Model
         $this->db->trans_complete();
         return $insert_id;
     }
+     /**
+     * This function is used to add new attachment to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addAttachment($attachmentInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_backup_attachments', $attachmentInfo);
+            
+        $attachment_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        return $attachment_id;
+    }
     
+
     
     /**
      * This function is used to get the backups

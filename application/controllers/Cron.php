@@ -32,17 +32,16 @@ class Cron extends BaseController
         
     }
     
-
      /**
      * This function is used to add todays backup schedule
      */
     function scheduleBackups()
     {
         $this->load->model('backup_model');
-
+        date_default_timezone_set('Asia/Kolkata');
         $cronInfo = array('type'=>'Create_Schedule','startTime'=>date('Y-m-d H:i:s'));
         $cronId = $this->backup_model->cronStartTime($cronInfo);
-
+        date_default_timezone_set('Asia/Kolkata');
         $date = cal_to_jd(CAL_GREGORIAN,date("m"),date("d"),date("Y"));
         $this->current_day = (jddayofweek($date,1));
         $this->current_date = date("j");
@@ -108,7 +107,7 @@ class Cron extends BaseController
            {
                $row_view_more = '<tr>
                                     <td  colspan="5" style="padding: 10px 12px;">
-                                    <a href="http://localhost:8080/server-m/schedules">
+                                    <a href="'. base_url() .'schedules">
                                             View More
                                         </a>
                                     </td>
@@ -130,7 +129,8 @@ class Cron extends BaseController
                         <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                         '.$rec['ClientName'].'
                         </td>
-                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'.$rec['id'].'">
+                        <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                            <a href="'. base_url() .'schedule-details/'.$rec['id'].'">
                                  View
                             </a>
                         </td>
@@ -165,19 +165,28 @@ class Cron extends BaseController
                 <p>Your Today'."'".'s backups</p> 
                 '.$message.'
                 ';
-        $config['mailtype'] = 'html';
-        $this->email->initialize($config);
+        // $config['mailtype'] = 'html';
+        // $this->email->initialize($config);
         
-        $result = $this->email
-            ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
-            // ->reply_to('')    // Optional, an account where a human being reads.
-            ->to($rec["UserEmail"])
-            ->subject($subject)
-            ->message($body)
-            ->send();
+        // $result = $this->email
+        //     ->from('gurinderjeetkaur01@gmail.com','Orion Esolutions')
+        //     // ->reply_to('')    // Optional, an account where a human being reads.
+        //     ->to($rec["UserEmail"])
+        //     ->subject($subject)
+        //     ->message($body)
+        //     ->send();
+        
+        // Always set content-type when sending HTML email
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+
+        // More headers
+        $headers .= 'From: <webmaster@example.com>' . "\r\n";
+        $headers .= 'Cc: myboss@example.com' . "\r\n";
+        $result = mail($rec["UserEmail"],$subject,$body,$headers);
         if($result == TRUE)
         {
-            $mailLogInfo = array('email_to'=>$rec["UserEmail"],'email_from'=>"gurinderjeetkaur01@gmail.com",
+            $mailLogInfo = array('email_to'=>$rec["UserEmail"],'email_from'=>"webmaster@example.com",
             'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"daily_backup_notification");
             $res = $this->backup_model->addMailLog($mailLogInfo);
         }
@@ -192,7 +201,7 @@ class Cron extends BaseController
     function pendingScheduleBackups()
     {
         $this->load->model('backup_model');
-
+        date_default_timezone_set('Asia/Kolkata');
         $cronInfo = array('type'=>'Send_Pending_Mail','startTime'=>date('Y-m-d H:i:s'));
             
         $cronId = $this->backup_model->cronStartTime($cronInfo);
@@ -202,13 +211,14 @@ class Cron extends BaseController
         $this->current_date = date("j");
         
         $this->current_fulldate = date('d-m-Y');
-        $userMailResult = "";
-        $adminMailResult = "";
+        
         $count = 1;
         $this->checkBackupId ='';
         // get all users of todays pending backup 
         $users = $this->backup_model->getBackupsUserEmail( $this->current_fulldate);
-       
+        $adminData= array();
+         $adminMailResult = NULL;
+         $userMailResult = array();
         foreach($users as $user):
             $UserId = $user->UserId;
             $UserEmail = $user->UserEmail;
@@ -229,7 +239,7 @@ class Cron extends BaseController
                 $scheduleId = $backups->scheduleId;
                 $backupId = $backups->id;
                 $backupData = array();
-                $adminData= array();
+                
                 $backupDaily1 = array();
                 $backupWeekly1 = array();
                 $backupMonthly1 = array();
@@ -251,7 +261,7 @@ class Cron extends BaseController
                             $count++;
                             foreach($res as $r)
                             {
-                                if(!($this->checkBackupId == $r->backupId ))
+                                if(($this->checkBackupId != $r->backupId ))
                                 {
                                     // create array of each pending tasks of user
                                     $backupDaily1 = array(
@@ -275,15 +285,17 @@ class Cron extends BaseController
                 if($backupDaily1 != null)
                 {
                     $backupDaily2 =array('count' => $count);
-                    $backupData[] = array_merge($backupDaily1, $backupDaily2);
+                    
+                    $data['backupData'][] = array_merge($backupDaily1, $backupDaily2);
                     unset($backupDaily1);
+                   
                 } 
                 $count= 1;
                 if( $backups->scheduleType == "Weekly")
                 {
                     for($d = 1; $d <= 10; $d++ )
                     {
-                        $this->day =  date('d-m-Y',strtotime("-$d week"));echo "<br>";
+                        $this->day =  date('d-m-Y',strtotime("-$d week"));
                         $timing = array(
                             'fullDate'=> $this->day,
                             'user'=>$UserId,
@@ -296,7 +308,6 @@ class Cron extends BaseController
                         if(!empty($res))
                         {
                             $count++;
-                            var_dump($res);
                             foreach($res as $r)
                             { 
                                 if($this->checkBackupId != $r->backupId )
@@ -323,7 +334,7 @@ class Cron extends BaseController
                 if($backupWeekly1 != null)
                 {
                     $backupWeekly2 =array('count' => $count);
-                    $backupData[] = array_merge($backupWeekly1, $backupWeekly2);
+                    $data['backupData'][] = array_merge($backupWeekly1, $backupWeekly2);
                     unset($backupWeekly1);
                 }
                 $count=1;
@@ -367,35 +378,35 @@ class Cron extends BaseController
                         }
                     }
                 }
-            } 
-            if($backupMonthly1 != null)
-            {
-                $backupMonthly2 =array('count' => $count);
-                $backupData[] = array_merge($backupMonthly1, $backupMonthly2);
-                unset($backupMonthly1);
+                if($backupMonthly1 != null)
+                {
+                    $backupMonthly2 =array('count' => $count);
+                    $data['backupData'][] = array_merge($backupMonthly1, $backupMonthly2);
+                    unset($backupMonthly1);
+                }
+                $count=1;
             }
-            $count=1;
-            $data['backupInfo'] =  $backupData;
-           //var_dump($data['backupInfo']);die;
-            foreach( $backupData as $d)
+            $data['backupInfo'] =   $data['backupData'];
+          
+            foreach( $data['backupData'] as $d)
             { 
                 $adminData[] =   $d;
             } 
             // empty the array of pending backups of users to store another users backups
-            unset($backupData);
+            unset( $data['backupData']);
             
             $data['userInfo'] =  array('userId'=>$UserId, 'userEmail'=>$UserEmail, 'userName'=>$UserName);
 
             // call to function to send mail to user for their pending backup
-           $userMailResult = $this->sendEmailPendingBackupUser($data);
+           $userMailResult[] = $this->sendEmailPendingBackupUser($data);
          
-        endforeach;
-        if($userMailResult == TRUE )
+        endforeach; 
+        if(!empty($userMailResult) )
         {
             // call to function to send mail to admin for pending backup list
             $adminMailResult = $this->sendEmailPendingBackupAdmin($adminData);
         }
-        if( $adminMailResult == True)
+        if( $adminMailResult != NULL)
         {
             $cronInfo2 = array('endTime'=>date('Y-m-d H:i:s'));
             $result = $this->backup_model->cronEndTime($cronInfo2 , $cronId);
@@ -411,12 +422,12 @@ class Cron extends BaseController
         $message = '';
         $this->userName = '';
         $this->messageAdmin  = '';
-       
+      
         if(!empty($data['backupInfo']))
-            {
+        {
                 foreach($data['backupInfo'] as $pendingBackup)
-                {
-                    if($pendingBackup['count'] >= 3)
+                { 
+                    if($pendingBackup['count'] >= 2)
                     {
                     $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;">
                                 <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
@@ -428,7 +439,7 @@ class Cron extends BaseController
                                 <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                 '.$pendingBackup['type'].'/'.$pendingBackup['timings'].'
                                 </td>
-                                <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'. $pendingBackup['scheduleId'].'">
+                                <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="'. base_url() .'schedule-details/'. $pendingBackup['scheduleId'].'">
                                     View
                                         </a>
                                 </td>
@@ -438,7 +449,7 @@ class Cron extends BaseController
                     {
                         $row_view_more = '<tr>
                                                 <td  colspan="4" style="padding: 10px 12px;">
-                                                <a href="http://localhost:8080/server-m/schedules">
+                                                <a href="'. base_url() .'schedules">
                                                         View More
                                                     </a>
                                                 </td>
@@ -453,7 +464,7 @@ class Cron extends BaseController
                                         Server
                                     </th>
                                     <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                    No. of times
+                                         No. of times
                                     </th>
                                     <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                         Type
@@ -484,28 +495,41 @@ class Cron extends BaseController
             $config['mailtype'] = 'html';
             $this->email->initialize($config);
             
-            $result = $this->email
-                ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
-                // ->reply_to('')    // Optional, an account where a human being reads.
-                ->to($toEmail)
-                ->subject($subject)
-                ->message($body)
-                ->send();
-            if($result== TRUE)
+            // $result = $this->email
+            //     ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
+            //     // ->reply_to('')    // Optional, an account where a human being reads.
+            //     ->to($toEmail)
+            //     ->subject($subject)
+            //     ->message($body)
+            //     ->send();
+                
+            // Always set content-type when sending HTML email
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    
+            // More headers
+            $headers .= 'From: <webmaster@example.com>' . "\r\n";
+            $headers .= 'Cc: myboss@example.com' . "\r\n";
+            if($message != "")
             {
-                $mailLogInfo = array('email_to'=>$toEmail,'email_from'=>"gurinderjeetkaur01@gmail.com",
-                'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"Pending_backup_user_mail");
-                $res = $this->backup_model->addMailLog($mailLogInfo);
+                $result = mail($toEmail,$subject,$body,$headers);
+            
+                if($result == 1)
+                {
+                    $mailLogInfo = array('email_to'=>$toEmail,'email_from'=>"webmaster@example.com",
+                    'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"Pending_backup_user_mail");
+                    $res = $this->backup_model->addMailLog($mailLogInfo);
+                }
+                var_dump($result);
+                echo '<br />';
+                echo $this->email->print_debugger();
+              
             }
-            var_dump($result);
-            echo '<br />';
-            echo $this->email->print_debugger();
-            return $result;
-        }
-        }
+        }return $result;
+      }
       else
       {
-          return TRUE;
+          return 0;
       }   
     }
     /**
@@ -520,6 +544,7 @@ class Cron extends BaseController
         $this->userName = '';
         $this->messageAdmin  = '';
         $msg = '';
+        
         if(!empty($data))
         {
             $username = null;
@@ -536,7 +561,7 @@ class Cron extends BaseController
                                 Server
                             </th>
                             <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
-                                No. of times
+                                 No. of times
                             </th>
                             <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                 Type
@@ -555,7 +580,7 @@ class Cron extends BaseController
                                 <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                                 '.$pendingBackup['type'].'/'.$pendingBackup['timings'].'
                                 </td>
-                                <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'. $pendingBackup['scheduleId'].'">
+                                <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="'. base_url() .'schedule-details/'. $pendingBackup['scheduleId'].'">
                                     View
                                         </a>
                                 </td>
@@ -575,7 +600,7 @@ class Cron extends BaseController
                             <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
                             '.$pendingBackup['type'].'/'.$pendingBackup['timings'].'
                             </td>
-                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="http://localhost:8080/server-m/schedule-details/'. $pendingBackup['scheduleId'].'">
+                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;"><a href="'. base_url() .'schedule-details/'. $pendingBackup['scheduleId'].'">
                                 View
                                     </a>
                             </td>
@@ -592,7 +617,7 @@ class Cron extends BaseController
             {
                 $row_view_more = '<tr>
                                     <td  colspan="4" style="padding: 10px 12px;">
-                                        <a href="http://localhost:8080/server-m/schedules">
+                                        <a href="'. base_url() .'schedules">
                                             View More
                                         </a>
                                     </td>
@@ -616,10 +641,12 @@ class Cron extends BaseController
         }
         // get mail of admin
          $adminMail = $this->backup_model->getAdminEmail();
+        
          foreach($adminMail As $email)
          {
            $adminEmail = $email->email;
          }
+    
            // admin mail for user's pending backup
            $subject = 'Pending Backups list of users';
            echo $adminMailBody = '
@@ -632,16 +659,26 @@ class Cron extends BaseController
            $config['mailtype'] = 'html';
            $this->email->initialize($config);
 
-           $result = $this->email
-               ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
-               // ->reply_to('')    // Optional, an account where a human being reads.
-               ->to($adminEmail)
-               ->subject($subject)
-               ->message($adminMailBody)
-               ->send();
-           if($result== TRUE)
+        //   $result = $this->email
+        //       ->from('gurinderjeetkaur01@gmail.com','Orion eSolutions')
+        //       // ->reply_to('')    // Optional, an account where a human being reads.
+        //       ->to($adminEmail)
+        //       ->subject($subject)
+        //       ->message($adminMailBody)
+        //       ->send();
+               
+             // Always set content-type when sending HTML email
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    
+            // More headers
+            $headers .= 'From: <webmaster@example.com>' . "\r\n";
+            $headers .= 'Cc: myboss@example.com' . "\r\n";
+            
+            $result = mail($adminEmail,$subject,$adminMailBody,$headers);
+           if($result == 1)
            {
-               $mailLogInfo = array('email_to'=>$adminEmail,'email_from'=>"gurinderjeetkaur01@gmail.com",
+               $mailLogInfo = array('email_to'=>$adminEmail,'email_from'=>"webmaster@example.com",
                'email_subject'=>$subject ,'email_body'=>$adminMailBody,'type_email'=>"Pending_backup_admin_mail");
                $res = $this->backup_model->addMailLog($mailLogInfo);
            }
@@ -652,9 +689,256 @@ class Cron extends BaseController
         }
         else
         {
-            return TRUE;
+            return 0;
         }   
     }
+     /**
+     * This function is used to Check IP Blacklist 
+     */
+     function dnsbllookup($ip, $isList)
+    {
+        // Add your preferred list of DNSBL's
+        $dnsbl_lookup = [
+            "dnsbl-1.uceprotect.net",
+            "dnsbl-2.uceprotect.net",
+            "dnsbl-3.uceprotect.net",
+            "dnsbl.dronebl.org",
+            "dnsbl.sorbs.net",
+            "zen.spamhaus.org",
+            "bl.spamcop.net",
+            "list.dsbl.org",
+            "sbl.spamhaus.org",
+            "xbl.spamhaus.org",
+            "b.barracudacentral.org"
+        ];
+        $listed = "";
+        $listing = array();
+        if ($ip) {
+            $reverse_ip = implode(".", array_reverse(explode(".", $ip)));
+            foreach ($dnsbl_lookup as $host) {
+                if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) { 
+                    $listed .= '</br>'.$reverse_ip . '.' . $host ;
+                     $listing[] = array('ip'=>$ip,
+                                      'host'=>$host,
+                                      'listed'=>'Listed'    
+                             );
+                }
+                else
+                {
+                     $listing[] = array('ip'=>$ip,
+                                      'host'=>$host,
+                                      'listed'=>'Not Listed'    
+                             );
+                }
+            }
+        }
+        if($isList == TRUE)
+        {
+            return $listing;
+        }
+        if($isList == FALSE)
+        {
+            if(empty($listed) ) {
+                $message = 'Record was not found';
+                redirect("check-ip-blacklist?status=".$message);
+            } else {
+                redirect("check-ip-blacklist?listed=".$listed);
+            }
+        }
+        
+    }
+    
+     /**
+     * This function is used to load the Check daily- IP Blacklist 
+     */
+    function checkBlacklist()
+    {
+        $this->load->model('server_model');
+        $data['IP_List'] = $this->server_model->ipListing();
+
+        $data['server_ip'] = $this->server_model->serverListing( null, null);
+        $list = array();
+        $ip_list = array_merge($data['IP_List'], $data['server_ip']);
+        $statusList = array();
+        foreach( $ip_list as $servers)
+        {
+            if(isset($servers->server))
+            {
+                $serverId = $servers->id;
+                $ip = $servers->server;
+                $serverName = $servers->name;
+            }
+            else
+            {
+                $serverId = "";
+                $ip =$servers->ip;
+                $serverName = "";
+            }
+            $data["listing"][] = $this->dnsbllookup($ip, TRUE);
+            foreach( $data["listing"] as $datalist)
+            {
+                foreach( $datalist as $data)
+                {
+                    $ip = $data['ip'];
+                    $host = $data['host'];
+                    if($data['listed'] == "Listed")
+                    {
+                        $isListed = 1;
+                    }
+                    elseif($data['listed'] == "Not Listed")
+                    {
+                        $isListed = 0;
+                    }
+                    if($serverId != "")
+                    {
+                        $ipInfo = array('ip'=>$ip,'serverId'=>$serverId,'host'=>$host,'isListed'=>$isListed);
+                    }
+                    else
+                    {
+                        $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed);
+                    }
+                    $result = $this->server_model->addIPBlacklist($ipInfo);
+                   
+                }
+            } 
+        }
+        foreach( $ip_list as $ipList)
+        {
+            if(isset($ipList->server))
+            {
+                $serverId = $ipList->id;
+                $ip = $ipList->server;
+                $serverName = $ipList->name;
+            }
+            else
+            {
+                $serverId = "";
+                $ip =$ipList->ip;
+                $serverName = "";
+            }
+           $data['blacklist'] = $this->server_model->getIPBlacklist();
+           $id = "";
+           $isBlacklisted = "Not Checked";
+           if(!empty($data['blacklist']))
+           {
+               foreach($data["blacklist"] as  $list => $li)
+               { 
+                   if($li->ip == $ip)  
+                   {   
+                       if($li->isListed == "1")  
+                       {
+                           $id = $li->id;
+                           $isBlacklisted = "Listed";
+                           break;
+                       }
+                       else
+                       {
+                           $id = $li->id;
+                           $isBlacklisted = "Not Listed"; 
+                       }
+                   }
+               }
+            }
+            $statusList[] = array("id"=>$id,
+                              "ip"=> $ip,
+                              "isListed"=> $isBlacklisted
+                            );
+        }
+        $data['status'] = $statusList;
+        $this->blacklistMail($data['status']);
+    }
+     /**
+     * This function is used to send mail for IP Blacklist
+     */
+    function blacklistMail($data)
+    {
+        $row = "";
+        $userInfo = $this->server_model->userListing();
+       
+        if(!empty($data))
+        {
+            foreach($data as $list)
+            { 
+                if($list['isListed'] == "Listed")
+                {
+                    $row .= '<tr   style="border-bottom: 1px solid #e8e8e8;text-align:center;" >
+                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                            '.$list['ip'].'
+                            </td>
+                            <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                            '. $list['isListed'].'
+                            </td>
+                        </tr>'; 
+                }
+            }
+        }  
+        if($row != "")
+        {
+            $message = '<table style="border:1px solid #e8e8e8;border-spacing:0         ;width:100%;">
+                            <tr style="background:#D1F2EB;  border-bottom: 1px solid #e8e8e8;">
+                                <th   style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                        IP Address
+                                </th>
+                                <th  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                        is Listed?
+                                    </th>
+                            </tr>
+                                    '.$row.'
+                            <tr>
+                                <td  style="border-bottom: 1px solid #e8e8e8;border-left: 1px solid #e8e8e8; padding: 10px 12px;">
+                                    <a href="'.base_url().'/check-ip-blacklist">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>';
+            if(!empty($userInfo))
+            {
+                foreach($userInfo as $user)
+                { 
+                    $name = $user->name;
+                    $email = $user->email;
+                    $body = '<div style="text-align:center;">
+                            <img src="'. base_url() .'assets/dist/img/logo.png" alt="" /></div>
+                            <p>Hi '.$name.'</p>
+                            <p>IP Blacklist: </p> 
+                            '.$message.'
+                            ';
+           
+                    $config['mailtype'] = 'html';
+                    //$this->email->initialize($config);
+                    $subject = "IP Blacklist";
+                    // $result = $this->email
+                    //     ->from('webmaster@example.com','Orion eSolutions')
+                    //     // ->reply_to('')    // Optional, an account where a human being reads.
+                    //     ->to($email)
+                    //     ->subject($subject)
+                    //     ->message($body)
+                    //     ->send();
+                    
+                    // Always set content-type when sending HTML email
+                    $headers = "MIME-Version: 1.0" . "\r\n";
+                    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            
+                    // More headers
+                    $headers .= 'From: <webmaster@example.com>' . "\r\n";
+                    $headers .= 'Cc: myboss@example.com' . "\r\n";
+                    $result = mail($email,$subject,$body,$headers);
+                    if($result == TRUE)
+                    {
+                        $mailLogInfo = array('email_to'=>$email,'email_from'=>"webmaster@example.com",
+                        'email_subject'=>$subject ,'email_body'=>$body,'type_email'=>"ip_blacklist");
+                        $res = $this->server_model->addMailLog($mailLogInfo);
+                    }
+                    //var_dump($result);
+                    //echo '<br />';
+                    //echo $this->email->print_debugger();
+                }
+            }   
+        }
+    }
+    
+    
 }
 ob_flush();
 ?>

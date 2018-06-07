@@ -187,22 +187,22 @@
                                          <th>Name</th><td><?php echo $cl->name ?></td>
                                       </tr>
                                       <tr>
-                                         <th>Contact No.</th><td><?php echo $cl->phone ?></td>
+                                         <th>Contact No.</th><td><?php if( $cl->phone != ""){echo $cl->phone;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
-                                         <th>Email</th> <td><?php echo $cl->email ?></td>
+                                         <th>Email</th> <td><?php if( $cl->email != ""){echo $cl->email;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
-                                        <th>Address</th><td><?php echo $cl->address ?></td>
+                                        <th>Address</th><td><?php if( $cl->address != ""){echo $cl->address;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
-                                        <th>City</th><td><?php echo $cl->city ?></td>
+                                        <th>City</th><td><?php if( $cl->city != ""){echo $cl->city;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
-                                         <th>State</th><td><?php echo $cl->state ?></td>
+                                         <th>State</th><td><?php if( $cl->state != ""){echo $cl->state;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
-                                        <th>Zip</th><td><?php echo $cl->zip ?></td>
+                                        <th>Zip</th><td><?php if( $cl->zip != ""){echo $cl->zip;}else{ echo "N/A";} ?></td>
                                       </tr>
                                       <tr>
                                        <th>Status</th> <td><?php if($cl->status==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>

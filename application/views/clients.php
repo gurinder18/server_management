@@ -27,10 +27,7 @@
                       <th>Name</th>
                       <th>Phone</th>
                       <th>Email</th>
-                      <th>Address</th>
-                      <th>City</th>
-                      <th>State</th>
-                      <th>Zip</th>
+                      <th>Responsible Users</th>
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
@@ -47,10 +44,24 @@
                       <td><?php if(empty($record->name)){ echo "N/A";}else{echo $record->name;} ?></td>
                       <td><?php if(empty($record->phone)){ echo "N/A";}else{echo $record->phone;} ?></td>
                       <td><?php if(empty($record->email)){ echo "N/A";}else{echo $record->email;} ?></td>
-                      <td><?php if(empty($record->address)){ echo "N/A";}else{echo $record->address;} ?></td>
-                      <td><?php if(empty($record->city)){ echo "N/A";}else{echo $record->city;} ?></td>
-                      <td><?php if(empty($record->state)){ echo "N/A";}else{echo $record->state;} ?></td>
-                      <td><?php if(empty($record->zip)){ echo "N/A";}else{echo $record->zip;} ?></td>
+                      <td>
+                        <?php  
+                            if(!empty($clientsUsers))
+                            {
+                                $count = 1;
+                                foreach($clientsUsers as $users)
+                                { 
+                                    if(($record->id) == $users->clientId)
+                                    { 
+                                        if($count != 1 ){ echo " | "; }
+                                        echo $users->UserName;
+                                        $count++; 
+                                    }
+                                } 
+                            }
+                            ?>
+                      </td>
+                     
                       <td><?php if(($record->status)==1){ echo "Active"; }else{ echo "Deactive"; } ?></td>
                       <td class="text-center">
                           <button type="button" class="btn  btn-sm btn-detail" data-toggle="modal" data-target="#exampleModal<?php echo $record->id; ?>"><i class="fa fa-search-plus"></i></button>
@@ -62,21 +73,50 @@
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
-                                        <h2 class="modal-title" id="exampleModalLabel">Other Contacts</h2>
+                                        <h2 class="modal-title" id="exampleModalLabel">Client Details</h2>
                                     </div>
                                     <div class="modal-body">
                                         <table class="table table-hover">
-                                            <?php
-                                                        if(!empty($record->contacts))
-                                                            {                 
-                                            ?>
                                             <tr>
-                                                <td><?php echo $record->contacts ?></td>
+                                                <th>Name</th>
+                                                <td><?php if(empty($record->name)){ echo "N/A";}else{echo $record->name;} ?></td>
                                             </tr>
-                                            <?php }else{ ?>
-                                            <tr><td>No Contact added</td></tr>
-                                            <?php }
-                                             ?>
+                                            <tr>   
+                                                <th>Phone</th>
+                                                <td><?php if(empty($record->phone)){ echo "N/A";}else{echo $record->phone;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>Email Adress</th>
+                                                <td><?php if(empty($record->email)){ echo "N/A";}else{echo $record->email;} ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Address</th>
+                                                <td><?php if(empty($record->address)){ echo "N/A";}else{echo $record->address;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>City</th>
+                                                <td><?php if(empty($record->city)){ echo "N/A";}else{echo $record->city;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>State</th>
+                                                <td><?php if(empty($record->state)){ echo "N/A";}else{echo $record->state;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>Country</th>
+                                                <td><?php if(empty($record->country)){ echo "N/A";}else{echo $record->country;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>Zip</th>
+                                                <td><?php if(empty($record->zip)){ echo "N/A";}else{echo $record->zip;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                                <th>Organisation</th>
+                                                <td><?php if(empty($record->organisation)){ echo "N/A";}else{echo $record->organisation;} ?></td>
+                                            </tr>
+                                            <tr>   
+                                            <th>Other Contacts</th>
+                                               <td><?php if(empty($record->contacts)){ echo "N/A";}else{echo $record->contacts;} ?></td>
+                                            </tr>
                                          </table>
                                     </div>
                                     <div class="modal-footer">

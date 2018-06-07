@@ -262,14 +262,21 @@
                 <span>Check IP Blacklist</span>
               </a>
               <?php 
-                if($role_slug == "member" && $updatedBy != $vendorId)
+                }if($role_slug == "member" && $updatedBy != $vendorId)
                 {
+              ?>
+                <a href="<?php echo base_url(); ?>loadChangePass">
+                  <i class="fa fa-list-alt"></i>
+                  <span>Assign Duties</span>
+                </a>
+              <?php
+                }elseif($role_slug == "member"){
               ?>
               <a href="<?php echo base_url(); ?>assign-duties">
                 <i class="fa fa-arrow-circle-up"></i>
                 <span>Assign Duties</span>
               </a>
-                <?php }} ?>
+                <?php } ?>
             </li>
           </ul>
         </section>

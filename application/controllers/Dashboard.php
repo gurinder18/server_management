@@ -38,12 +38,12 @@ class Dashboard extends BaseController
     function dashboardSchedule()
     {
         $current_date = date('d-m-Y');
-        $userId = 2;
         $data['users'] = $this->dashboard_model->getUsers();
-        $data['servers'] = $this->dashboard_model->getServers($userId);
+       
         if($this->isMember() == TRUE)
         {
-            $this->load->model('dashboard_model');
+            $userId = $this->vendorId;
+            $data['servers'] = $this->dashboard_model->getServers($userId);
             $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date,$this->vendorId);
             $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
                 
@@ -51,12 +51,11 @@ class Dashboard extends BaseController
         }
         elseif($this->isAdmin() == TRUE)
         {
-            $this->load->model('dashboard_model');
-           
+            $userId = "";
+            $data['servers'] = $this->dashboard_model->getServers($userId);
             $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date); 
             $data['todayBackupCount'] = $this->dashboard_model->todaysBackupCount( $current_date); 
-            //print_r($data);
-
+           
             $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
             $this->loadViews("dashboard", $this->global,  $data, NULL);
         }   
@@ -82,7 +81,7 @@ class Dashboard extends BaseController
                 $serverId=$backup['serverId'];
             }
             $data['clients'] = $this->backup_model->getClientById($clientId);
-			//print_r($data);
+			
             $data['servers'] = $this->backup_model->getServerById($serverId);
             
             $this->global['pageTitle'] = 'Orion eSolutions : Backup Details';
@@ -220,8 +219,68 @@ class Dashboard extends BaseController
             } 
       
         echo json_encode($responce); 
-       
     } 
+    /**
+     * This function is used to load the backup status list for pie chart 
+     */
+    function getSelectedBackupData() 
+    { 
+        if($this->isAdmin() == TRUE )
+        {
+            $userId = null;
+        }
+        elseif($this->isMember() == TRUE)
+        {
+            $userId = $this->vendorId;
+        }
+            $userId1 = $this->input->get('user');
+            $serverId = $this->input->get('server');    
+            $status = $this->input->get('status');
+            $st="";
+            if($status == "Pending")
+            {
+                $st = 1;
+            }
+            elseif($status == "Inprogress")
+            {
+                $st = 2;
+            }
+            elseif($status == "Completed")
+            {
+                $st = 3;
+            }
+            elseif($status == "Failed")
+            {
+                $st = 4;
+            }
+            $current_date = date('d-m-Y');
+            $search_data['status'] = $st;
+            if($userId1 == "user" || $userId1 == "null")
+            {
+                $search_data['userId'] = "";
+            }
+            else
+            {
+                $search_data['userId'] = $userId1;
+            }
+            if($serverId == "server" || $serverId == "null")
+            {
+                $search_data['serverId'] = "";
+            }
+            else
+            {
+                $search_data['serverId'] =$serverId;
+            }
+            $data['users'] = $this->dashboard_model->getUsers();
+            $data['servers'] = $this->dashboard_model->getServers($userId);
+            $data['pendingBackupCount'] = $this->dashboard_model->todaysPendingBackupCount( $current_date); 
+            $data['todayBackupCount'] = $this->dashboard_model->todaysBackupCount( $current_date); 
+            
+            $data['backupRecords'] = $this->dashboard_model->backupDetails($userId, $search_data); 
+            $this->global['pageTitle'] = 'Orion eSolutions : Dashboard';
+                
+            $this->loadViews("dashboard", $this->global, $data, NULL);
+    }
 }
 
 ?>

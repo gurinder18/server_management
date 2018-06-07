@@ -48,6 +48,7 @@ $route['loginMe'] = 'login/loginMe';
 //$route['dashboard'] = 'user';
 $route['logout'] = 'user/logout';
 $route['dashboard'] = 'dashboard/dashboardSchedule';
+$route['backups-status'] = 'dashboard/getSelectedBackupData';
 $route['users'] = 'user/userListing';
 $route['users/(:num)'] = "user/userListing/$1";
 
@@ -123,12 +124,14 @@ $route['backup-report/(:num)'] = "report/backupReport/$1";
 $route['backups-report'] = "report/allBackupReport";
 $route['backups-report/(:num)'] = "report/allBackupReport/$1";
 $route['export-excel'] = "report/excel";
+$route['clear-data'] = 'report/clearData';
 
 /*********** IP Blacklist DEFINED ROUTES *******************/
 $route['check-ip-blacklist'] = 'server/ipBlacklisting';
-$route['check-ip-blacklisting'] = 'server/checkBlacklist';
+$route['check-ip-blacklisting'] = 'cron/checkBlacklist';
 $route['check-ip-blacklist/(:any)'] = 'server/checkBlacklist/$1';
 $route['blacklist'] = 'server/blacklist';
+$route['add-ip-comment'] = 'server/addIpComment';
 
 $route['add-ip'] = "server/addIP";
 $route['add-ip(:any)'] = "server/addIP/$1";

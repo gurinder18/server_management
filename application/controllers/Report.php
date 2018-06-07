@@ -34,7 +34,6 @@ class Report extends BaseController
     /**
      * This function is used to load the report list
      */
-   
     function backupReport($limit = NULL)
     {
         $this->load->model('report_model');
@@ -320,7 +319,7 @@ class Report extends BaseController
                 $scheduleId = $this->input->post('scheduleId');
                 $statusId = $this->input->post('statusId');
                 $comment = $this->input->post('comment');
-
+                
                 $commentInfo = array('scheduleId'=>$scheduleId,'userId'=>$this->vendorId,'statusId'=>$statusId,
                 'userComment'=>$comment,'createdDtm'=>date('Y-m-d H:i:s'));
                 if(!$data['file_name']=="")
@@ -543,8 +542,50 @@ class Report extends BaseController
                 $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5'); 
                 //force user to download the Excel file without writing it to server's HD
                 $objWriter->save('php://output');
+    }
+     /**
+     * This function is used to load the report list
+     */
+    function clearData()
+    {
+        $from =  $this->input->post('fromDate');
+        $to =  $this->input->post('toDate');
+              
+        if($from!=null && $to!=null)
+        {
+            $search_data['fromDate'] =  $from;
+            $search_data['toDate'] = $to;
         }
-        
+        $data = $this->report_model->getAttachments($search_data);
+        if(!empty($data))
+        {
+            foreach($data as $d)
+            {
+                $filename = $d['filePath'];
+                if(!unlink("./assets/files/".$filename))
+                {
+                    $result = FALSE;
+                }
+                else
+                {
+                    $result = TRUE;
+                }
+            }
+            if($result == TRUE)
+            {
+                $this->session->set_flashdata('success', 'Data cleared successfully');
+            }
+            elseif($result == FALSE)
+            {
+                $this->session->set_flashdata('error', 'Data clearing failed');
+            }
+        }
+        else
+        {
+            $this->session->set_flashdata('error', 'Data already cleared');
+        }
+        redirect('backup-report');
+    }
     
 }
 

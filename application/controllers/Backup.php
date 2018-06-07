@@ -20,6 +20,7 @@ class Backup extends BaseController
     {
         parent::__construct();
         $this->load->model('backup_model');
+        date_default_timezone_set('Asia/Kolkata');
         $this->isLoggedIn();   
     }
   
@@ -151,7 +152,7 @@ class Backup extends BaseController
      * This function is used to load the add new form and to add new backup
      */
     function addBackup()
-    {
+    {	
         if($this->isAdmin() == FALSE)
         {
             $this->loadThis();

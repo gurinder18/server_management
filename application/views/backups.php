@@ -37,9 +37,9 @@
                     <tr>
                     <td></td> 
                     <form role="form" id="searchBackup" action="<?php echo base_url() ?>backups" method="get" role="form">
-                    
-                        <td><?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
-                            <select class="form-control required" id="user" name="user" > 
+                        <td>
+                            <?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
+                            <select class="form-control required" id="user" name="user" onchange="this.form.submit();" > 
                                 <option value="">Select User</option>
                                 <?php
                                     if(!empty($users))
@@ -49,8 +49,8 @@
                                 ?>
                                 <option value="<?php echo $us->userId ?>"
                                 <?php
-                                    if(isset($_GET['search_backup'])=='Search')
-                                    { 
+                                    if(isset($_GET['user']))
+                                    {
                                         if(!($_GET['user']) == NULL)
                                         {
                                             if($_GET['user']==$us->userId)
@@ -58,7 +58,7 @@
                                                 echo "selected";
                                             } 
                                         }
-                                    } 
+                                    }
                                 ?>
                                 ><?php echo $us->name ?></option>
                                 <?php
@@ -69,7 +69,7 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-control required" id="client" name="client" > 
+                            <select class="form-control required" id="client" name="client" onchange="clientserver();"> 
                                 <option value="">Select Client</option>
                                 <?php
                                     if(!empty($clients))
@@ -79,8 +79,8 @@
                                 ?>
                                 <option value="<?php echo $cl->id ?>"
                                 <?php
-                                if(isset($_GET['search_backup'])=='Search')
-                                { 
+                                 if(isset($_GET['client']))
+                                 { 
                                     if(!($_GET['client']) == NULL)
                                     {
                                             if($_GET['client']== $cl->id)
@@ -98,7 +98,7 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-control required" id="server" name="server" > 
+                            <select class="form-control required" id="server" name="server"  onchange="this.form.submit();"> 
                                 <option value="">Select server</option>
                                 <?php
                                     if(!empty($backupRecords))
@@ -107,7 +107,7 @@
                                         { 
 
                                         }
-                                            if(isset($_GET['search_backup'])=='Search')
+                                            if(isset($_GET['server']))
                                             { 
                                                 if(!($_GET['server']) == NULL)
                                                 {
@@ -123,13 +123,12 @@
                                    <?php
                                                 }   
                                             }  
-                                        
                                     }
                                    ?>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control required" id="status" name="status" onchange="this.form.submit();" > 
+                            <select class="form-control required" id="status" name="status"  onchange="this.form.submit();"> 
                                 <option value="">Select Status</option>
                                 <option value="1" 
                                 <?php
@@ -158,7 +157,8 @@
                                 <option value="">Select type</option>
                                 <option value="Daily" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Search'){ 
+                                    if(isset($_GET['scheduleType']))
+                                    {    
                                         if($_GET['scheduleType'] =="Daily" )
                                         {
                                             echo "selected";
@@ -168,7 +168,8 @@
                                 >Daily</option>
                                 <option value="Weekly" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Search'){ 
+                                    if(isset($_GET['scheduleType']))
+                                    {
                                         if($_GET['scheduleType'] =="Weekly" )
                                         {
                                             echo "selected";
@@ -178,7 +179,8 @@
                                 >Weekly</option>
                                 <option value="Monthly" 
                                     <?php
-                                    if(isset($_GET['search_backup'])=='Search'){ 
+                                    if(isset($_GET['scheduleType']))
+                                    {
                                         if($_GET['scheduleType'] =="Monthly" )
                                         {
                                             echo "selected";
@@ -189,8 +191,8 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-control required" id="scheduleTimings" name="scheduleTimings" > 
-                            <option value=''>Select timings</option>
+                            <select class="form-control required" id="scheduleTimings" name="scheduleTimings" onchange="this.form.submit();"> 
+                            
                                 <?php
                                         if(isset($_GET['scheduleTimings']))
                                         { 
@@ -211,6 +213,7 @@
                         </td>
                         <td> 
                             <input type="submit" class="btn btn-primary" name='search_backup' value="Search" />
+                            <!-- <input type="reset" class="btn btn-default" value="Reset"  id="reset"  /> -->
                         </td>
                         </form>
                     </tr>
@@ -233,7 +236,7 @@
                       <td class="text-center">
                           <a class="btn btn-sm btn-detail" href="<?php echo base_url().'backup-details/'.$record->id; ?>"><i class="fa fa-search-plus"></i></a>
                           <?php if($role_slug=="sys.admin" || $role_slug=="master.admin"){ ?>
-                             <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
+                              <a class="btn btn-sm btn-info" href="<?php echo base_url().'edit-backup/'.$record->id; ?>"><i class="fa fa-pencil"></i></a>
                               <a class="btn btn-sm btn-danger deleteBackup" href="#" data-id="<?php echo $record->id; ?>"><i class="fa fa-trash"></i></a>
                           <?php } ?>
                       </td> 
@@ -300,8 +303,9 @@
         }
     });
 
-$(document).on("change","#client",function(){
-    var val = $(this).val();
+    function clientserver(){
+   
+    var val = $('#client').val();
     $.ajax({
 	type: "POST",
 	url: baseURL + "getServers/"+val,
@@ -316,8 +320,8 @@ $(document).on("change","#client",function(){
         })
         $("#server").html(server_text);
     }
-    });
-});
+    }); //$('#searchBackup').submit();
+}
 $(document).ready(function () {
     $("#delete_all").click(function () {
         $(".delete_backup").prop('checked', $(this).prop('checked'));

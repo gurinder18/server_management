@@ -57,6 +57,7 @@ class Dashboard_model extends CI_Model
         $query = $this->db->get();
         return count($query->result());
     }
+   
      /**
      * This function is used to get the users information
      * @return array $result : This is result of the query
@@ -65,7 +66,7 @@ class Dashboard_model extends CI_Model
     {
         $this->db->select('Basetbl.userId, Basetbl.name');
         $this->db->from('tbl_users as Basetbl');
-        $this->db->join('tbl_roles as Role', 'Role.roleId = BaseTbl.roleId','left');
+        $this->db->join('tbl_roles as Role', 'Role.roleId = Basetbl.roleId','left');
 
         $this->db->where('Basetbl.isDeleted ', 0);
         $this->db->where('Role.slug','member' );
@@ -84,7 +85,10 @@ class Dashboard_model extends CI_Model
         
         $this->db->join('tbl_backups as Backup', 'Basetbl.id = Backup.serverId','left');
         $this->db->join('tbl_users as User', 'Backup.userId = User.userId','left');
-        $this->db->where('Backup.userId ', $userId);
+        if($userId != "")
+        {
+            $this->db->where('Backup.userId ', $userId);
+        }
         $this->db->where('Basetbl.isDeleted ', 0);
         $this->db->group_by('Backup.serverId ');
        
@@ -101,7 +105,7 @@ class Dashboard_model extends CI_Model
         $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
         BaseTbl.status');
         $this->db->from('tbl_backup_schedule as BaseTbl');
-        $this->db->join('tbl_backups as Backup', 'Basetbl.backupId = Backup.id','left');
+        $this->db->join('tbl_backups as Backup', 'BaseTbl.backupId = Backup.id','left');
         $this->db->join('tbl_servers as Server', 'Backup.serverId = Server.id','left');
      
         $this->db->where('BaseTbl.date BETWEEN "'. date("01-m-Y").'" AND "'.date("d-m-Y").'"');
@@ -138,7 +142,57 @@ class Dashboard_model extends CI_Model
         
         return count($query->result());
     }
-
+ /**
+     * This function is used to get the backup info 
+    
+     * @return number $count : This is row count
+     */
+    function backupDetails($userId, $search_data = null)
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.date,BaseTbl.userId, BaseTbl.clientId, BaseTbl.backupId,
+        BaseTbl.status,Client.name As ClientName,Backup.scheduleTimings As Day,Backup.serverId,
+        Server.name As ServerName,Server.server As ServerIP, Server.hostname As ServerHostname,
+        Server.name As ServerName,Status.status As ScheduleStatus,User.name As UserName,
+        Backup.scheduleType As ScheduleType,');
+        
+        $this->db->from('tbl_backup_schedule as BaseTbl');
+       
+        $this->db->join('tbl_users as User', 'User.userId = BaseTbl.userId','left');
+        $this->db->join('tbl_clients as Client', 'Client.id = BaseTbl.clientId','left');
+        $this->db->join('tbl_backups as Backup', 'Backup.id = BaseTbl.backupId','left');
+        $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
+        $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
+        
+        $this->db->where('BaseTbl.date BETWEEN "'. date("01-m-Y").'" AND "'.date("d-m-Y").'"');
+        if($search_data==null)
+        {
+            //$this->db->where('BaseTbl.createdAt BETWEEN "'. $fromDate.'" AND "'.$toDate.'"');
+        }
+        if($search_data['status']!=null)
+        {
+            $this->db->where('BaseTbl.status', $search_data['status']);
+        }
+        if($search_data['serverId']!=null)
+        {
+            $this->db->where('Server.id', $search_data['serverId']);
+        }
+        if($search_data['userId']!=null)
+        {
+            $this->db->where('BaseTbl.userId',$search_data['userId']);
+        }
+        if($userId!=null)
+        {
+            $this->db->where('BaseTbl.userId',$userId);
+        }
+       
+        $this->db->order_by("BaseTbl.date", "asc");
+        $this->db->order_by("Client.name", "asc");
+        $this->db->order_by("User.name", "asc");
+        $query = $this->db->get();
+        $result = $query->result();   
+      
+        return $result;
+    }
 }
 
   

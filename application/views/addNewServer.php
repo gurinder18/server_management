@@ -78,7 +78,7 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="name">Name *</label>
-                                        <input type="text" class="form-control required" id="name" name="name" maxlength="50" >
+                                        <input type="text" class="form-control required" id="name" name="name" maxlength="50" value="<?php echo isset($_POST["name"]) ? $_POST["name"] : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -109,13 +109,13 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="server">Server IP *</label>
-                                        <input type="text" class="form-control required" id="server" name="server" maxlength="128">
+                                        <input type="text" class="form-control required" id="server" name="server" maxlength="128" value="<?php echo isset($_POST["server"]) ? $_POST["server"] : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="hostname">Hostname *</label>
-                                        <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128">
+                                        <input type="text" class="form-control required" id="hostname" name="hostname" maxlength="128" value="<?php echo isset($_POST["hostname"]) ? $_POST["hostname"] : ''; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -123,13 +123,13 @@
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="username">Username</label>
-                                        <input type="text" class="form-control " id="username" name="username" maxlength="50">
+                                        <input type="text" class="form-control " id="username" name="username" maxlength="50" value="<?php echo isset($_POST["username"]) ? $_POST["username"] : ''; ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">                                
                                     <div class="form-group">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control " id="password" name="password" data-toggle="password" >
+                                        <input type="password" class="form-control " id="password" name="password" data-toggle="password" value="<?php echo isset($_POST["password"]) ? $_POST["password"] : ''; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +168,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="details">Other Details</label>
-                                       <textarea class="form-control" id="details" name="details"></textarea>
+                                       <textarea class="form-control" id="details" name="details"><?php echo isset($_POST["details"]) ? $_POST["details"] : ''; ?></textarea>
                                     </div>
                                 </div>    
                             </div>
@@ -196,15 +196,19 @@
                         <div class="modal-body">
                             <table class="table table-hover" id="add_comment"> 
                                 <tr>
-                                <?php echo form_open_multipart('server/addServers');?>  
-                                    <td> <input type="file" name="serverfile" /></td>
+                                <form id="addServers" action="server/addServers" method="post" role="form" enctype="multipart/form-data">
+                                    <td> 
+                                        <input type="file" name="serverfile" id="serverfile" required/>
+                                        <input type="hidden" name="overwrite_data" id="overwrite_data" />
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <h4>Format for excel file</h4>
                                         <p><b>Total fields - </b></p>
-                                        <p><b>Server_name, Client_name, Server_IP, Hostname, Username, Password, Status, Details</b></p>
-                                        <p><span style="color:red;"><b>(Username and Password can have null values)</b></span></p>
+                                        <p><b>Server_name*, Operating_system*, Client_name*, Server_IP*, Hostname*, Username, Password, Status*, Details</b></p>
+                                        <p><span style="color:red;"><b>(* fields are mandatory)</b></span></p>
+                                        <p>Status field shoud have 0,1 value(1 for Active, 0 for Deactive)</p>
                                     </td>
                                 </tr>
                             </table>
@@ -224,7 +228,9 @@
 <script src="<?php echo base_url(); ?>assets/js/addUser.js" type="text/javascript"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/bootstrap/js/bootstrap-show-password.min.js"></script>
 <script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/jquery.min.js"></script>
-
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/dist/js/sweetalert.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/froala_editor.pkgd.min.js" type="text/javascript"></script>
 <script>
   $(function() {
@@ -236,4 +242,36 @@
     if(name=='Other')document.getElementById('div1').innerHTML='Other: <input type="text" class="form-control" name="other" placeholder="Enter Operating System"/>';
     else document.getElementById('div1').innerHTML='';
     }
+
+    $(document).on('click', '#upload', function(e) {
+    e.preventDefault();
+    var file = $( "#serverfile" ).val();
+    if(file.length == 0){
+        alert("Please select file");
+    }else
+    {
+    swal({
+        title: "Are you sure?",
+        text: "Want to overwrite data?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#8CD4F5',
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, overwrite it!",
+        cancelButtonText: "No, cancel!",
+        closeOnConfirm: false,
+        closeOnCancel: false
+    },function(isConfirm)
+    {
+        if(isConfirm){
+            $( "#overwrite_data" ).val( "confirmed");
+            $("#addServers").submit();
+        } 
+        else {
+            $( "#overwrite_data" ).val( "ignored");
+            $("#addServers").submit();
+        }
+    });
+}
+});
 </script>

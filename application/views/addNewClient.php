@@ -55,7 +55,6 @@
                                         <label for="name">Name *</label>
                                         <input type="text" class="form-control required" id="name" name="name" value="<?php echo isset($_POST["name"]) ? $_POST["name"] : ''; ?>" maxlength="50">
                                     </div>
-                                    
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -82,23 +81,31 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="city">City </label>
-                                        <input type="text" class="form-control " id="city" name="city" value="<?php echo isset($_POST["city"]) ? $_POST["city"] : ''; ?>" maxlength="50">
+                                        <input type="text" class="form-control " id="city" name="city" value="<?php echo isset($_POST["city"]) ? $_POST["city"] : ''; ?>" maxlength="100">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="state">State </label>
-                                        <input type="text" class="form-control " id="state" name="state" value="<?php echo isset($_POST["state"]) ? $_POST["state"] : ''; ?>" maxlength="50">
+                                        <input type="text" class="form-control " id="state" name="state" value="<?php echo isset($_POST["state"]) ? $_POST["state"] : ''; ?>" maxlength="100">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="state">Country </label>
+                                        <input type="text" class="form-control " id="country" name="country" value="<?php echo isset($_POST["country"]) ? $_POST["country"] : ''; ?>" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="zip">Zip </label>
                                         <input type="text" class="form-control " id="zip" name="zip" value="<?php echo isset($_POST["zip"]) ? $_POST["zip"] : ''; ?>" maxlength="100">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="status">Status </label>
@@ -109,39 +116,39 @@
                                         </select>
                                     </div>
                                 </div>   
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="organisation">Organisation </label>
                                         <input type="text" class="form-control " id="organisation" name="organisation" value="<?php echo isset($_POST["organisation"]) ? $_POST["organisation"] : ''; ?>">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="contacts">Other Contacts </label>
                                         <input type="text" class="form-control " id="contacts" name="contacts" value="<?php echo isset($_POST["contacts"]) ? $_POST["contacts"] : ''; ?>" placeholder="Name-Contact No.-Organisation">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                       <div> <label for="user">Users </label>(Click in box to select)</div>
-                                        <select class="multipleSelect form-control" multiple name="user[]" id="user" required>
-                                            <?php
-                                            if(!empty($users))
-                                            {
-                                                foreach ($users as $us)
-                                                { 
-                                                    ?>
-                                                    <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
-                                                    <?php
+                                       <div> 
+                                            <label for="user">Users </label>(Click in box to select)
+                                        </div>
+                                            <select class="multipleSelect form-control " multiple name="user[]" id="user">
+                                                <?php
+                                                if(!empty($users))
+                                                {
+                                                    foreach ($users as $us)
+                                                    { 
+                                                        ?>
+                                                        <option value="<?php echo $us->userId ?>"><?php echo $us->name ?></option>
+                                                        <?php
+                                                    }
                                                 }
-                                            }
-                                            ?>
-                                        </select> 
-                                        </div> 
+                                                ?>
+                                            </select> 
+                                    </div>
                                 </div>    
                             </div>
                         </div><!-- /.box-body -->
@@ -162,8 +169,8 @@
 <link rel="stylesheet" href="https://rawgit.com/dbrekalo/attire/master/dist/css/build.min.css">
 <script src="https://rawgit.com/dbrekalo/attire/master/dist/js/build.min.js"></script>
 
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/fastselect.min.css">
-<script src="<?php echo base_url(); ?>assets/dist/js/fastselect.standalone.js"></script>
+<link rel="stylesheet" href="<?php echo base_url() ?>assets/dist/css/fastselect.min.css">
+<script src="<?php echo base_url() ?>assets/dist/js/fastselect.standalone.js"></script>
 <script>
-    $('.multipleSelect').fastselect();
+    $('#user').fastselect();
 </script>

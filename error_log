@@ -3,3 +3,12 @@
 [15-May-2018 07:43:48 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/backuptoolcustom/public_html/application/third_party\PHPExcel\Classes\PHPExcel.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/backuptoolcustom/public_html/application/libraries/Excel.php on line 2
 [15-May-2018 07:44:46 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/backuptoolcustom/public_html/application/third_party\PHPExcel\Classes\PHPExcel.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/backuptoolcustom/public_html/application/libraries/Excel.php on line 2
 [15-May-2018 08:13:48 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/backuptoolcustom/public_html/application/third_party\PHPExcel\Classes\PHPExcel.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/backuptoolcustom/public_html/application/libraries/Excel.php on line 2
+[27-May-2018 13:21:52 UTC] PHP Fatal error:  Call to a member function initialize() on a non-object in /home/backuptoolcustom/public_html/application/controllers/Cron.php on line 909
+[27-May-2018 13:21:58 UTC] PHP Fatal error:  Call to a member function initialize() on a non-object in /home/backuptoolcustom/public_html/application/controllers/Cron.php on line 909
+[06-Jun-2018 05:25:55 UTC] PHP Fatal error:  Cannot use object of type stdClass as array in /home/backuptoolcustom/public_html/application/views/checkBlacklist.php on line 264
+[06-Jun-2018 06:19:16 UTC] PHP Fatal error:  Can't use method return value in write context in /home/backuptoolcustom/public_html/application/controllers/Client.php on line 191
+[06-Jun-2018 06:19:52 UTC] PHP Fatal error:  Can't use method return value in write context in /home/backuptoolcustom/public_html/application/controllers/Client.php on line 191
+[06-Jun-2018 06:19:59 UTC] PHP Fatal error:  Can't use method return value in write context in /home/backuptoolcustom/public_html/application/controllers/Client.php on line 191
+[06-Jun-2018 06:20:02 UTC] PHP Fatal error:  Can't use method return value in write context in /home/backuptoolcustom/public_html/application/controllers/Client.php on line 191
+[06-Jun-2018 07:16:00 UTC] PHP Fatal error:  Cannot use object of type CI_Loader as array in /home/backuptoolcustom/public_html/application/controllers/Schedule.php on line 600
+[06-Jun-2018 07:25:19 UTC] PHP Parse error:  syntax error, unexpected end of file in /home/backuptoolcustom/public_html/application/views/scheduleDetails.php on line 465

@@ -20,6 +20,7 @@ class Server extends BaseController
     {
         parent::__construct();
         $this->load->model('server_model');
+        date_default_timezone_set('Asia/Kolkata');
         $this->isLoggedIn();   
         $this->load->library('email');
     }
@@ -271,29 +272,38 @@ class Server extends BaseController
                 {
                     $operatingSystem =  $os;
                 }
-                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,
-                'server'=>$server,'hostname'=>$hostname,'username'=>$username,'password'=>$password,
-                'status'=>$status,'details'=>$details, 'createdBy'=>$this->vendorId,
-                 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                $this->load->model('server_model');
-                $result = $this->server_model->addNewServer($serverInfo);
-                
-                if($result > 0)
+                date_default_timezone_set('Asia/Kolkata');
+                $serverExists = $this->server_model->checkServerExists($name);
+                if(empty($serverExists))
                 {
-                    //$ipInfo = array('ip'=>$server,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                
-                   // $res = $this->server_model->addNewIP($ipInfo);
-                    $this->session->set_flashdata('success', 'New server created successfully');
+                    $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,'clientId'=>$client,
+                    'server'=>$server,'hostname'=>$hostname,'username'=>$username,'password'=>$password,
+                    'status'=>$status,'details'=>$details, 'createdBy'=>$this->vendorId,
+                    'createdDtm'=>date('Y-m-d H:i:s'));
+                    
+                    $result = $this->server_model->addNewServer($serverInfo);
+                    
+                    if($result > 0)
+                    {
+                        //$ipInfo = array('ip'=>$server,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                    
+                    // $res = $this->server_model->addNewIP($ipInfo);
+                        $this->session->set_flashdata('success', 'New server created successfully');
+                    }
+                    else
+                    {
+                        $this->session->set_flashdata('error', 'Server creation failed');
+                    }
+                    
+                    redirect('servers');
                 }
                 else
                 {
-                    $this->session->set_flashdata('error', 'Server creation failed');
+                    $this->session->set_flashdata('error', $name.' server already exists');
+                    redirect('add-server');
                 }
-                
-                redirect('servers');
             }
-        }else{}
+        }
     }
 
     /**
@@ -361,7 +371,7 @@ class Server extends BaseController
                     $operatingSystem =  $os;
                 }
                 $serverInfo = array();
-                
+                date_default_timezone_set('Asia/Kolkata');
                 $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
                 'clientId'=>$client,'server'=>$server,'hostname'=>$hostname,'username'=>$username,
                 'password'=>$password,'status'=>$status,'details'=>$details, 'updatedBy'=>$this->vendorId, 
@@ -381,7 +391,7 @@ class Server extends BaseController
                 
                 redirect('edit-server/'.$id);
             }
-        }else{}
+        }
     }
     
     /**
@@ -396,7 +406,7 @@ class Server extends BaseController
         }
         elseif(isset($_POST['delete_server'])!='Delete')
         {
-
+            date_default_timezone_set('Asia/Kolkata');
             $id = $this->input->post('id');
             $serverInfo = array('isDeleted'=>1,'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
             
@@ -435,7 +445,10 @@ class Server extends BaseController
     }
     
     function addServers()
-    {  
+    { 
+        date_default_timezone_set('Asia/Kolkata');
+        $overwrite = $this->input->post('overwrite_data');
+        
         //Path of files were you want to upload on localhost (C:/xampp/htdocs/ProjectName/uploads/excel/)	 
         $configUpload['upload_path'] = APPPATH.'../assets/excel/';
         $configUpload['allowed_types'] = 'xls|xlsx|csv';
@@ -445,7 +458,7 @@ class Server extends BaseController
         $this->upload->do_upload('serverfile');	
         $upload_data = $this->upload->data(); //Returns array of containing all of the data related to the file you uploaded.
         $file_name = $upload_data['file_name']; //uploded file name
-        $extension=$upload_data['file_ext'];    // uploded file extension
+        $extension = $upload_data['file_ext'];    // uploded file extension
         $file = explode(".",$file_name); 
        
         if($file[1] != 'xlsx' && $file[1] != 'xls' && $file[1] != 'csv')
@@ -461,19 +474,20 @@ class Server extends BaseController
         //Set to read only
         $objReader->setReadDataOnly(true); 		  
         //Load excel file
-        $path = 'C:/wamp64/www/server-m/assets/excel/';
+        $path = APPPATH.'assets/excel/';
         $objPHPExcel = $objReader->load( APPPATH.'../assets/excel/'.$file_name);		 
         $totalrows = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();   //Count Numbe of rows avalable in excel      	 
         $objWorksheet = $objPHPExcel->setActiveSheetIndex(0); 
 
         $name = $objWorksheet->getCellByColumnAndRow(0,1)->getValue();
-        $client = $objWorksheet->getCellByColumnAndRow(1,1)->getValue(); //Excel Column 1
-        $serverIP = $objWorksheet->getCellByColumnAndRow(2,1)->getValue(); //Excel Column 2
-        $hostname = $objWorksheet->getCellByColumnAndRow(3,1)->getValue(); //Excel Column 3
-        $username = $objWorksheet->getCellByColumnAndRow(4,1)->getValue(); //Excel Column 4
-        $password = $objWorksheet->getCellByColumnAndRow(5,1)->getValue(); //Excel Column 5
-        $status = $objWorksheet->getCellByColumnAndRow(6,1)->getValue(); //Excel Column 6
-        $details = $objWorksheet->getCellByColumnAndRow(7,1)->getValue(); //Excel Column 7 
+        $operatingSystem = $objWorksheet->getCellByColumnAndRow(1,1)->getValue(); //Excel Column 1
+        $client = $objWorksheet->getCellByColumnAndRow(2,1)->getValue(); //Excel Column 2
+        $serverIP = $objWorksheet->getCellByColumnAndRow(3,1)->getValue(); //Excel Column 3
+        $hostname = $objWorksheet->getCellByColumnAndRow(4,1)->getValue(); //Excel Column 4
+        $username = $objWorksheet->getCellByColumnAndRow(5,1)->getValue(); //Excel Column 5
+        $password = $objWorksheet->getCellByColumnAndRow(6,1)->getValue(); //Excel Column 6
+        $status = $objWorksheet->getCellByColumnAndRow(7,1)->getValue(); //Excel Column 7
+        $details = $objWorksheet->getCellByColumnAndRow(8,1)->getValue(); //Excel Column 8 
         if(!isset($name,$client,$serverIP,$hostname,$username,$password,$status,$details))
         {
             redirect("add-server?message=Please upload file with valid data");
@@ -483,33 +497,53 @@ class Server extends BaseController
         //loop from first data untill last data
         for($i = 2 ; $i <= $totalrows ; $i++)
         {
-            $name = $objWorksheet->getCellByColumnAndRow(0,$i)->getValue();			
-            $client = $objWorksheet->getCellByColumnAndRow(1,$i)->getValue(); //Excel Column 1
-            $serverIP = $objWorksheet->getCellByColumnAndRow(2,$i)->getValue(); //Excel Column 2
-            $hostname = $objWorksheet->getCellByColumnAndRow(3,$i)->getValue(); //Excel Column 3
-            $username = $objWorksheet->getCellByColumnAndRow(4,$i)->getValue(); //Excel Column 4
-            $password = $objWorksheet->getCellByColumnAndRow(5,$i)->getValue(); //Excel Column 5
-            $status = $objWorksheet->getCellByColumnAndRow(6,$i)->getValue(); //Excel Column 6
-            $details = $objWorksheet->getCellByColumnAndRow(7,$i)->getValue(); //Excel Column 7
+            $name = $objWorksheet->getCellByColumnAndRow(0,$i)->getValue();	
+            $operatingSystem = $objWorksheet->getCellByColumnAndRow(1,$i)->getValue(); //Excel Column 1		
+            $client = $objWorksheet->getCellByColumnAndRow(2,$i)->getValue(); //Excel Column 2
+            $serverIP = $objWorksheet->getCellByColumnAndRow(3,$i)->getValue(); //Excel Column 3
+            $hostname = $objWorksheet->getCellByColumnAndRow(4,$i)->getValue(); //Excel Column 4
+            $username = $objWorksheet->getCellByColumnAndRow(5,$i)->getValue(); //Excel Column 5
+            $password = $objWorksheet->getCellByColumnAndRow(6,$i)->getValue(); //Excel Column 6
+            $status = $objWorksheet->getCellByColumnAndRow(7,$i)->getValue(); //Excel Column 7
+            $details = $objWorksheet->getCellByColumnAndRow(8,$i)->getValue(); //Excel Column 8
 
-            if(isset($name,$client,$serverIP,$hostname,$status,$details) && (is_string($client) == TRUE) && (is_numeric($status) == TRUE))
+            if(isset($name,$client,$serverIP,$hostname,$status) && (is_string($client) == TRUE) && (is_numeric($status) == TRUE))
             {
                 $clientId = $this->checkClientExists($client);
                 if(!empty($clientId))
                 {
-                    $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
-                    'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
-                    'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                                    
-                    $this->load->model('server_model');
-                    $result = $this->server_model->addNewServer($serverInfo);
-                    if($result > 0)
+                    $serverExists = $this->server_model->checkServerExists($name);
+                   
+                    if(empty($serverExists))
                     {
-                        $this->session->set_flashdata('success', 'New server created successfully');
+                        $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
+                        'clientId'=>$clientId,'server'=>$serverIP, 'hostname'=>$hostname,
+                        'username'=>$username,'password'=>$password,'status'=>$status,
+                        'details'=>$details, 'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                                        
+                        $result = $this->server_model->addNewServer($serverInfo);
+                        if($result > 0)
+                        {
+                            $this->session->set_flashdata('success', 'New server created successfully');
+                        }
+                        else
+                        {
+                            $this->session->set_flashdata('error', 'Server creation failed');
+                        }
                     }
                     else
                     {
-                        $this->session->set_flashdata('error', 'Server creation failed');
+                        $id = $serverExists['id'];
+                       
+                        if($overwrite == "confirmed")
+                        {
+                            $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
+                            'clientId'=>$clientId, 'server'=>$serverIP,'hostname'=>$hostname,
+                            'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                            'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                            
+                            $result = $this->server_model->editServer($serverInfo, $id);
+                        }
                     }
                 }
                 else
@@ -522,19 +556,37 @@ class Server extends BaseController
                     $clientId = $this->checkClientExists($client);
                     if(!empty($clientId))
                     {
-                        $serverInfo = array('name'=>ucwords($name),'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
-                        'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
-                        'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
-                                    
-                        $this->load->model('server_model');
-                        $result = $this->server_model->addNewServer($serverInfo);
-                        if($result > 0)
+                        $serverExists = $this->server_model->checkServerExists($name);
+                        if(empty($serverExists))
                         {
-                            $this->session->set_flashdata('success', 'New server created successfully');
+                            $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
+                            'clientId'=>$clientId,'server'=>$serverIP,'hostname'=>$hostname,
+                            'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                            'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                                        
+                            $this->load->model('server_model');
+                            $result = $this->server_model->addNewServer($serverInfo);
+                            if($result > 0)
+                            {
+                                $this->session->set_flashdata('success', 'New server created successfully');
+                            }
+                            else
+                            {
+                                $this->session->set_flashdata('error', 'Server creation failed');
+                            }
                         }
                         else
                         {
-                            $this->session->set_flashdata('error', 'Server creation failed');
+                            $id = $serverExists['id'];
+                            if($overwrite == "confirmed")
+                            {
+                                $serverInfo = array('name'=>ucwords($name),'operatingSystem'=>$operatingSystem,
+                                'clientId'=>$clientId, 'server'=>$serverIP,'hostname'=>$hostname,
+                                'username'=>$username,'password'=>$password,'status'=>$status,'details'=>$details,
+                                'updatedBy'=>$this->vendorId, 'updatedDtm'=>date('Y-m-d H:i:s'));
+                                
+                                $result = $this->server_model->editServer($serverInfo, $id);
+                            }
                         }
                     }
                 }
@@ -544,7 +596,7 @@ class Server extends BaseController
                 redirect("add-server?message=Please upload file with valid data");
                 break;
             }
-        } 
+        } unset($_SESSION['confir']);
         unlink( APPPATH.'../assets/excel/'.$file_name); //File Deleted After uploading in database .			 
         redirect('servers');
         }
@@ -608,7 +660,16 @@ class Server extends BaseController
                     {
                         $ipInfo = array('ip'=>$ip,'host'=>$host,'isListed'=>$isListed);
                     }
-                    $result = $this->server_model->addIPBlacklist($ipInfo);
+                    $ipExist = $this->server_model->checkIpInBlacklistExists($ip, $host);
+                    if(!empty($ipExist))
+                    {
+                        $id = $ipExist->id;
+                        $result = $this->server_model->updateIPBlacklist($id, $ipInfo);
+                    }
+                    else
+                    {
+                        $result = $this->server_model->addIPBlacklist($ipInfo);
+                    }
                    
                 }
             } 
@@ -730,6 +791,7 @@ class Server extends BaseController
             }
         }
         $data['status'] = $statusList;
+        $data['Comments'] = $this->server_model->getIpComments();
         $this->global['pageTitle'] = 'Orion eSolutions : Check IP Blacklist';
            
          $this->loadViews("checkBlacklist", $this->global, $data, NULL);
@@ -757,7 +819,7 @@ class Server extends BaseController
             $reverse_ip = implode(".", array_reverse(explode(".", $ip)));
             foreach ($dnsbl_lookup as $host) {
                 if (checkdnsrr($reverse_ip . "." . $host . ".", "A")) { 
-                    $listed .= '</br>'.$reverse_ip . '.' . $host ;
+                    $listed .= '</br>'.$reverse_ip . ' .  ' . $host ;
                      $listing[] = array('ip'=>$ip,
                                       'host'=>$host,
                                       'listed'=>'Listed'    
@@ -765,6 +827,7 @@ class Server extends BaseController
                 }
                 else
                 {
+                    $notlisted = $ip." is not blacklisted" ;
                      $listing[] = array('ip'=>$ip,
                                       'host'=>$host,
                                       'listed'=>'Not Listed'    
@@ -779,8 +842,8 @@ class Server extends BaseController
         if($isList == FALSE)
         {
             if(empty($listed) ) {
-                $message = 'Record was not found';
-                redirect("check-ip-blacklist?status=".$message);
+                $message = 'Record not found';
+                redirect("check-ip-blacklist?status=".$notlisted);
             } else {
                 redirect("check-ip-blacklist?listed=".$listed);
             }
@@ -881,6 +944,35 @@ class Server extends BaseController
         //echo $this->email->print_debugger();
         }
     }
+    }
+     /**
+     * This function is used to load the add new ip
+     */
+    function addIpComment()
+    {
+        if(isset($_POST['add_ip_comment'])=='Submit')
+        {
+            $this->load->library('form_validation');
+            
+            $this->form_validation->set_rules('comment','Comment','trim|required|xss_clean');
+            $id = $this->input->post('id');
+            $comment = $this->input->post('comment');
+            date_default_timezone_set('Asia/Kolkata');
+            $commentInfo = array('comment'=>$comment,'createdBy'=>$this->vendorId, 'blacklistedIpId'=>$id,
+            'createdAt'=>date('Y-m-d H:i:s'));
+                
+                $result = $this->server_model->addIpComment($commentInfo);
+                if($result > 0)
+                {
+                    $this->session->set_flashdata('success', 'Comment added successfully');
+                }
+                else
+                {
+                    $this->session->set_flashdata('error', 'Failed to add comment');
+                }
+                redirect("check-ip-blacklist");
+        }
+        redirect("check-ip-blacklist");
     }
      /**
      * This function is used to load the add new ip

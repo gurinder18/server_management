@@ -215,7 +215,20 @@ class Server_model extends CI_Model
         
         return $insert_id;
     }
-    
+     /**
+     * This function is used to check whether server already exist or not
+     * @return {mixed} $result : This is searched result
+     */
+    function checkServerExists($name)
+    {
+        $this->db->select("id,name");
+        $this->db->from("tbl_servers");
+        $this->db->where("name", $name);   
+        
+        $query = $this->db->get();
+        
+        return $query->row_array();
+    }
     /**
      * This function used to get server information by id
      * @param number $id : This is server id
@@ -404,6 +417,22 @@ class Server_model extends CI_Model
         $result = $query->result();        
         return $result;
     }
+    /**
+     * This function is used to check whether ip in blacklist already exist or not
+     * @return {mixed} $result : This is searched result
+     */
+    function checkIpInBlacklistExists($ip, $host)
+    {
+        $this->db->select("id,ip");
+        $this->db->from("tbl_ip_blacklist");
+        $this->db->where("ip", $ip);   
+        $this->db->where('host', $host);
+        $this->db->where("isDeleted", 0);
+      
+        $query = $this->db->get();
+        
+        return $query->row_array();
+    }
      /**
      * This function is used to add new ip blacklist to system
      * @return number $insert_id : This is last inserted id
@@ -418,6 +447,17 @@ class Server_model extends CI_Model
         $this->db->trans_complete();
         
         return $insert_id;
+    }
+     /**
+     * This function is used to add new ip blacklist to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function updateIPBlacklist($id, $ipInfo)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('tbl_ip_blacklist', $ipInfo);
+        
+        return TRUE;
     }
     /**
      * This function is used to get the blacklisted-ip list 
@@ -450,6 +490,38 @@ class Server_model extends CI_Model
 
         $result = $query->result();    
         
+        return $result;
+    }
+     /**
+     * This function is used to add new ip blacklist- comment to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function addIpComment($commentInfo)
+    {
+        $this->db->trans_start();
+        $this->db->insert('tbl_blacklisted_ip_comment', $commentInfo);
+        
+        $insert_id = $this->db->insert_id();
+        
+        $this->db->trans_complete();
+        
+        return $insert_id;
+    }
+    /**
+     * This function is used to get ip blacklist- comment to system
+     * @return number $insert_id : This is last inserted id
+     */
+    function getIpComments()
+    {
+        $this->db->select('BaseTbl.id, BaseTbl.comment, BaseTbl.blacklistedIpId, BaseTbl.createdAt,
+        BaseTbl.createdBy,Users.name as UserName, IP.ip as ip,IP.isListed ');
+        $this->db->from('tbl_blacklisted_ip_comment as BaseTbl');
+        $this->db->join('tbl_users as Users', 'Users.userId = BaseTbl.createdBy','left');
+        $this->db->join('tbl_ip_blacklist as IP', 'IP.id = BaseTbl.blacklistedIpId','left');
+       
+        $query = $this->db->get();
+        
+        $result = $query->result();    
         return $result;
     }
 }

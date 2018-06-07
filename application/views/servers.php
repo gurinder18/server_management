@@ -75,7 +75,7 @@
                         </td>
                         <td>
                             <select class="form-control required" id="os" name="os" onchange="this.form.submit();" > 
-                                <option value="">Select Operating System</option>
+                                <option value="">Select OS</option>
                                 <option value="Linux" 
                                 <?php
                                     if(isset($_GET['os'])){ 

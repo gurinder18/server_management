@@ -148,9 +148,7 @@ class Report_model extends CI_Model
             return $query->result_array();
         }
         return [];
-        
     }
-
      /**
      * This function used to get schedule information by id
      * @param number $id : This is server id
@@ -169,7 +167,6 @@ class Report_model extends CI_Model
         $this->db->join('tbl_servers as Server', 'Server.id = Backup.serverId','left');
         $this->db->join('tbl_backup_status as Status', 'Status.id = BaseTbl.status','left');
 
-      
         $this->db->where('BaseTbl.id', $id);
         $query = $this->db->get();
         
@@ -242,9 +239,6 @@ class Report_model extends CI_Model
     
         return $query->result();
     }
-  
-   
-     
     /**
      * This function is used to update the server information
      * @param array $backupInfo : This is servers updated information
@@ -257,7 +251,23 @@ class Report_model extends CI_Model
         //print_r($this->db);die;
         return TRUE;
     }
-    
+    /**
+     * This function is used to get the attachments information
+     * @return array $result : This is result of the query
+     */
+    function getAttachments($search_data)
+    {
+        $this->db->select('id, scheduleId, commentId, filePath, createdDtm');
+        $this->db->from('tbl_backup_attachments');
+        
+        $this->db->where('createdDtm BETWEEN "'. $search_data['fromDate'].'" AND "'.$search_data['toDate'].'"');
+        
+        $query = $this->db->get();
+        if(count($query)>0){
+            return $query->result_array();
+        }
+        return [];
+    }
 }
 
   

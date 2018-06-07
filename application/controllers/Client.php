@@ -1,4 +1,6 @@
-<?php if(!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+ob_start();
+if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 require APPPATH . '/libraries/BaseController.php';
 
@@ -18,6 +20,7 @@ class Client extends BaseController
     {
         parent::__construct();
         $this->load->model('client_model');
+         date_default_timezone_set('Asia/Kolkata');
         $this->isLoggedIn();   
     }
     
@@ -54,7 +57,7 @@ class Client extends BaseController
 			$returns = $this->paginationCompress ( "clients/", $count, 5 );
             
             $data['clientRecords'] = $this->client_model->clients($searchText, $returns["page"], $returns["segment"]);
-            
+            $data['clientsUsers'] = $this->client_model->getClientsUsers(); 
             $this->global['pageTitle'] = 'Orion eSolutions : Clients Listing';
             $this->loadViews("clients", $this->global, $data, NULL);
         }
@@ -69,7 +72,7 @@ class Client extends BaseController
         {
             $this->loadThis();
         }
-        elseif(isset($_POST['add_client'])!='Submit')
+        elseif(isset($_POST['add_client']) != 'Submit')
         {
             $this->load->model('client_model');
             $data['users'] = $this->client_model->getUsers();
@@ -78,7 +81,7 @@ class Client extends BaseController
 
             $this->loadViews("addNewClient", $this->global, $data, NULL);
         }
-        elseif(isset($_POST['add_client'])=='Submit'){
+        elseif(isset($_POST['add_client']) == 'Submit'){
             $this->load->library('form_validation');
             
             $this->form_validation->set_rules('name','Name','trim|required|max_length[50]|xss_clean');
@@ -87,11 +90,12 @@ class Client extends BaseController
             $this->form_validation->set_rules('address','Address','trim|xss_clean');
             $this->form_validation->set_rules('city','City','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('country','Country','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('organisation','Organisation','trim|xss_clean');
             $this->form_validation->set_rules('contacts','Contacts','trim|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|numeric');
-            
+           // $this->form_validation->set_rules('user[]','User','required');
            
             if($this->form_validation->run() == FALSE)
             {
@@ -106,6 +110,7 @@ class Client extends BaseController
                 $address = $this->input->post('address');
                 $city = $this->input->post('city');
                 $state = $this->input->post('state');
+                $country = $this->input->post('country');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
                 $organisation = $this->input->post('organisation');
@@ -116,9 +121,11 @@ class Client extends BaseController
                 {
                     $status = 1;
                 }
+                        date_default_timezone_set('Asia/Kolkata');
                         $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                        'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'organisation'=>$organisation,
-                         'contacts'=>$contacts,'createdBy'=>$this->vendorId, 'createdDtm'=>date('Y-m-d H:i:s'));
+                        'city'=>$city, 'state'=>$state,'country'=>$country, 'zip'=>$zip, 'status'=>$status,
+                        'organisation'=>$organisation,'contacts'=>$contacts,'createdBy'=>$this->vendorId, 
+                        'createdDtm'=>date('Y-m-d H:i:s'));
                         
                         $this->load->model('client_model');
                         $clientId = $this->client_model->add($clientInfo);
@@ -188,7 +195,6 @@ class Client extends BaseController
                 redirect('clients');
             }
             
-            //$data['roles'] = $this->user_model->getUserRoles();
             $data['clientInfo'] = $this->client_model->getClientInfo($id);
             $data['clientUsers'] = $this->client_model->getClientsUserInfo($id);
             
@@ -209,11 +215,12 @@ class Client extends BaseController
             $this->form_validation->set_rules('address','Address','trim|xss_clean');
             $this->form_validation->set_rules('city','City','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('state','State','trim|max_length[50]|xss_clean');
+            $this->form_validation->set_rules('country','Country','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('zip','Zip','trim|max_length[50]|xss_clean');
             $this->form_validation->set_rules('status','Status','trim|numeric');
             $this->form_validation->set_rules('organisation','Organisation','trim|xss_clean');
             $this->form_validation->set_rules('contacts','Contacts','trim|xss_clean');
-            
+             $this->form_validation->set_rules('user[]','User','required');
             if($this->form_validation->run() == FALSE)
             {
                 unset($_POST['edit_client']);
@@ -227,6 +234,7 @@ class Client extends BaseController
                 $address = $this->input->post('address');
                 $city = $this->input->post('city');
                 $state = $this->input->post('state');
+                $country = $this->input->post('country');
                 $zip = $this->input->post('zip');
                 $status = $this->input->post('status');
                 $organisation = $this->input->post('organisation');
@@ -234,10 +242,10 @@ class Client extends BaseController
                 $userId = $this->input->post('user');
                 
                 $clientInfo = array();
-                
                 $clientInfo = array('name'=>$name, 'phone'=>$phone, 'email'=>$email, 'address'=>$address,
-                'city'=>$city, 'state'=>$state, 'zip'=>$zip, 'status'=>$status,'updatedBy'=>$this->vendorId, 
-                'organisation'=>$organisation,'contacts'=>$contacts,'updatedDtm'=>date('Y-m-d H:i:s'));
+                'city'=>$city, 'state'=>$state, 'country'=>$country, 'zip'=>$zip, 'status'=>$status,
+                'updatedBy'=>$this->vendorId, 'organisation'=>$organisation,'contacts'=>$contacts,
+                'updatedDtm'=>date('Y-m-d H:i:s'));
                 
                 $result = $this->client_model->edit($clientInfo, $id);
                 
@@ -446,5 +454,5 @@ class Client extends BaseController
         $this->loadViews("404", $this->global, NULL, NULL);
     }
 }
-
+ob_flush();
 ?>

@@ -102,7 +102,7 @@
                     ?>
                     <div class="box-body">
                         <div class="box-header">
-                            <h3 class="box-title">Assigned Duties</h3>
+                            <h3 class="box-title">Duties Assigned By Me</h3>
                         </div><!-- /.box-header -->
                         <div class="row">
                             <div class="col-md-12"> 
@@ -120,10 +120,16 @@
                                             {
                                                 if($duties->endDate >= date("Y-m-d")) 
                                                 {
+                                                    $start = $duties->startDate;
+                                                    $st = explode(" ",$start);
+                                                    $StartDate = $st[0];
+                                                    $end = $duties->endDate;
+                                                    $en = explode(" ",$end);
+                                                    $EndDate = $en[0];
                                         ?>
                                         <tr>
-                                            <td><?php echo $duties->startDate; ?></td>
-                                            <td><?php echo $duties->endDate; ?></td>
+                                            <td><?php echo $StartDate; ?></td>
+                                            <td><?php echo $EndDate; ?></td>
                                             <td><?php echo $duties->numDays; ?></td>
                                             <td><?php echo $duties->UserName; ?></td>
                                             <td style=
@@ -135,6 +141,63 @@
                                                 <?php if($duties->status == 0){echo "Pending"; }
                                                       elseif($duties->status == 1){echo "Accepted";}
                                                       elseif($duties->status == 2){echo "Rejected";}       
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <?php }
+                                        } ?>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- /.box-body -->    
+                    <?php } ?>
+                    <?php
+                        if(!empty($myAssigned_duties))
+                        {
+                    ?>
+                    <div class="box-body">
+                        <div class="box-header">
+                            <h3 class="box-title">Duties Assigned To Me</h3>
+                        </div><!-- /.box-header -->
+                        <div class="row">
+                            <div class="col-md-12"> 
+                                <div class="box-body table-responsive">
+                                    <table class="table table-hover td-align">
+                                        <tr>
+                                            <th class="td-align">Start date</th>
+                                            <th class="td-align">End date</th>
+                                            <th class="td-align">Total days</th>
+                                            <th class="td-align">Assigned by</th>
+                                            <th class="td-align">Status</th>
+                                        </tr>
+                                        <?php
+                                            foreach ($myAssigned_duties as $myDuties)
+                                            {
+                                                if($myDuties->endDate >= date("Y-m-d")) 
+                                                {
+                                                    $start = $myDuties->startDate;
+                                                    $st = explode(" ",$start);
+                                                    $StartDate = $st[0];
+
+                                                    $end = $myDuties->endDate;
+                                                    $en = explode(" ",$end);
+                                                    $EndDate = $en[0];
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $StartDate; ?></td>
+                                            <td><?php echo $EndDate; ?></td>
+                                            <td><?php echo $myDuties->numDays; ?></td>
+                                            <td><?php echo $myDuties->UserName; ?></td>
+                                            <td style=
+                                                <?php if($myDuties->status == 0){echo "color:red"; }
+                                                      elseif($myDuties->status == 1){echo "color:green";}
+                                                      elseif($myDuties->status == 2){echo "color:brown";}       
+                                                ?>
+                                            >
+                                                <?php if($myDuties->status == 0){echo "Pending"; }
+                                                      elseif($myDuties->status == 1){echo "Accepted";}
+                                                      elseif($myDuties->status == 2){echo "Rejected";}       
                                                 ?>
                                             </td>
                                         </tr>
@@ -240,14 +303,14 @@ $(function(){
        
         var inputDate = new Date(this.value);
 
-        var incrementedMaxDate = inputDate.setDate(inputDate.getDate() + 15);
+        var incrementedMaxDate = inputDate.setDate(inputDate.getDate() + 7);
         var newMaxDate = new Date(incrementedMaxDate);
         var newMaxMonth = newMaxDate.getMonth() + 1;
         var newMaxDay = newMaxDate.getDate();
         var newMaxYear = newMaxDate.getFullYear();
-        if(month < 10)
+        if(newMaxMonth < 10)
             var newMaxMonth = '0' + newMaxMonth.toString();
-        if(day < 10)
+        if(newMaxDay < 10)
             var newMaxDay = '0' + newMaxDay.toString();
         
         var endMaxDate = newMaxYear + '-' + newMaxMonth + '-' + newMaxDay;

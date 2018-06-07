@@ -132,7 +132,7 @@
                                        <textarea class="form-control" id="information" name="information"></textarea>
                                     </div>
                                 </div>    
-                            </div>
+                            </div>  </div>
                         </div><!-- /.box-body -->
     
                         <div class="box-footer">
